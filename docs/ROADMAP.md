@@ -11,16 +11,29 @@ O que ainda não está pronto.
 
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
-| <feature> | 1 | `spec/<arquivo>.md` | |
+| Chefes: perfil, tutoria, alergias e dados iniciais dos três | 1 | `spec/chefes.md` | Migração com a tabela de chefes e os três chefes de partida |
+| Peso: registro, gráfico e alerta de variação | 1 | `spec/chefes.md` | |
+| Voz dos chefes: tags, frases base e modo sério | 1 | `spec/voz-dos-chefes.md` | Frases em `src/domain`, com testes |
+| Cartão SOS | 1 | `spec/cartao-sos.md` | A dois toques de qualquer tela |
+| Carteirinha de vacinação | 1 | `spec/vacinas.md` | Protocolos por espécie e registro em grupo |
+| Lembretes por push | 1 | `spec/lembretes.md` | ADR-008; chaves VAPID, service worker e cron |
+| Mural da Chefia | 1 | `spec/mural.md` | Troca a tela `Home` de exemplo |
+| Fases 2, 3 e 4 | 2 a 4 | `SPEC.md` | Cada uma ganha seus arquivos em `spec/` na vez dela |
 
 ## O código ainda não segue o spec
 
-- <regra do spec> — <o que o código faz hoje>.
+Nada por enquanto.
 
 ## Adiado
 
-- <o que foi adiado> — <por quê e até quando>.
+- Frases por funcionário (só o Cesar ou só eu vemos) — decidir se entram na fase 1 ou na 2.
 
 ## Revisar as lacunas que o agente decidiu
 
-- [ ] <regra que o agente escreveu em `spec/` sem perguntar, com o arquivo>.
+- [ ] `spec/lembretes.md`: o aviso chega às 9h, no fuso de Brasília.
+- [ ] `spec/chefes.md`: só nome e espécie são obrigatórios no cadastro; os tutores são ligados pelos
+  e-mails `souza.pereira.valeria@gmail.com` e `csrgamboa@gmail.com`.
+- [ ] `spec/mural.md`: "Exige atenção" quando há vacina atrasada ou a vencer em 30 dias, ou alergia em
+  branco.
+- [ ] `spec/vacinas.md`: só a vacina e a data são obrigatórias no registro.
+- [ ] `spec/acesso-e-membros.md`: eu e o Cesar somos os dois admins.

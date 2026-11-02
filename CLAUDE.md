@@ -1,7 +1,6 @@
-# <Nome do app> - Claude Code Context & Instructions
+# CLT Pet - Claude Code Context & Instructions
 
-<!-- BOOTSTRAP.md fills this paragraph: what the app is, for whom, and its core loop. -->
-<One paragraph: what the app does, who uses it, the loop a member repeats every day.>
+CLT Pet (Consolidação das Leis do Tutor) is a private PWA for one couple, Valéria and Cesar, to manage the health and routine of their three pets, with humor as the engagement: each pet "talks" to its tutors in its own voice. The loop each of them repeats: open the Mural da Chefia, see which pet needs attention (vaccines, weight), register what was done, and answer the push reminders. Phase 1 is profile, weight, SOS card, vaccines, push reminders and the Mural; see `docs/SPEC.md`.
 
 ## Docs
 

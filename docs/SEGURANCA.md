@@ -17,7 +17,11 @@ conferidas pelo `src/security.test.ts`, que roda em todo build.
   `send_metrics: false`.
 - Segredos nunca vão para o código do cliente: tudo que está no bundle é público. O segredo do login
   Google, e qualquer chave de API, ficam só no Worker (`wrangler secret put`; localmente no `.dev.vars`).
-- <O `BOOTSTRAP.md` escreve aqui quais dados pessoais o app guarda e se algum é sensível.>
+- Dados que o app guarda: nome, e-mail e foto de quem está no grupo (as duas pessoas da casa); a
+  inscrição de push de cada aparelho; e os dados dos pets (perfil, peso, vacinas, remédios, consultas,
+  fotos e PDFs de exames). Nenhum é sensível no sentido de dinheiro ou saúde de pessoas; mesmo assim,
+  tudo fica atrás do login e só sai do app pelo PDF e pelo link do funcionário temporário, que não
+  mostra dados dos tutores além dos contatos de emergência. Gastos ficam de fora.
 
 ## 2. Acesso e dados
 

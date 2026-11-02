@@ -1,14 +1,14 @@
 // Every user-facing text, in Brazilian Portuguese, in the app's voice (docs/GLOSSARIO.md has the
 // terms). The UI imports from here; it never writes its own text.
 export const strings = {
-  appName: 'Nome do app',
+  appName: 'CLT Pet',
   genericError: 'Algo deu errado. Tenta de novo?',
   retry: 'Tentar de novo',
   forbidden: 'Você não tem permissão para isso.',
   offline: 'Sem conexão. Mostrando o último estado carregado.',
 
   signIn: {
-    tagline: 'Uma frase sobre o que o app faz.',
+    tagline: 'Consolidação das Leis do Tutor: a saúde e a rotina dos chefes da casa.',
     button: 'Entrar com Google',
     noInvite: 'Não há convite para esse e-mail. Peça a um admin para te convidar.',
     failed: 'O login não deu certo. Tenta de novo?',

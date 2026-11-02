@@ -1,14 +1,11 @@
 # Acesso e membros
 
-Quem entra no app, como entra e o que cada papel pode fazer. Já vem construído no template; o
-`BOOTSTRAP.md` ajusta as regras às respostas da dona.
+Quem entra no app, como entra e o que cada papel pode fazer.
 
 - **Entra aqui:** login, convites, papéis, a lista de membros, remover membro e o nome no perfil.
 - **Não entra aqui:** as features do app em si (cada uma no seu arquivo de `spec/`).
 
 ## Em aberto
-
-- [ ] Que papéis o app tem além de admin e membro, e o que cada um pode?
 
 ## Entrar
 
@@ -27,11 +24,16 @@ Quem entra no app, como entra e o que cada papel pode fazer. Já vem construído
 | Admin | Tudo do membro; convidar e remover membros; dar e tirar o papel de admin |
 
 - Pode haver mais de um admin. O app não deixa tirar o papel do último. *(1)*
+- Eu e o Cesar somos os dois admins desde o começo. *(1)*
+- "Tutor responsável" e "funcionário reserva" não são papéis da pessoa: são por chefe (`chefes.md`).
+  Os dois têm acesso total a todos os chefes. *(1)*
+- O funcionário temporário (pet sitter) entra por um link somente leitura, sem login, e não é um
+  membro. *(2)*
 
 ## Membros
 
-- Todos os membros veem a lista do grupo, com nome, foto e papéis. O e-mail de cada um só o admin
-  vê. *(1)*
+- Todos os membros veem a lista do grupo, com nome, foto, e-mail e papéis, e o que cada um fez no
+  app ("Dose dada por: …"). *(1)*
 - O admin remove um membro depois de confirmar. Ele não remove a si mesmo: outro admin faz isso.
   Assim sempre sobra um admin. *(1)*
 - Quem é removido perde o acesso na hora, inclusive no app aberto. Um convite novo traz a pessoa de

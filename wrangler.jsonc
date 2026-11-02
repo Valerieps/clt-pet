@@ -3,7 +3,7 @@
 // `npx wrangler secret put <NAME>`, and locally in .dev.vars (see .dev.vars.example).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "app-name",
+  "name": "clt-pet",
   "main": "server/entry/worker.ts",
   "compatibility_date": "2026-10-01",
   "assets": {
@@ -20,7 +20,7 @@
   // One cron for every time-based job; each job decides whether it is due (GroupService.tick).
   "triggers": { "crons": ["*/5 * * * *"] },
   "vars": {
-    // Public: the OAuth client ID from Google Cloud (BOOTSTRAP.md). The secret is a secret.
+    // Public: the OAuth client ID from Google Cloud (README.md). The secret is a secret.
     "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com"
   },
   // Branch previews (`wrangler preview`, ADR-004) refuse to deploy without this block. Each preview

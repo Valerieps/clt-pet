@@ -10,7 +10,7 @@ import { Members } from './screens/Members';
 import { SignIn } from './screens/SignIn';
 import { useQuery } from './use-query';
 
-/** The app's screens. Replace Home with the app's first real screen (BOOTSTRAP.md). */
+/** The app's screens. Replace Home with the Mural da Chefia (docs/spec/mural.md). */
 export function App() {
   const { backend, live } = useServices();
   const me = useQuery('me', {}, ['me']);
