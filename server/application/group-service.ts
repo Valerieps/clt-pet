@@ -26,7 +26,7 @@ type Handler<T> = (ctx: Context, actor: Member, input: Input) => T;
 /** Every query the API answers. A handler returns null when the actor may not see it. */
 const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | null> } = {
   me: (_ctx, actor) => me(actor),
-  members: (ctx, actor) => listMembers(ctx, actor),
+  members: (ctx) => listMembers(ctx),
   invites: (ctx, actor) => listInvites(ctx, actor),
 };
 

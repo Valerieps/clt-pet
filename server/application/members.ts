@@ -140,12 +140,12 @@ export function me(member: Member): MeView {
   return { ...memberView(member), email: member.email };
 }
 
-/** Everyone sees name, photo and roles; only admins also see the e-mail. */
-export function listMembers(ctx: Context, actor: Member): MemberListItem[] {
+/** Every member sees name, photo, roles and e-mail of the others (docs/spec/acesso-e-membros.md). */
+export function listMembers(ctx: Context): MemberListItem[] {
   return ctx.sql
     .all<MemberRow>('SELECT * FROM members WHERE active = 1 ORDER BY name COLLATE NOCASE')
     .map(toMember)
-    .map((m) => (isAdmin(actor) ? { ...memberView(m), email: m.email } : memberView(m)));
+    .map((m) => ({ ...memberView(m), email: m.email }));
 }
 
 /** The member changes their own name. */

@@ -90,7 +90,7 @@ describe('dev sign-in', () => {
     expect(devSignInAllowed('1', new URL('http://[::1]:8787/api/auth/dev'))).toBe(true);
     expect(devSignInAllowed(undefined, new URL('http://localhost:4173/api/auth/dev'))).toBe(false);
     expect(devSignInAllowed('true', new URL('http://localhost:4173/api/auth/dev'))).toBe(false);
-    expect(devSignInAllowed('1', new URL('https://app-name.workers.dev/api/auth/dev'))).toBe(false);
+    expect(devSignInAllowed('1', new URL('https://clt-pet.souza-pereira-valeria.workers.dev/api/auth/dev'))).toBe(false);
     expect(devSignInAllowed('1', new URL('https://localhost.example.com/api/auth/dev'))).toBe(false);
   });
 
