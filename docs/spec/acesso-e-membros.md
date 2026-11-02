@@ -7,6 +7,8 @@ Quem entra no app, como entra e o que cada papel pode fazer.
 
 ## Em aberto
 
+Nada por enquanto.
+
 ## Entrar
 
 - Eu entro só com minha conta Google. Não há login com senha. *(1)*
