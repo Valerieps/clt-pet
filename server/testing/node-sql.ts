@@ -2,14 +2,27 @@
 import { DatabaseSync } from 'node:sqlite';
 import type { Clock, IdGenerator, Sql, SqlValue } from '../application/ports';
 
+/** The Durable Object's SQLite allows at most 5 terms in a compound SELECT; node:sqlite allows 500. */
+export const MAX_COMPOUND_SELECT = 5;
+
+/** Throws as the Durable Object does on a statement it would refuse but node:sqlite accepts. */
+export function checkDurableObjectLimits(query: string): void {
+  const terms = (query.match(/\b(UNION|INTERSECT|EXCEPT)\b/gi)?.length ?? 0) + 1;
+  if (terms > MAX_COMPOUND_SELECT) throw new Error('too many terms in compound SELECT: SQLITE_ERROR');
+}
+
 export function memorySql(): Sql {
   const db = new DatabaseSync(':memory:');
   db.exec('PRAGMA foreign_keys = ON');
   let depth = 0;
+  const prepare = (query: string) => {
+    checkDurableObjectLimits(query);
+    return db.prepare(query);
+  };
   return {
-    all: <T>(query: string, ...bindings: SqlValue[]) => db.prepare(query).all(...bindings) as T[],
+    all: <T>(query: string, ...bindings: SqlValue[]) => prepare(query).all(...bindings) as T[],
     run: (query, ...bindings) => {
-      db.prepare(query).run(...bindings);
+      prepare(query).run(...bindings);
     },
     transaction: (fn) => {
       if (depth > 0) return fn();

@@ -54,10 +54,18 @@ const PET_SELECT = `SELECT pets.*, members.name AS tutor_name, back.name AS retu
   LEFT JOIN members AS back ON back.id = pets.tutor_return_member_id AND back.active = 1`;
 
 /** What the Registrar drawer saves (docs/spec/navegacao.md): the Mural's "Feito" seal shows the newest of these. */
+// One query per table, not one UNION: the Durable Object's SQLite allows at most 5 terms in a compound SELECT.
 const REGISTER_TABLES = ['weights', 'vaccinations', 'medications', 'care_records', 'visits', 'diary'] as const;
-const LAST_RECORD = `SELECT members.name, r.created_at FROM (
-  ${REGISTER_TABLES.map((table) => `SELECT member_id, created_at FROM ${table} WHERE pet_id = ?`).join(' UNION ALL ')}
-) AS r JOIN members ON members.id = r.member_id ORDER BY r.created_at DESC LIMIT 1`;
+const LAST_RECORD = REGISTER_TABLES.map(
+  (table) => `SELECT members.name, r.created_at FROM ${table} AS r JOIN members ON members.id = r.member_id
+   WHERE r.pet_id = ? ORDER BY r.created_at DESC LIMIT 1`,
+);
+
+function lastRecord(ctx: Context, petId: string): { name: string; created_at: string } | undefined {
+  return LAST_RECORD.flatMap((query) => ctx.sql.all<{ name: string; created_at: string }>(query, petId)).reduce<
+    { name: string; created_at: string } | undefined
+  >((newest, r) => (!newest || r.created_at > newest.created_at ? r : newest), undefined);
+}
 
 /** Today in Brasília (UTC-3), as YYYY-MM-DD: the date a weight or birthday is judged against. */
 export function todayInBrasilia(ctx: Context): string {
@@ -73,7 +81,7 @@ function toView(ctx: Context, row: PetRow): PetView {
      WHERE weights.pet_id = ? ORDER BY weights.on_date, weights.created_at, weights.rowid`,
     row.id,
   );
-  const last = ctx.sql.all<{ name: string; created_at: string }>(LAST_RECORD, ...REGISTER_TABLES.map(() => row.id))[0];
+  const last = lastRecord(ctx, row.id);
   return {
     id: row.id,
     species: row.species,
