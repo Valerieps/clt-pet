@@ -30,7 +30,13 @@ export const ChevronLeftIcon = () => <Icon path="M15 5l-7 7 7 7" />;
 export const CheckIcon = () => <Icon path="M5 12l5 5 9-10" />;
 export const PlusIcon = () => <Icon path="M12 5v14M5 12h14" />;
 export const ScaleIcon = () => <Icon path="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM6.5 13a5.5 5.5 0 0 1 11 0zM12 13l2.5-3.5" />;
-export const CatIcon = () => <Icon path="M5 20V6l4 3h6l4-3v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zM9.5 13h.01M14.5 13h.01M11 16l1 1 1-1" />;
+/** Parasites and hygiene: a shield. */
+export const ShieldIcon = () => <Icon path="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6zM9 12l2 2 4-4" />;
+/** Health: a stethoscope. */
+export const StethoscopeIcon = () => <Icon path="M6 3v6a4 4 0 0 0 8 0V3M10 13v2a5 5 0 0 0 10 0v-2M20 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />;
+/** Routine: a bowl. */
+export const BowlIcon = () => <Icon path="M3 11h18a9 9 0 0 1-18 0zM8 7c0-1.5 1-2 1-3M12 7c0-1.5 1-2 1-3M16 7c0-1.5 1-2 1-3" />;
+export const CatIcon =() => <Icon path="M5 20V6l4 3h6l4-3v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zM9.5 13h.01M14.5 13h.01M11 16l1 1 1-1" />;
 export const DogIcon = () => (
   <Icon path="M8 6C6 5 3.5 6 3.5 10c0 2 .5 4 2.5 4.5M16 6c2-1 4.5 0 4.5 4 0 2-.5 4-2.5 4.5M8 6c1-1 2.5-1.5 4-1.5S15 5 16 6v7c0 3.5-2 6-4 6s-4-2.5-4-6zM10 11h.01M14 11h.01M11 15h2l-1 1.2z" />
 );

@@ -1,11 +1,13 @@
 // What the UI needs from the outside world. src/infrastructure/ implements it; the UI receives it
 // through ServicesProvider and never makes network calls itself.
-import type { ApiResult, CommandName, Commands, QueryName, Queries, Topic } from './api-contract';
+import type { ApiResult, CommandName, Commands, QueryName, Queries, SitterManualView, Topic } from './api-contract';
 
 export interface Backend {
   query<N extends QueryName>(name: N, input: Queries[N]['input']): Promise<ApiResult<Queries[N]['output']>>;
   command<N extends CommandName>(name: N, input: Commands[N]['input']): Promise<ApiResult<Commands[N]['output']>>;
   signOut(): Promise<void>;
+  /** The pet sitter's page, read with the link's token and no session (docs/spec/manual-temporario.md). */
+  sitterManual(token: string): Promise<ApiResult<SitterManualView>>;
   /** The test sign-in without Google; the server accepts it only on localhost (ADR-007). */
   devSignIn(email: string, name: string): Promise<ApiResult<null>>;
   /** The address the browser navigates to for "Entrar com Google". */

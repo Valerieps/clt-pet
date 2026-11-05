@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { PetView, VaccinationView } from '../application/api-contract';
+import type { CareView, PetView, VaccinationView } from '../application/api-contract';
 import { muralStatus, type MuralStatus } from '../domain/mural';
 import { auraClass } from '../domain/navigation';
 import { weightAlert } from '../domain/pets/weight';
@@ -13,20 +13,25 @@ export interface Chefe {
   readonly aura: string;
   readonly status: MuralStatus;
   readonly doses: readonly VaccinationView[];
+  /** Parasite and hygiene records (docs/spec/cuidados.md). */
+  readonly care: readonly CareView[];
 }
 
 /** Every chefe with its aura and Mural status: what the faces, the Mural and the pages share. */
 export function useChefia(): { chefes: readonly Chefe[]; loading: boolean; failed: boolean } {
   const pets = useQuery('pets', {}, ['pets']);
   const vaccinations = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
+  const careRecords = useQuery('care', {}, ['care', 'pets']);
   const chefes = useMemo(() => {
     const today = todayLocal();
     return (pets.data ?? []).map((pet, index): Chefe => {
       const doses = (vaccinations.data ?? []).filter((d) => d.petId === pet.id);
+      const care = (careRecords.data ?? []).filter((c) => c.petId === pet.id);
       const forMural = { id: pet.id, name: pet.profile.name, seriousMode: pet.seriousMode, allergiesAnswered: pet.allergiesAnswered };
       const alert = weightAlert(pet.weights, pet.weightAlertPercent);
-      return { pet, aura: auraClass(index), status: muralStatus(forMural, doses, today, alert?.percent ?? null), doses };
+      const parasites = care.filter((c) => c.category === 'parasite');
+      return { pet, aura: auraClass(index), status: muralStatus(forMural, doses, today, alert?.percent ?? null, parasites), doses, care };
     });
-  }, [pets.data, vaccinations.data]);
+  }, [pets.data, vaccinations.data, careRecords.data]);
   return { chefes, loading: pets.loading && !pets.data, failed: Boolean(pets.error && !pets.data) };
 }
