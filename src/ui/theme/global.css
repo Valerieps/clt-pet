@@ -351,7 +351,7 @@ a:hover {
 .hero {
   position: relative;
   /* Short phones (667px tall) must see the Registrar button without scrolling. */
-  height: clamp(300px, 46dvh, 450px);
+  height: clamp(370px, 56dvh, 520px);
   padding: 14px 16px 0;
   overflow: hidden;
 }
@@ -406,14 +406,24 @@ a:hover {
   stroke-linejoin: round;
 }
 
-.hero .monument {
+.hero-caption {
   position: absolute;
   z-index: 2;
   left: 16px;
   right: 16px;
-  bottom: 30px;
+  bottom: 34px;
+  color: #ffffff;
+}
+
+.hero .monument {
   color: #ffffff;
   white-space: nowrap;
+}
+
+/* Tags and tutor sit on the colored part, under the name. */
+.hero-caption .meta {
+  margin: 2px 0 0;
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .ground-sheet {
@@ -743,7 +753,7 @@ button:disabled {
   font-weight: 700;
 }
 
-/* ---------- The Manual de Sobrevivência: a handle on every screen, a drawer when open ---------- */
+/* ---------- The Cartão de Saúde: a handle on every screen, a drawer when open ---------- */
 
 .handle {
   position: fixed;

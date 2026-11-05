@@ -1,4 +1,4 @@
-// The Manual de Sobrevivência / Cartão SOS (docs/spec/cartao-sos.md): a drawer that opens from the
+// The Cartão de Saúde / Cartão SOS (docs/spec/cartao-sos.md): a drawer that opens from the
 // handle on every screen. Sober: no aura, no jokes. Neutral tone.
 import { useState, type FormEvent } from 'react';
 import type { PetView } from '../../application/api-contract';
@@ -7,7 +7,7 @@ import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
 import { useChefia } from '../chefia';
-import { Layer, PhoneIcon, WarningIcon, useEscape } from '../parts';
+import { CloseIcon, Layer, PhoneIcon, WarningIcon, useEscape } from '../parts';
 import { PetPhoto } from '../PetPhoto';
 import { goBack, navigate } from '../router';
 
@@ -25,7 +25,12 @@ export function Manual({ petId }: { petId: string | null }) {
       <button type="button" className="scrim" aria-label={strings.nav.close} onClick={close} />
       <div className="drawer" role="dialog" aria-modal="true" aria-label={strings.nav.manual}>
         <span className="grip" />
-        <h2>{strings.nav.manual}</h2>
+        <div className="spread">
+          <h2>{strings.nav.manual}</h2>
+          <button type="button" className="close" aria-label={strings.nav.close} onClick={close}>
+            <CloseIcon />
+          </button>
+        </div>
         {failed && <p className="notice">{strings.genericError}</p>}
         {!loading && !failed && chefes.length === 0 && <p className="muted">{strings.pets.empty}</p>}
         {chefes.length > 1 && (

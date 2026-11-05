@@ -62,7 +62,7 @@ export function BackBar({ to, label = strings.nav.back }: { to: string; label?: 
   );
 }
 
-/** Fixed on the bottom edge of every screen: the Manual de Sobrevivência is a gesture away. */
+/** Fixed on the bottom edge of every screen: the Cartão de Saúde is a gesture away. */
 export function ManualHandle({ to }: { to: string }) {
   return (
     <Link to={to} className="handle">

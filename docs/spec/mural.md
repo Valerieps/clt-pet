@@ -20,7 +20,7 @@ Nada por enquanto.
   em branco, ou o alerta de peso disparou (`chefes.md`). No card, o motivo é "Peso mudou X%". *(1)*
 - O card tem um só caminho para a página do chefe (o nome) e o botão principal: Registrar, ou
   Informar alergias quando é o único motivo. *(1)*
-- Tocar no card abre a página do chefe, e o Manual de Sobrevivência fica na alça de baixo, em toda
+- Tocar no card abre a página do chefe, e o Cartão de Saúde fica na alça de baixo, em toda
   tela (`navegacao.md`). *(1)*
 - Quando o único motivo de atenção é a alergia em branco, o card diz "Falta informar as alergias" no
   lugar da frase. *(1)*

@@ -28,7 +28,7 @@ export const strings = {
     back: 'Voltar',
     backToMural: 'Voltar ao Mural',
     close: 'Fechar',
-    manual: 'Manual de Sobrevivência',
+    manual: 'Cartão de Saúde',
     signOut: 'Sair',
   },
 

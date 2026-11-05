@@ -86,9 +86,13 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
             </span>
           )}
         </div>
-        <h1 className="monument" style={{ fontSize: nameSize(name) }}>
-          {name}
-        </h1>
+        <div className="hero-caption">
+          <h1 className="monument" style={{ fontSize: nameSize(name) }}>
+            {name}
+          </h1>
+          {pet.tags.length > 0 && <p className="meta">{pet.tags.join(' · ')}</p>}
+          <p className="meta">{pet.tutorName ? t.tutor(pet.tutorName) : t.tutorPending(pet.tutorEmail)}</p>
+        </div>
       </section>
       <main className="ground-sheet">
         <div className="actions">
@@ -106,11 +110,10 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
   );
 }
 
-/** Under the name: tags, allergies, and what the chefe demands (Exige) and what is next (A seguir). */
+/** Under the name: what the chefe demands (Exige) and what is next (A seguir). */
 function Summary({ chefe }: { chefe: Chefe }) {
   const { pet, status, doses } = chefe;
   const today = todayLocal();
-  const { profile } = pet;
   const current = currentDoses(doses).map((dose) => ({ dose, state: vaccineStatus(dose, today), due: boosterDate(dose) }));
   const demanded = current.filter((c) => c.state !== 'ok').sort((a, b) => a.due.localeCompare(b.due));
   const next = current.filter((c) => c.state === 'ok').sort((a, b) => a.due.localeCompare(b.due)).slice(0, 2);
@@ -119,19 +122,6 @@ function Summary({ chefe }: { chefe: Chefe }) {
 
   return (
     <>
-      {pet.tags.length > 0 && <p className="meta">{pet.tags.join(' · ')}</p>}
-      <p className="meta">{pet.tutorName ? t.tutor(pet.tutorName) : t.tutorPending(pet.tutorEmail)}</p>
-      {profile.allergies.length > 0 ? (
-        <div className="allergy" role="region" aria-label={t.allergiesTitle}>
-          {profile.allergies.map((a, i) => (
-            <p key={i}>
-              {t.allergyKind[a.kind]}: {a.description}
-            </p>
-          ))}
-        </div>
-      ) : (
-        <p className="meta">{pet.allergiesAnswered ? t.noAllergies : mural.allergiesMissing}</p>
-      )}
       {nothingDemanded && <div className="calm-note">{strings.chefe.allGood}</div>}
       {!nothingDemanded && (
         <div>
