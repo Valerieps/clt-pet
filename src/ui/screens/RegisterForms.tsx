@@ -4,7 +4,6 @@ import type { PetView } from '../../application/api-contract';
 import { TEXT_MAX } from '../../domain/pets/pet';
 import { parseKilos } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
-import { FREQUENCIES, type Frequency } from '../../domain/medications/medication';
 import { DEFAULT_INTERVAL_DAYS, MAX_INTERVAL_DAYS, PROTOCOLS } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
 import { todayLocal } from '../chefia';
@@ -12,7 +11,6 @@ import { useToast } from '../toast';
 
 const weightT = strings.pets.weight;
 const vaccineT = strings.vaccines;
-const medicationT = strings.medications;
 
 export function WeightForm({ pet, onSaved }: { pet: PetView; onSaved: () => void }) {
   const toast = useToast();
@@ -160,78 +158,6 @@ export function VaccineForm({ pet, allPets, onSaved }: { pet: PetView; allPets: 
       )}
       <div className="form-actions">
         <button type="submit">{vaccineT.form.add}</button>
-      </div>
-    </form>
-  );
-}
-
-export function MedicationForm({ pet, onSaved }: { pet: PetView; onSaved: () => void }) {
-  const toast = useToast();
-  const { backend } = useServices();
-  const [name, setName] = useState('');
-  const [dose, setDose] = useState('');
-  const [frequency, setFrequency] = useState<Frequency | null>(null);
-  const [startOn, setStartOn] = useState(todayLocal());
-  const [endOn, setEndOn] = useState('');
-  const [error, setError] = useState<string | null>(null);
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    if (!frequency) return setError(medicationT.form.frequency);
-    const result = await backend.command('medication.add', { petId: pet.id, name, dose, frequency, startOn, endOn: endOn || null });
-    if (result.ok) {
-      toast(strings.toast.medication(pet.profile.name));
-      onSaved();
-    } else {
-      setError(result.error === 'invalid' ? medicationT.form.invalid : strings.genericError);
-    }
-  }
-
-  return (
-    <form className="stack" onSubmit={submit}>
-      <label>
-        {medicationT.form.name}
-        <input required autoFocus maxLength={TEXT_MAX} value={name} onChange={(e) => setName(e.target.value)} />
-      </label>
-      <label>
-        {medicationT.form.dose}
-        <input required maxLength={TEXT_MAX} placeholder={medicationT.form.dosePlaceholder} value={dose} onChange={(e) => setDose(e.target.value)} />
-      </label>
-      <fieldset className="field">
-        <legend>{medicationT.form.frequency}</legend>
-        <div className="chips">
-          {FREQUENCIES.map((key) => (
-            <button
-              key={key}
-              type="button"
-              className="chip"
-              aria-pressed={frequency === key}
-              onClick={() => {
-                setFrequency(key);
-                setError(null);
-              }}
-            >
-              {medicationT.frequency[key]}
-            </button>
-          ))}
-        </div>
-      </fieldset>
-      <label>
-        {medicationT.form.startOn}
-        <input required type="date" value={startOn} onChange={(e) => setStartOn(e.target.value)} />
-      </label>
-      <label>
-        {medicationT.form.endOn}
-        <input type="date" min={startOn} value={endOn} onChange={(e) => setEndOn(e.target.value)} />
-        <span className="muted">{medicationT.form.endHint}</span>
-      </label>
-      {error && (
-        <p className="notice" role="alert">
-          {error}
-        </p>
-      )}
-      <div className="form-actions">
-        <button type="submit">{medicationT.form.add}</button>
       </div>
     </form>
   );

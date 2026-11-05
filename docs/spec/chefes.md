@@ -1,15 +1,16 @@
 # Chefes
 
-Os pets da casa: o perfil de cada um (o Exame Admissional), quem é o tutor responsável, as alergias
-e o peso.
+Os pets da casa: o perfil de cada um (o Exame Admissional), quem é o tutor responsável, as alergias,
+a alimentação e o peso.
 
-- **Entra aqui:** cadastro e perfil do chefe, tutoria, alergias e restrições, peso, aposentadoria e
-  os chefes que já vêm cadastrados.
+- **Entra aqui:** cadastro e perfil do chefe, tutoria, alergias e restrições, alimentação (a ração e
+  os horários das refeições), peso, aposentadoria e os chefes que já vêm cadastrados.
 - **Não entra aqui:** a voz de cada chefe (`voz-dos-chefes.md`), o Cartão SOS (`cartao-sos.md`) e as
   vacinas (`vacinas.md`).
 
 ## Em aberto
 
+- [ ] Os horários das refeições de cada chefe, para eu cadastrar.
 - [ ] O limite de variação de peso (10% em até 60 dias) é igual para gatos e cachorros, ou ajusto por
   espécie na hora de cadastrar?
 
@@ -47,6 +48,17 @@ e o peso.
   perfil e no Cartão SOS. *(1)*
 - Sem nenhuma alergia registrada, o perfil mostra "Nenhuma alergia informada", para eu saber que
   ninguém preencheu ainda. *(1)*
+
+## Alimentação
+
+- A alimentação inteira fica na aba Perfil, na seção Alimentação: a ração do perfil (tipo, marca e
+  quantidade por dia) e os horários das refeições. *(2)*
+  *Por quê:* a ração e os horários respondem à mesma pergunta, "o que e quando ele come".
+- Os horários são uma ficha: eu cadastro cada um pelo botão "+ Novo horário", no fim da seção, com
+  horário e, se quiser, quantidade e observação. Só o horário é obrigatório. A lista fica em ordem de
+  horário. *(2)*
+- Os horários vão para o Manual do Funcionário Temporário. *(2)*
+- Lembrete de refeição não existe: os horários são referência, não tarefa. *(2)*
 
 ## Peso
 

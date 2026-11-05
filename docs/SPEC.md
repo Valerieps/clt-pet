@@ -35,17 +35,16 @@ As fases 3 e 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos
 | Arquivo | O que cobre |
 | --- | --- |
 | [spec/acesso-e-membros.md](spec/acesso-e-membros.md) | Login com Google, convites, papéis e membros |
-| [spec/chefes.md](spec/chefes.md) | Perfil dos chefes, tutoria, alergias, peso e os dados iniciais |
+| [spec/chefes.md](spec/chefes.md) | Perfil dos chefes, tutoria, alergias, alimentação, peso e os dados iniciais |
 | [spec/voz-dos-chefes.md](spec/voz-dos-chefes.md) | Tom de voz, tags de personalidade e a biblioteca de frases |
 | [spec/cartao-sos.md](spec/cartao-sos.md) | O Cartão de Saúde: dados de emergência a dois toques |
 | [spec/vacinas.md](spec/vacinas.md) | Carteirinha de vacinação, protocolos e status |
-| [spec/medicacoes.md](spec/medicacoes.md) | Cadastro de medicações: remédio, dose, frequência e período |
+| [spec/medicacoes.md](spec/medicacoes.md) | Tratamentos (medicações): remédio, dose, frequência e período |
 | [spec/lembretes.md](spec/lembretes.md) | Push, prazos e escalonamento para o funcionário reserva |
 | [spec/mural.md](spec/mural.md) | O Mural da Chefia, a tela inicial |
-| [spec/navegacao.md](spec/navegacao.md) | Os dois níveis, a fileira de rostos, a aura de cada chefe e o Manual a um gesto |
+| [spec/navegacao.md](spec/navegacao.md) | Os dois níveis, a fileira de rostos, a aura de cada chefe, as abas da página do chefe, o "Exige" e o + |
 | [spec/cuidados.md](spec/cuidados.md) | Parasitas e higiene: registro, modelos, prazo e status (fase 2) |
-| [spec/saude.md](spec/saude.md) | Condições de saúde, consultas, exames e laudos (fase 2) |
-| [spec/rotina.md](spec/rotina.md) | Alimentação e o diário do chefe (fase 2) |
+| [spec/saude.md](spec/saude.md) | Condições de saúde, consultas, exames e laudos, e o "algo estranho hoje" (fase 2) |
 | [spec/manual-temporario.md](spec/manual-temporario.md) | O link de uma página só para o pet sitter (fase 2) |
 | [spec/_modelo.md](spec/_modelo.md) | Modelo para um arquivo de feature novo |
 

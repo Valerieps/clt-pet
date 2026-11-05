@@ -18,8 +18,10 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
   ele se repete e, se quiser, o produto ou uma observação. *(2)*
 - Só o cuidado e a data são obrigatórios; a data não pode ser futura. *(2)*
 - Eu posso registrar o mesmo cuidado para vários chefes de uma vez. *(2)*
-- Eu chego ao formulário pelo Registrar ("Antipulgas, vermífugo ou higiene"). Na página do chefe, o
-  ícone Cuidados mostra o que está em dia e o histórico. *(2)*
+- Eu chego ao formulário pelo +: "Antiparasitário dado" abre o formulário já em parasitas e
+  "Higiene feita", já em higiene. *(2)*
+- Na página do chefe, a aba Prazos mostra o estado de cada antiparasitário e de cada cuidado de
+  higiene, junto das vacinas, e o histórico dobrado embaixo (`navegacao.md`). *(2)*
 
 ## Modelos
 
@@ -41,5 +43,6 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
   Por quê: com a janela de 30 dias das vacinas, um antipulgas mensal ficaria sempre "vencendo".
 - Parasitas atrasados ou vencendo exigem atenção no Mural e na página do chefe, como as vacinas, e
   geram aviso no celular. *(2)*
-- Higiene não exige atenção no Mural nem gera aviso: aparece só no ícone Cuidados. *(2)*
+- Higiene atrasada ou vencendo exige atenção na página do chefe ("Exige"), como os parasitas. *(2)*
+- Higiene não exige atenção no Mural nem gera aviso no celular. *(2)*
   Por quê: escovar os dentes a cada 7 dias viraria um aviso por semana.

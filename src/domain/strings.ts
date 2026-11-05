@@ -32,42 +32,51 @@ export const strings = {
     signOut: 'Sair',
   },
 
-  // The registration drawer: what can be registered for a chefe. Items marked with a phase are
-  // not built yet (docs/ROADMAP.md) and show as disabled.
+  // The + and the Registrar drawer: only acontecimentos (docs/GLOSSARIO.md), named in the past. The
+  // same name is the + option, the form's title and the toast. Items marked with a phase are not built
+  // yet (docs/ROADMAP.md) and show as disabled.
   register: {
     title: (name: string) => `Registrar para ${name}`,
     button: 'Registrar',
-    vaccine: 'Vacina',
+    vaccine: 'Vacina dada',
     weight: 'Peso',
-    medication: 'Medicações',
-    care: 'Antipulgas, vermífugo ou higiene',
+    parasite: 'Antiparasitário dado',
+    hygiene: 'Higiene feita',
+    visit: 'Consulta ou exame',
     diary: 'Algo estranho hoje',
-    visit: 'Reunião com o Conselho Médico',
-    newMedication: 'Nova medicação',
     soon: [{ label: 'Dose dada', phase: 'F3' }],
     lastWeight: (weight: string) => `último: ${weight}`,
     noWeight: 'sem registro',
   },
 
-  // A chefe's page.
+  // A chefe's page: four tabs, each with sections (docs/spec/navegacao.md).
   chefe: {
     requires: 'Exige',
     next: 'A seguir',
     noPortrait: 'Ainda sem retrato',
     weightAlert: 'Advertência',
+    tabs: { prazos: 'Prazos', saude: 'Saúde', peso: 'Peso', perfil: 'Perfil' },
     sections: {
-      history: 'Histórico',
-      weight: 'Peso',
-      care: 'Cuidados',
-      health: 'Saúde',
-      routine: 'Rotina',
-      medication: 'Medicações',
-      profile: 'Perfil',
+      vaccines: 'Vacinas',
+      parasites: 'Antiparasitários',
+      hygiene: 'Higiene',
+      conditions: 'Condições',
+      treatments: 'Tratamentos',
+      visits: 'Consultas e exames',
+      diary: 'Algo estranho hoje',
+      allergies: 'Alergias e restrições',
+      food: 'Alimentação',
       tutoria: 'Tutoria',
     },
-    editHistory: 'Editar histórico',
+    editTab: (tab: string) => `Editar ${tab}`,
     doneEditing: 'Concluir',
+    history: 'Histórico',
     dueOn: (date: string) => `vence em ${date}`,
+    endsOn: (date: string) => `termina em ${date}`,
+    deadline: {
+      return: (title: string) => `Retorno: ${title}`,
+      treatmentEnd: (name: string) => `Fim do tratamento: ${name}`,
+    },
   },
 
   settings: {
@@ -156,7 +165,6 @@ export const strings = {
       foodDaily: 'Quantidade por dia',
       notInformed: 'Não informado',
       name: 'Nome',
-      edit: 'Editar perfil',
       save: 'Salvar',
       cancel: 'Cancelar',
       addAllergy: 'Adicionar alergia',
@@ -221,7 +229,6 @@ export const strings = {
       line: (name: string, from: string, to: string) => `${name} — chefe de ${from} a ${to}`,
     },
     weight: {
-      title: 'Peso',
       kilos: 'Peso (kg)',
       date: 'Data',
       add: 'Registrar peso',
@@ -243,8 +250,8 @@ export const strings = {
 
   toast: {
     weight: (name: string) => `Peso de ${name} registrado.`,
-    vaccine: (name: string) => `Vacina de ${name} registrada.`,
-    medication: (name: string) => `Medicação de ${name} registrada.`,
+    vaccine: (name: string) => `Vacina dada: registrada para ${name}.`,
+    treatment: (name: string) => `Tratamento de ${name} adicionado.`,
     profile: (name: string) => `Perfil de ${name} atualizado.`,
     tags: (name: string) => `Etiquetas de ${name} salvas.`,
     photo: (name: string) => `Foto de ${name} salva.`,
@@ -252,28 +259,27 @@ export const strings = {
     name: 'Nome atualizado.',
     pushOn: 'Avisos ligados neste aparelho.',
     pushOff: 'Avisos desligados neste aparelho.',
-    care: (name: string) => `Cuidado de ${name} registrado.`,
+    parasite: (name: string) => `Antiparasitário dado: registrado para ${name}.`,
+    hygiene: (name: string) => `Higiene feita: registrada para ${name}.`,
     condition: (name: string) => `Condição de ${name} registrada.`,
-    visit: (name: string) => `Reunião de ${name} com o Conselho Médico registrada.`,
-    diary: (name: string) => `Anotado no diário de ${name}.`,
-    meal: (name: string) => `Refeição de ${name} adicionada.`,
+    visit: (name: string) => `Consulta ou exame de ${name} registrado.`,
+    diary: (name: string) => `Algo estranho hoje: anotado para ${name}.`,
+    meal: (name: string) => `Horário de refeição de ${name} adicionado.`,
     sitterCreated: 'Link criado.',
     copied: 'Link copiado.',
   },
 
   // Parasites and hygiene (docs/spec/cuidados.md).
   care: {
-    categories: { parasite: 'Parasitas', hygiene: 'Higiene' },
+    categories: { parasite: 'Antiparasitários', hygiene: 'Higiene' },
     empty: { parasite: 'Nenhum antiparasitário registrado.', hygiene: 'Nenhum cuidado de higiene registrado.' },
     status: { ok: 'Em dia', soon: 'Vence logo', overdue: 'Atrasado' },
     done: (date: string) => `Feito em ${date}`,
     next: (date: string) => `Próximo: ${date}`,
-    history: 'Histórico de cuidados',
     by: (name: string) => `por ${name}`,
     remove: 'Apagar',
     removeConfirm: 'Apagar esse registro de cuidado?',
     form: {
-      category: 'Que tipo de cuidado?',
       item: 'O quê?',
       other: 'Outro',
       otherName: 'Nome do cuidado ou produto',
@@ -282,14 +288,13 @@ export const strings = {
       interval: 'Repetir a cada (dias)',
       note: 'Produto ou observação',
       together: 'Registrar também para',
-      add: 'Registrar cuidado',
+      add: 'Registrar',
       invalid: 'Esse cuidado, essa data ou esse intervalo não parecem certos.',
     },
   },
 
   // Conditions, consultas, exames and laudos (docs/spec/saude.md). Clinical: neutral tone.
   health: {
-    conditionsTitle: 'Condições de saúde',
     conditionsEmpty: 'Nenhuma condição registrada.',
     grave: 'Grave',
     since: (date: string) => `desde ${date}`,
@@ -298,7 +303,7 @@ export const strings = {
     resolve: 'Marcar como resolvida',
     reopen: 'Reabrir',
     removeConditionConfirm: 'Apagar essa condição?',
-    addCondition: 'Adicionar condição',
+    addCondition: '+ Nova condição',
     conditionForm: {
       name: 'Condição (ex.: doença renal, sopro cardíaco)',
       grave: 'É grave (aparece no Cartão de Saúde e para o pet sitter)',
@@ -307,13 +312,11 @@ export const strings = {
       save: 'Salvar condição',
       invalid: 'Esse nome ou essa data não parecem certos.',
     },
-    visitsTitle: 'Consultas, exames e laudos',
     visitsEmpty: 'Nenhuma consulta, exame ou laudo registrado.',
     kinds: { consulta: 'Consulta', exame: 'Exame', laudo: 'Laudo' },
     scheduled: 'Agendada',
     returnOn: (date: string) => `retorno em ${date}`,
     removeVisitConfirm: 'Apagar esse registro?',
-    addVisit: 'Adicionar consulta, exame ou laudo',
     visitForm: {
       kind: 'O que foi?',
       title: 'Assunto (ex.: check-up, hemograma)',
@@ -329,12 +332,11 @@ export const strings = {
     cancel: 'Cancelar',
   },
 
-  // The diary and the meals (docs/spec/rotina.md).
+  // "Algo estranho hoje" (docs/spec/saude.md) and the meals (docs/spec/chefes.md, "Alimentação").
   routine: {
-    mealsTitle: 'Alimentação',
     food: 'Ração',
     mealsEmpty: 'Nenhum horário de refeição cadastrado.',
-    addMeal: 'Adicionar refeição',
+    addMeal: '+ Novo horário',
     mealForm: {
       at: 'Horário',
       amount: 'Quantidade (ex.: 40 g, 1 sachê)',
@@ -343,8 +345,8 @@ export const strings = {
       invalid: 'Esse horário não parece certo.',
     },
     removeMealConfirm: 'Apagar esse horário de refeição?',
-    diaryTitle: 'Diário do chefe',
-    diaryEmpty: 'Nada anotado ainda. Vômito, apetite, xixi fora do lugar: tudo cabe aqui.',
+    diaryEmpty: 'Nada anotado ainda. Vômito, apetite, xixi fora do lugar: tudo cabe aqui, pelo +.',
+    olderDiary: 'Anotações antigas',
     diaryForm: {
       text: 'O que aconteceu?',
       onDate: 'Quando',
@@ -414,12 +416,9 @@ export const strings = {
   },
 
   vaccines: {
-    title: 'Carteirinha de vacinação',
     empty: 'Nenhuma vacina registrada.',
-    status: { ok: 'Em dia', soon: 'Vence em até 30 dias', overdue: 'Atrasada' },
     booster: (date: string) => `Reforço: ${date}`,
     applied: (date: string) => `Aplicada em ${date}`,
-    history: 'Histórico',
     form: {
       title: 'Registrar vacina',
       vaccine: 'Qual vacina?',
@@ -442,8 +441,8 @@ export const strings = {
   },
 
   medications: {
-    title: 'Medicações',
-    empty: 'Nenhuma medicação registrada.',
+    empty: 'Nenhum tratamento registrado.',
+    add: '+ Novo tratamento',
     ended: 'Encerradas',
     continuous: 'uso contínuo',
     since: (date: string) => `desde ${date}`,
@@ -467,7 +466,7 @@ export const strings = {
       startOn: 'Começa em',
       endOn: 'Termina em (opcional)',
       endHint: 'Deixe vazio para uso contínuo.',
-      add: 'Registrar medicação',
+      add: 'Salvar tratamento',
       invalid: 'Esse remédio, essa dose ou essas datas não parecem certos.',
     },
   },

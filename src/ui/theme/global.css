@@ -520,7 +520,7 @@ a:hover {
   background: var(--color-surface);
 }
 
-/* Icon tabs at the top of the white part: history, weight, profile. */
+/* The four tabs at the top of the white part: an icon in a circle with a short label under it. */
 .tabs {
   display: flex;
   flex-wrap: wrap;
@@ -535,18 +535,33 @@ a:hover {
 }
 
 .tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 64px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.tab-icon {
   display: grid;
   place-items: center;
   width: 48px;
   height: 48px;
-  padding: 0;
   border: 1px solid var(--color-border);
   border-radius: 50%;
-  background: transparent;
-  color: var(--color-text-muted);
 }
 
 .tab.on {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.tab.on .tab-icon {
   background: var(--color-text);
   border-color: var(--color-text);
   color: var(--color-surface);
@@ -560,6 +575,12 @@ a:hover {
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* A section inside a tab (Vacinas, Tratamentos, Alimentação). */
+.tab-panel h3 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 1rem;
 }
 
 .tab-panel {

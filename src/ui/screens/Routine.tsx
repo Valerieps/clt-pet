@@ -1,6 +1,6 @@
-// The meals and the chefe's diary (docs/spec/rotina.md).
-import { useState, type FormEvent, type ReactNode } from 'react';
-import type { PetView } from '../../application/api-contract';
+// Alimentação (in the Perfil tab) and "algo estranho hoje" (in the Saúde tab): docs/spec/chefes.md and docs/spec/saude.md.
+import { useState, type FormEvent } from 'react';
+import type { DiaryEntryView, PetView } from '../../application/api-contract';
 import { formatDate, TEXT_MAX } from '../../domain/pets/pet';
 import { DIARY_MAX } from '../../domain/routine/routine';
 import { strings } from '../../domain/strings';
@@ -27,16 +27,8 @@ export function foodLine(pet: PetView): string | null {
   return parts.length > 0 ? parts.join(' · ') : null;
 }
 
-export function RoutinePanel({ pet, removable, action }: { pet: PetView; removable: boolean; action?: ReactNode }) {
-  return (
-    <div id="rotina" className="stack">
-      <Meals pet={pet} removable={removable} action={action} />
-      <Diary pet={pet} removable={removable} />
-    </div>
-  );
-}
-
-function Meals({ pet, removable, action }: { pet: PetView; removable: boolean; action?: ReactNode }) {
+/** The food from the profile and the meal times, a ficha: "+ Novo horário" at the end. */
+export function Food({ pet, removable }: { pet: PetView; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const all = useQuery('meals', {}, ['meals', 'pets']);
@@ -52,11 +44,8 @@ function Meals({ pet, removable, action }: { pet: PetView; removable: boolean; a
   }
 
   return (
-    <section className="stack">
-      <div className="spread">
-        <h2>{t.mealsTitle}</h2>
-        {action}
-      </div>
+    <section id="alimentacao" className="stack">
+      <h3>{strings.chefe.sections.food}</h3>
       <p>
         {t.food}: {food ?? strings.pets.profile.notInformed}
       </p>
@@ -131,7 +120,11 @@ function MealForm({ pet, onDone }: { pet: PetView; onDone: () => void }) {
   );
 }
 
-function Diary({ pet, removable }: { pet: PetView; removable: boolean }) {
+/** How many diary entries show before the fold. */
+const DIARY_SHOWN = 3;
+
+/** "Algo estranho hoje" in the Saúde tab: the latest entries, the older ones folded. New ones come by the +. */
+export function Diary({ pet, removable }: { pet: PetView; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const all = useQuery('diary', {}, ['diary', 'pets']);
@@ -144,34 +137,41 @@ function Diary({ pet, removable }: { pet: PetView; removable: boolean }) {
     setError(result.ok ? null : strings.genericError);
   }
 
+  const card = (d: DiaryEntryView) => (
+    <li key={d.id} className="card">
+      <div className="row">
+        <span className="grow muted">
+          {formatDate(d.onDate)} · {t.by(d.byName)}
+        </span>
+        {removable && (
+          <button type="button" className="secondary danger" onClick={() => void remove(d.id)}>
+            {t.remove}
+          </button>
+        )}
+      </div>
+      <p className="pre">{d.text}</p>
+    </li>
+  );
+  const older = entries.slice(DIARY_SHOWN);
+
   return (
-    <section className="stack">
-      <h2>{t.diaryTitle}</h2>
-      <DiaryForm pet={pet} />
+    <section id="diario" className="stack">
+      <h3>{strings.chefe.sections.diary}</h3>
       {entries.length === 0 && <p className="muted">{t.diaryEmpty}</p>}
-      <ul className="list">
-        {entries.map((d) => (
-          <li key={d.id} className="card">
-            <div className="row">
-              <span className="grow muted">
-                {formatDate(d.onDate)} · {t.by(d.byName)}
-              </span>
-              {removable && (
-                <button type="button" className="secondary danger" onClick={() => void remove(d.id)}>
-                  {t.remove}
-                </button>
-              )}
-            </div>
-            <p className="pre">{d.text}</p>
-          </li>
-        ))}
-      </ul>
+      <ul className="list">{entries.slice(0, DIARY_SHOWN).map(card)}</ul>
+      {older.length > 0 && (
+        <details className="fold" open={removable || undefined}>
+          <summary>{t.olderDiary}</summary>
+          <ul className="list">{older.map(card)}</ul>
+        </details>
+      )}
       <ErrorLine error={error} />
     </section>
   );
 }
 
-export function DiaryForm({ pet, onSaved }: { pet: PetView; onSaved?: () => void }) {
+/** Opened by the + only ("Algo estranho hoje"). */
+export function DiaryForm({ pet, onSaved }: { pet: PetView; onSaved: () => void }) {
   const toast = useToast();
   const { backend } = useServices();
   const [text, setText] = useState('');
@@ -185,7 +185,7 @@ export function DiaryForm({ pet, onSaved }: { pet: PetView; onSaved?: () => void
       toast(strings.toast.diary(pet.profile.name));
       setText('');
       setError(null);
-      onSaved?.();
+      onSaved();
     } else setError(result.error === 'invalid' ? t.diaryForm.invalid : strings.genericError);
   }
 

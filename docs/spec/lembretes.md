@@ -22,7 +22,7 @@ Os avisos que chegam ao celular antes de uma vacina vencer e quando ela atrasa.
 - O aviso diz quem é o responsável e mostra o item e os dias. *(1)*
 - Os antiparasitários (`cuidados.md`) e o retorno de uma consulta ("Retorno: check-up",
   `saude.md`) seguem os mesmos prazos e o mesmo escalonamento das vacinas. Higiene não avisa. *(2)*
-- Tocar no aviso abre a página do chefe no ícone do item (`navegacao.md`). *(2)*
+- Tocar no aviso abre a página do chefe na aba do item (`navegacao.md`). *(2)*
 - Com a tutoria emprestada (`chefes.md`), quem recebe como responsável é quem está com ela. *(2)*
 - Para dose de remédio, o escalonamento é de 1 hora. *(3)*
 - O aviso de um item atrasado é mais insistente, a Advertência. *(3)*

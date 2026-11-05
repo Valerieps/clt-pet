@@ -39,8 +39,17 @@ Nada por enquanto.
 - [ ] Fase 2, `spec/saude.md`: só o nome é obrigatório numa condição; as graves vão para o Cartão de
   Saúde em vermelho e para o pet sitter; consulta pode ter data futura, exame e laudo não; o retorno
   gera aviso como uma vacina; resultado de exame em texto, sem anexo por enquanto.
-- [ ] Fase 2, `spec/rotina.md`: refeições só com horário obrigatório e sem lembrete; diário até 500
-  letras, só na página do chefe (não no Mural).
+- [ ] Fase 2, `spec/chefes.md` e `spec/saude.md`: refeições só com horário obrigatório e sem
+  lembrete; "algo estranho hoje" até 500 letras, só na página do chefe (não no Mural).
+- [ ] Fase 2, `spec/navegacao.md`, as quatro abas: o retorno de uma consulta vence logo 7 dias antes
+  e sai do "Exige" quando há uma consulta registrada a partir de 7 dias antes dele; o fim de um
+  tratamento entra no "A seguir" nos 7 dias antes do último dia; o "A seguir" mostra os dois próximos
+  prazos; os nomes exatos do + ("Vacina dada", "Peso", "Antiparasitário dado", "Higiene feita",
+  "Consulta ou exame", "Algo estranho hoje") e das seções; o menu da gaveta só aparece para um link
+  sem formulário (o antigo `#cuidado` abre Antiparasitário dado, o antigo `#medicacao` cai no menu);
+  "Algo estranho hoje" mostra as três anotações mais novas e dobra as outras; Consultas e exames
+  mostra primeiro as agendadas e as com retorno em aberto; o lápis abre o histórico dobrado; as
+  alergias aparecem como uma linha dos dados do Perfil.
 - [ ] Fase 2, `spec/manual-temporario.md`: qualquer funcionário cria o link; prazo de 1 a 90 dias
   (7 por padrão); a página mostra só o nome dos tutores (sem telefone nem e-mail) e só lê; o token
   fica guardado para copiar o link de novo (ADR-010).
@@ -48,7 +57,7 @@ Nada por enquanto.
   aposentar fica no editar perfil; o ano de chegada é o ano em que o chefe entrou no app; o Exame
   Admissional pede só nome e espécie e quem cadastra vira o tutor.
 - [ ] Fase 2, `spec/navegacao.md`: "Lembrar amanhã" vale só no aparelho e até o fim do dia; o aviso
-  abre o ícone do item; os ícones novos (Cuidados, Saúde, Rotina) quebram em duas linhas.
+  abre a aba do item.
 
 - [ ] `spec/vacinas.md`: todo reforço começa em 365 dias (editável em cada registro); o status de cada
   vacina vem da última aplicação dela; o nome da vacina é livre, com os protocolos da espécie como
