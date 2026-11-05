@@ -41,6 +41,7 @@ As fases 2 a 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos
 | [spec/vacinas.md](spec/vacinas.md) | Carteirinha de vacinação, protocolos e status |
 | [spec/lembretes.md](spec/lembretes.md) | Push, prazos e escalonamento para o funcionário reserva |
 | [spec/mural.md](spec/mural.md) | O Mural da Chefia, a tela inicial |
+| [spec/navegacao.md](spec/navegacao.md) | Os dois níveis, a fileira de rostos, a aura de cada chefe e o Manual a um gesto |
 | [spec/_modelo.md](spec/_modelo.md) | Modelo para um arquivo de feature novo |
 
 Os termos estão definidos em [GLOSSARIO.md](GLOSSARIO.md).
