@@ -10,7 +10,7 @@ export const initialOf = (name: string): string => ([...name.trim()][0] ?? '?').
 
 /** The font size, in px, that makes a name fill the width of the page without overflowing. */
 export const NAME_SIZE_MAX = 150;
-export const NAME_SIZE_MIN = 56;
+export const NAME_SIZE_MIN = 32; // a 20-letter name still fits 343px (375px phone minus gutters)
 export function nameSize(name: string): number {
   const length = Math.max([...name.trim()].length, 1);
   return Math.max(NAME_SIZE_MIN, Math.min(NAME_SIZE_MAX, Math.floor(790 / length)));

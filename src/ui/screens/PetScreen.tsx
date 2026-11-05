@@ -90,7 +90,6 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
         </h1>
       </section>
       <main className="ground-sheet">
-        <Summary chefe={chefe} />
         <div className="actions">
           <Link to={`/chefes/${pet.id}/registrar`} className="btn">
             {strings.register.button}
@@ -99,6 +98,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
             {strings.register.history}
           </Link>
         </div>
+        <Summary chefe={chefe} />
         <div id="historico">
           <PetDetails pet={pet} myId={me.id} allPets={chefes.map((c) => c.pet)} />
         </div>

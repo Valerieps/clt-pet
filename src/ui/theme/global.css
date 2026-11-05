@@ -334,7 +334,8 @@ a:hover {
 
 .hero {
   position: relative;
-  height: 450px;
+  /* Short phones (667px tall) must see the Registrar button without scrolling. */
+  height: clamp(300px, 46dvh, 450px);
   padding: 14px 16px 0;
   overflow: hidden;
 }
@@ -352,7 +353,7 @@ a:hover {
   position: absolute;
   left: 56px;
   right: 56px;
-  top: 104px;
+  top: 96px;
   bottom: 0;
   display: grid;
   place-items: center;
