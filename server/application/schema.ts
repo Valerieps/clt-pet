@@ -112,6 +112,15 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     )`,
     `CREATE INDEX vaccinations_pet ON vaccinations(pet_id, applied_on)`,
   ],
+  // 5: each chefe's vet, 24 h clinic and health plan, for the Cartão SOS (docs/spec/cartao-sos.md).
+  [
+    `ALTER TABLE pets ADD COLUMN vet_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN vet_phone TEXT`,
+    `ALTER TABLE pets ADD COLUMN clinic_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN clinic_phone TEXT`,
+    `ALTER TABLE pets ADD COLUMN plan_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN plan_number TEXT`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

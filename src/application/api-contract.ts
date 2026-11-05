@@ -1,6 +1,7 @@
 // The contract between the app and the server: query and command names, inputs and outputs.
 // Types only. The server imports it with `import type`, so nothing here runs on either side.
 import type { Role } from '../domain/group/roles';
+import type { Emergency } from '../domain/pets/emergency';
 import type { PetProfile, Species } from '../domain/pets/pet';
 
 export interface MemberView {
@@ -47,6 +48,7 @@ export interface PetView {
   /** False until someone saves the allergies once, so the screen can say "nenhuma alergia informada". */
   readonly allergiesAnswered: boolean;
   readonly weightAlertPercent: number;
+  readonly emergency: Emergency;
   readonly tutorMemberId: string | null;
   readonly tutorEmail: string;
   readonly tutorName: string | null;
@@ -98,6 +100,8 @@ export interface Commands {
   'member.rename': { input: { name: string }; output: MeView };
   /** Any member edits any chefe's profile, allergies and weight limit. */
   'pet.update': { input: PetUpdate; output: PetView };
+  /** Any member edits the vet, 24 h clinic and health plan shown on the Cartão SOS. */
+  'pet.setEmergency': { input: { petId: string } & Emergency; output: PetView };
   /** Makes `memberId` the tutor responsável; the other members stay as reservas. */
   'pet.setTutor': { input: { petId: string; memberId: string }; output: PetView };
   /** `image` is a base64 JPEG (at most PHOTO_MAX_BASE64 characters); null takes the photo away. */

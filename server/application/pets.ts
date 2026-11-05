@@ -2,6 +2,7 @@
 // Any member sees and edits any chefe; the actor only has to be signed in.
 import { PHOTO_MAX_BASE64, type PetView, type WeightEntryView } from '../../src/application/api-contract';
 import { normalizeEmail } from '../../src/domain/group/email';
+import { normalizeEmergency } from '../../src/domain/pets/emergency';
 import { normalizeProfile, normalizeTags, type Allergy, type FoodKind, type Sex, type Species } from '../../src/domain/pets/pet';
 import { isValidAlertPercent, isValidGrams, isValidWeightDate } from '../../src/domain/pets/weight';
 import { failure, nowIso, type CommandResult, type Context } from './context';
@@ -25,6 +26,12 @@ interface PetRow {
   tutor_member_id: string | null;
   tutor_email: string;
   tutor_name: string | null;
+  vet_name: string | null;
+  vet_phone: string | null;
+  clinic_name: string | null;
+  clinic_phone: string | null;
+  plan_name: string | null;
+  plan_number: string | null;
 }
 
 const PET_SELECT = `SELECT pets.*, members.name AS tutor_name FROM pets
@@ -64,6 +71,14 @@ function toView(ctx: Context, row: PetRow): PetView {
     photoVersion: ctx.sql.all<{ updated_at: string }>('SELECT updated_at FROM pet_photos WHERE pet_id = ?', row.id)[0]?.updated_at ?? null,
     allergiesAnswered: row.allergies_answered === 1,
     weightAlertPercent: row.weight_alert_percent,
+    emergency: {
+      vetName: row.vet_name,
+      vetPhone: row.vet_phone,
+      clinicName: row.clinic_name,
+      clinicPhone: row.clinic_phone,
+      planName: row.plan_name,
+      planNumber: row.plan_number,
+    },
     tutorMemberId: row.tutor_member_id,
     tutorEmail: row.tutor_email,
     tutorName: row.tutor_name,
@@ -155,6 +170,25 @@ export function setPhoto(ctx: Context, _actor: Member, input: Record<string, unk
 export function photoOf(ctx: Context, petId: string): string | null {
   if (!findPet(ctx, petId)) return null;
   return ctx.sql.all<{ image: string }>('SELECT image FROM pet_photos WHERE pet_id = ?', petId)[0]?.image ?? null;
+}
+
+/** Saves the vet, 24 h clinic and health plan of the Cartão SOS; blank fields clear them. */
+export function setEmergency(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<PetView> {
+  const pet = findPet(ctx, input.petId);
+  if (!pet) return failure('not_found');
+  const emergency = normalizeEmergency(input);
+  if (!emergency) return failure('invalid');
+  ctx.sql.run(
+    `UPDATE pets SET vet_name = ?, vet_phone = ?, clinic_name = ?, clinic_phone = ?, plan_name = ?, plan_number = ? WHERE id = ?`,
+    emergency.vetName,
+    emergency.vetPhone,
+    emergency.clinicName,
+    emergency.clinicPhone,
+    emergency.planName,
+    emergency.planNumber,
+    pet.id,
+  );
+  return reply(ctx, pet.id);
 }
 
 /** Trocar o responsável é uma ação explícita; o novo tutor precisa ser um membro ativo. */

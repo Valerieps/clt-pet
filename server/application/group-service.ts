@@ -17,7 +17,7 @@ import {
   type SignInResult,
 } from './members';
 import type { Clock, IdGenerator, Sql } from './ports';
-import { addWeight, linkTutor, listPets, photoOf, removeWeight, setPhoto, setTags, setTutor, updatePet } from './pets';
+import { addWeight, linkTutor, listPets, photoOf, removeWeight, setEmergency, setPhoto, setTags, setTutor, updatePet } from './pets';
 import { migrate } from './schema';
 import { addVaccination, listVaccinations, removeVaccination } from './vaccines';
 
@@ -42,6 +42,7 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'member.remove': removeMember,
   'member.rename': rename,
   'pet.update': updatePet,
+  'pet.setEmergency': setEmergency,
   'pet.setTutor': setTutor,
   'pet.setPhoto': setPhoto,
   'pet.setTags': setTags,
