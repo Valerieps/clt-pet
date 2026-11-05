@@ -129,21 +129,18 @@ a:hover {
 :root,
 .aura-ber {
   --a: var(--aura-ber);
-  --a-glow: var(--aura-ber-glow);
 }
 
 .aura-pan {
   --a: var(--aura-pan);
-  --a-glow: var(--aura-pan-glow);
 }
 
 .aura-pac {
   --a: var(--aura-pac);
-  --a-glow: var(--aura-pac-glow);
 }
 
 .sunbg {
-  background: radial-gradient(120% 75% at 18% -5%, var(--a-glow), transparent 62%), var(--a);
+  background: var(--a);
   color: #ffffff;
 }
 
