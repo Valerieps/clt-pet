@@ -19,7 +19,8 @@ export interface Chefe {
 
 /** Every chefe with its aura and Mural status: what the faces, the Mural and the pages share. */
 export function useChefia(): { chefes: readonly Chefe[]; loading: boolean; failed: boolean } {
-  const pets = useQuery('pets', {}, ['pets']);
+  // Every record the Registrar saves moves `lastRecord`, the Mural's "Feito" seal.
+  const pets = useQuery('pets', {}, ['pets', 'vaccinations', 'medications', 'care', 'visits', 'diary']);
   const vaccinations = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
   const careRecords = useQuery('care', {}, ['care', 'pets']);
   const chefes = useMemo(() => {

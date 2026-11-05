@@ -13,8 +13,11 @@ Nada por enquanto.
 
 - O app tem dois níveis: o Mural da Chefia e a página de cada chefe. Eu passo de um para o outro
   tocando no rosto, na fileira do topo, ou deslizando para o lado. *(1)*
-- A fileira de rostos tem o Mural (o sol) e um rosto redondo por chefe. Um ponto amarelo no rosto
-  avisa que o chefe exige atenção. Funciona até uns cinco chefes; acima disso, vira lista. *(1)*
+- A fileira de rostos tem o Mural (o sol) e um rosto redondo por chefe, com a foto dele (sem foto,
+  a inicial na aura). Um ponto amarelo no rosto avisa que o chefe exige atenção. Funciona até uns
+  cinco chefes; acima disso, vira lista. *(1)*
+- A fileira de rostos e o meu rosto ficam no mesmo lugar em todas as telas: na mesma linha, no
+  topo, os rostos à esquerda e o meu à direita. *(1)*
 - Meu rosto fica no canto de cima, à direita: leva às Configurações (chefes, membros, convites, aviso
   no celular, meu nome, sair). *(1)* O Manual do Funcionário Temporário também fica lá. *(2)*
 - A página do chefe é enorme: o retrato em arco, de baixo para cima, sob a aura do chefe, e o nome em
@@ -46,7 +49,7 @@ Nada por enquanto.
   *Por quê:* registrar é o laço que repetimos todo dia; não pode exigir rolar a página.
 
 
-- "Lembrar amanhã" no card do Mural: o card vira uma linha calma até o fim do dia, só neste
+- "Lembrar amanhã" no balão do Mural: o balão vira um recado calmo até o fim do dia, só neste
   aparelho; o ponto amarelo no rosto continua. *(2)*
   *Por quê:* adiar é pessoal; o outro funcionário continua vendo a cobrança.
 - Tocar no aviso do celular abre a página do chefe já no ícone do item (Vacinas, Cuidados ou

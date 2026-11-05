@@ -188,6 +188,15 @@ a:hover {
   font-size: 18px;
 }
 
+/* A chefe's photo fills its round face (the faces row and the Mural's messages). */
+.face .dot img,
+.msg-face img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .face .dot.sun {
   background: var(--color-sol);
   color: #15141a;
@@ -254,11 +263,22 @@ a:hover {
 
 /* ---------- The Mural ---------- */
 
+/* The same row as the top of a chefe's page: the faces on the left, the member's face on the right. */
 .mural-header {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 14px 16px 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 16px 20px;
+}
+
+/* Text only screen readers get, like the Mural's title. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .spread {
@@ -279,19 +299,46 @@ a:hover {
 .mural-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   padding: 0 16px;
 }
 
-.mural-card {
+/* Each chefe's message: the round face, then a speech bubble whose tail points at it. */
+.msg {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 18px;
-  border-radius: var(--radius-card);
+  align-items: flex-end;
+  gap: 8px;
 }
 
-.mural-card > a:first-child {
+.msg.sealed {
+  margin-bottom: 12px;
+}
+
+.msg-face {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--a);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+
+.bubble {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-card) var(--radius-card) var(--radius-card) 6px;
+}
+
+.bubble > a:first-child {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -300,41 +347,67 @@ a:hover {
   text-decoration: none;
 }
 
-.mural-card p {
+.bubble p {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.45;
 }
 
-.mural-card .monument {
-  font-size: 36px;
+.bubble .monument {
+  font-size: 30px;
 }
 
-.mural-calm {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 4px;
-  color: var(--color-text-muted);
-  font-size: 14px;
+/* The calm message: small, white, the whole of it a link to the chefe's page. */
+.msg.calm {
   text-decoration: none;
 }
 
-.mural-calm:hover {
-  color: var(--color-text-muted);
+.msg.calm .msg-face {
+  width: 36px;
+  height: 36px;
+  font-size: 15px;
 }
 
-.mural-calm .dot {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--a);
-  color: #ffffff;
-  font-family: var(--font-display);
+.msg.calm .bubble {
+  flex: 0 1 auto;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: 18px 18px 18px 6px;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   font-size: 14px;
+  line-height: 1.4;
+}
+
+.msg.calm b {
+  color: var(--color-text);
+}
+
+/* The "Feito" seal, hanging off the bubble's lower edge like a reaction to a message. */
+.seal {
+  position: absolute;
+  right: 14px;
+  bottom: -14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px 4px 6px;
+  border: 2px solid var(--color-bg);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-ok);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.seal svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .actions {
