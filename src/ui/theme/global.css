@@ -1012,6 +1012,54 @@ button:disabled {
   border-radius: var(--radius-card);
 }
 
+.drawer-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.drawer-head h2 {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer-head .close:first-child {
+  margin-left: -12px;
+}
+
+.drawer-head h2 + .close {
+  margin-right: -12px;
+}
+
+/* A group of choices inside a form: a small caption over chips, no boxed outline. */
+fieldset.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+fieldset.field legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+fieldset.field legend + * {
+  clear: both;
+}
+
+.form-actions button {
+  width: 100%;
+}
+
 .close {
   display: grid;
   place-items: center;

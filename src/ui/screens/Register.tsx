@@ -3,7 +3,7 @@ import { dueLabel } from '../../domain/navigation';
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useChefia } from '../chefia';
-import { CloseIcon, Layer, useEscape } from '../parts';
+import { ChevronLeftIcon, CloseIcon, Layer, useEscape } from '../parts';
 import { goBack } from '../router';
 import { VaccineForm, WeightForm } from './RegisterForms';
 
@@ -32,7 +32,12 @@ export function RegisterDrawer({ petId }: { petId: string }) {
       <button type="button" className="scrim" aria-label={strings.nav.close} onClick={close} />
       <div className="drawer floating" role="dialog" aria-modal="true" aria-label={t.button}>
         <span className="grip" />
-        <div className="spread">
+        <div className="drawer-head">
+          {step !== 'menu' && (
+            <button type="button" className="close" aria-label={strings.nav.back} onClick={() => setStep('menu')}>
+              <ChevronLeftIcon />
+            </button>
+          )}
           <h2>{title}</h2>
           <button type="button" className="close" aria-label={strings.nav.close} onClick={close}>
             <CloseIcon />
@@ -61,9 +66,6 @@ export function RegisterDrawer({ petId }: { petId: string }) {
         )}
         {step !== 'menu' && (
           <>
-            <button type="button" className="secondary" onClick={() => setStep('menu')}>
-              {strings.nav.back}
-            </button>
             {step === 'weight' && <WeightForm pet={pet} onSaved={close} />}
             {step === 'vaccine' && <VaccineForm pet={pet} allPets={chefes.map((c) => c.pet)} onSaved={close} />}
           </>

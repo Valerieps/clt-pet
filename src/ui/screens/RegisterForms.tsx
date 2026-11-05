@@ -47,7 +47,7 @@ export function WeightForm({ pet, onSaved }: { pet: PetView; onSaved: () => void
           {error}
         </p>
       )}
-      <div>
+      <div className="form-actions">
         <button type="submit">{weightT.add}</button>
       </div>
     </form>
@@ -64,12 +64,14 @@ export function VaccineForm({ pet, allPets, onSaved }: { pet: PetView; allPets: 
   const [lot, setLot] = useState('');
   const [maker, setMaker] = useState('');
   const [vet, setVet] = useState('');
+  const [custom, setCustom] = useState(false);
   const [together, setTogether] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const others = allPets.filter((p) => p.id !== pet.id);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (!vaccine.trim()) return setError(vaccineT.form.pick);
     const result = await backend.command('vaccine.add', {
       petIds: [pet.id, ...together],
       vaccine,
@@ -87,19 +89,31 @@ export function VaccineForm({ pet, allPets, onSaved }: { pet: PetView; allPets: 
     }
   }
 
+  const pick = (name: string) => {
+    setCustom(false);
+    setVaccine(name);
+    setError(null);
+  };
   const toggle = (id: string) => setTogether((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));
 
   return (
     <form className="stack" onSubmit={submit}>
-      <label>
-        {vaccineT.form.vaccine}
-        <input required autoFocus list={`protocol-${pet.id}`} maxLength={TEXT_MAX} value={vaccine} onChange={(e) => setVaccine(e.target.value)} />
-        <datalist id={`protocol-${pet.id}`}>
+      <fieldset className="field">
+        <legend>{vaccineT.form.vaccine}</legend>
+        <div className="chips">
           {PROTOCOLS[pet.species].map((name) => (
-            <option key={name} value={name} />
+            <button key={name} type="button" className="chip" aria-pressed={!custom && vaccine === name} onClick={() => pick(name)}>
+              {name}
+            </button>
           ))}
-        </datalist>
-      </label>
+          <button type="button" className="chip" aria-pressed={custom} onClick={() => { setCustom(true); setVaccine(''); }}>
+            {vaccineT.form.other}
+          </button>
+        </div>
+        {custom && (
+          <input required autoFocus aria-label={vaccineT.form.otherName} placeholder={vaccineT.form.otherName} maxLength={TEXT_MAX} value={vaccine} onChange={(e) => setVaccine(e.target.value)} />
+        )}
+      </fieldset>
       <label>
         {vaccineT.form.appliedOn}
         <input required type="date" max={today} value={appliedOn} onChange={(e) => setAppliedOn(e.target.value)} />
@@ -109,17 +123,18 @@ export function VaccineForm({ pet, allPets, onSaved }: { pet: PetView; allPets: 
         <input required type="number" min={1} max={MAX_INTERVAL_DAYS} step={1} value={interval} onChange={(e) => setInterval(e.target.value)} />
       </label>
       {others.length > 0 && (
-        <fieldset>
+        <fieldset className="field">
           <legend>{vaccineT.form.together}</legend>
-          {others.map((p) => (
-            <label key={p.id} className="row">
-              <input type="checkbox" checked={together.includes(p.id)} onChange={() => toggle(p.id)} />
-              {p.profile.name}
-            </label>
-          ))}
+          <div className="chips">
+            {others.map((p) => (
+              <button key={p.id} type="button" className="chip" aria-pressed={together.includes(p.id)} onClick={() => toggle(p.id)}>
+                {p.profile.name}
+              </button>
+            ))}
+          </div>
         </fieldset>
       )}
-      <details>
+      <details className="fold">
         <summary>{vaccineT.form.moreDetails}</summary>
         <div className="stack">
           <label>
@@ -141,7 +156,7 @@ export function VaccineForm({ pet, allPets, onSaved }: { pet: PetView; allPets: 
           {error}
         </p>
       )}
-      <div>
+      <div className="form-actions">
         <button type="submit">{vaccineT.form.add}</button>
       </div>
     </form>
