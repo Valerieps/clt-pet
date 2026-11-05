@@ -38,7 +38,7 @@ export function Faces({ chefes, current, onDark = false }: { chefes: readonly Ch
         <Link key={pet.id} to={`/chefes/${pet.id}`} className={`face ${aura}`} aria-current={current === pet.id ? 'page' : undefined}>
           <span className="dot">{initialOf(pet.profile.name)}</span>
           {status.needsAttention && <span className="pend" role="img" aria-label={strings.nav.pending} />}
-          {pet.profile.name}
+          <span className="name">{pet.profile.name}</span>
         </Link>
       ))}
     </nav>
