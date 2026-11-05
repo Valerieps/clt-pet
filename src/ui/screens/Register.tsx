@@ -7,15 +7,22 @@ import { ChevronLeftIcon, CloseIcon, Layer, useEscape } from '../parts';
 import { goBack } from '../router';
 import { CareForm } from './Care';
 import { VisitForm } from './Health';
-import { VaccineForm, WeightForm } from './RegisterForms';
+import { MedicationForm, VaccineForm, WeightForm } from './RegisterForms';
 import { DiaryForm } from './Routine';
 
 const t = strings.register;
 
-type Step = 'menu' | 'weight' | 'vaccine' | 'care' | 'diary' | 'visit';
+type Step = 'menu' | 'weight' | 'vaccine' | 'medication' | 'care' | 'diary' | 'visit';
 
 /** The hash the speed dial opens the drawer with, per form. */
-const STEP_OF_HASH: Record<string, Step | undefined> = { vacina: 'vaccine', peso: 'weight', cuidado: 'care', diario: 'diary', consulta: 'visit' };
+const STEP_OF_HASH: Record<string, Step | undefined> = {
+  vacina: 'vaccine',
+  peso: 'weight',
+  medicacao: 'medication',
+  cuidado: 'care',
+  diario: 'diary',
+  consulta: 'visit',
+};
 
 /** What can be registered for a chefe (docs/spec/navegacao.md). Every form opens right here. */
 export function RegisterDrawer({ petId }: { petId: string }) {
@@ -33,10 +40,17 @@ export function RegisterDrawer({ petId }: { petId: string }) {
     menu: t.title(pet.profile.name),
     weight: t.weight,
     vaccine: t.vaccine,
+    medication: t.newMedication,
     care: t.care,
     diary: t.diary,
     visit: t.visit,
   };
+  const simple: [Step, string][] = [
+    ['medication', t.newMedication],
+    ['care', t.care],
+    ['diary', t.diary],
+    ['visit', t.visit],
+  ];
   return (
     <Layer>
       <button type="button" className="scrim" aria-label={strings.nav.close} onClick={close} />
@@ -63,18 +77,12 @@ export function RegisterDrawer({ petId }: { petId: string }) {
               <p>{t.weight}</p>
               <span className="meta">{latest ? t.lastWeight(formatKilos(latest.grams)) : t.noWeight}</span>
             </button>
-            <button type="button" className="item" onClick={() => setStep('care')}>
-              <p>{t.care}</p>
-              <span />
-            </button>
-            <button type="button" className="item" onClick={() => setStep('diary')}>
-              <p>{t.diary}</p>
-              <span />
-            </button>
-            <button type="button" className="item" onClick={() => setStep('visit')}>
-              <p>{t.visit}</p>
-              <span />
-            </button>
+            {simple.map(([key, label]) => (
+              <button key={key} type="button" className="item" onClick={() => setStep(key)}>
+                <p>{label}</p>
+                <span />
+              </button>
+            ))}
             {t.soon.map((item) => (
               <div key={item.label} className="item" aria-disabled="true">
                 <p>
@@ -88,6 +96,7 @@ export function RegisterDrawer({ petId }: { petId: string }) {
         )}
         {step === 'weight' && <WeightForm pet={pet} onSaved={close} />}
         {step === 'vaccine' && <VaccineForm pet={pet} allPets={allPets} onSaved={close} />}
+        {step === 'medication' && <MedicationForm pet={pet} onSaved={close} />}
         {step === 'care' && <CareForm pet={pet} allPets={allPets} onSaved={close} />}
         {step === 'diary' && <DiaryForm pet={pet} onSaved={close} />}
         {step === 'visit' && <VisitForm pet={pet} onSaved={close} />}

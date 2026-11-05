@@ -4,6 +4,7 @@ import type { CareCategory } from '../domain/care/care';
 import type { Role } from '../domain/group/roles';
 import type { VisitKind } from '../domain/health/health';
 import type { Emergency } from '../domain/pets/emergency';
+import type { Frequency } from '../domain/medications/medication';
 import type { PetProfile, Species } from '../domain/pets/pet';
 
 export interface MemberView {
@@ -192,6 +193,19 @@ export const sitterPhotoPath = (token: string, petId: string, version: string) =
 /** The page the sitter opens. */
 export const sitterPagePath = (token: string) => `/temporario/${token}`;
 
+export interface MedicationView {
+  readonly id: string;
+  readonly petId: string;
+  readonly name: string;
+  readonly dose: string;
+  readonly frequency: Frequency;
+  /** YYYY-MM-DD. */
+  readonly startOn: string;
+  /** YYYY-MM-DD; null is continuous use. */
+  readonly endOn: string | null;
+  readonly byName: string;
+}
+
 /** Where a chefe's photo is served (GET, signed-in members only). */
 export const petPhotoPath = (petId: string, version: string) => `/api/pets/${petId}/photo?v=${encodeURIComponent(version)}`;
 
@@ -220,6 +234,8 @@ export interface Queries {
   meals: { input: Record<string, never>; output: MealView[] };
   /** The links not revoked, newest first. */
   sitterLinks: { input: Record<string, never>; output: SitterLinkView[] };
+  /** Every medication registered for the chefes that are not retired, oldest start first. */
+  medications: { input: Record<string, never>; output: MedicationView[] };
   me: { input: Record<string, never>; output: MeView };
   push: { input: Record<string, never>; output: PushInfo };
   members: { input: Record<string, never>; output: MemberListItem[] };
@@ -293,13 +309,31 @@ export interface Commands {
   /** The link lasts `days` days (1 to 90, default 7), counting today. */
   'sitter.create': { input: { label: string; petIds: string[]; note?: string | null; days?: number }; output: SitterLinkView };
   'sitter.revoke': { input: { linkId: string }; output: null };
+  /** One medication for one chefe; `endOn` empty or missing is continuous use. */
+  'medication.add': {
+    input: { petId: string; name: string; dose: string; frequency: Frequency; startOn: string; endOn?: string | null };
+    output: MedicationView;
+  };
+  'medication.remove': { input: { medicationId: string }; output: null };
 }
 
 export type QueryName = keyof Queries;
 export type CommandName = keyof Commands;
 
 /** What a live message says changed; the screens that show it refetch. */
-export type Topic = 'me' | 'members' | 'invites' | 'pets' | 'vaccinations' | 'care' | 'conditions' | 'visits' | 'diary' | 'meals' | 'sitter';
+export type Topic =
+  | 'me'
+  | 'members'
+  | 'invites'
+  | 'pets'
+  | 'vaccinations'
+  | 'medications'
+  | 'care'
+  | 'conditions'
+  | 'visits'
+  | 'diary'
+  | 'meals'
+  | 'sitter';
 
 export interface LiveMessage {
   readonly type: 'changed';

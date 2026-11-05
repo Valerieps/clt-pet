@@ -48,6 +48,7 @@ import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
 import { Link, navigate, useHash, usePath } from '../router';
 import { useQuery } from '../use-query';
+import { Medications } from './Medications';
 import { Vaccines } from './Vaccines';
 import { WeightChart } from './WeightChart';
 
@@ -151,7 +152,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
             {tab === 'care' && <CarePanel chefe={chefe} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
             {tab === 'health' && <HealthPanel pet={pet} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
             {tab === 'routine' && <RoutinePanel pet={pet} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
-            {tab === 'medication' &&<p className="muted">{strings.chefe.medicationSoon}</p>}
+            {tab === 'medication' && <MedicationPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
             {tab === 'profile' && <ProfilePanel pet={pet} myId={me.id} />}
           </div>
         )}
@@ -265,6 +266,14 @@ function HistoryPanel({ pet, editing, onToggle }: { pet: PetView; editing: boole
   return (
     <div id="vacinas">
       <Vaccines pet={pet} removable={editing} action={<EditToggle editing={editing} onToggle={onToggle} />} />
+    </div>
+  );
+}
+
+function MedicationPanel({ pet, editing, onToggle }: { pet: PetView; editing: boolean; onToggle: () => void }) {
+  return (
+    <div id="medicacoes">
+      <Medications pet={pet} removable={editing} action={<EditToggle editing={editing} onToggle={onToggle} />} />
     </div>
   );
 }

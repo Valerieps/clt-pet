@@ -19,7 +19,7 @@ export function SpeedDial({ petId }: { petId: string }) {
     { to: `/chefes/${petId}/registrar#cuidado`, label: t.care, icon: <ShieldIcon /> },
     { to: `/chefes/${petId}/registrar#diario`, label: t.diary, icon: <BowlIcon /> },
     { to: `/chefes/${petId}/registrar#consulta`, label: t.visit, icon: <StethoscopeIcon /> },
-    { to: `/chefes/${petId}#medicacoes`, label: t.medication, icon: <PillIcon /> },
+    { to: `/chefes/${petId}/registrar#medicacao`, label: t.medication, icon: <PillIcon /> },
   ];
   return (
     <>

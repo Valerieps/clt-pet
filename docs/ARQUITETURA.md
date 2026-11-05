@@ -62,6 +62,7 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 | `pet_allergies` | `pet_id`, `kind` (`drug`, `food`), `description` | Em vermelho no perfil e no Cartão SOS |
 | `weights` | `id`, `pet_id`, `grams`, `on_date`, `member_id`, `created_at` | Quem pesou fica no registro |
 | `vaccinations` | `pet_id`, `vaccine`, `applied_on`, `next_due_on`, `batch`, `maker`, `vet`, `member_id` | `next_due_on` vem do protocolo e é editável |
+| `medications` | `pet_id`, `name`, `dose`, `frequency`, `start_on`, `end_on`, `member_id` | `end_on` nulo é uso contínuo; `frequency` é uma de seis chaves fixas |
 | `push_subscriptions` | `endpoint`, `member_id`, `p256dh`, `auth` | Um por aparelho; o endpoint só pode ser de uma origem de ADR-008 |
 | `reminders_sent` | `pet_id`, `item`, `due_on`, `stage` (`30d`, `7d`, `due`, `escalated`), `sent_at` | Evita avisar duas vezes |
 | `care_records` | `pet_id`, `category` (`parasite`, `hygiene`), `item`, `done_on`, `interval_days`, `note`, `member_id` | O próximo prazo é `done_on` + `interval_days`, calculado, nunca guardado |

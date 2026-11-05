@@ -22,11 +22,11 @@ Nada por enquanto.
   ícones (Vacinas, Peso, Cuidados, Saúde, Rotina, Medicações e Perfil), as exigências e "A seguir". Não há aviso de "Tudo em dia" na página do chefe.
   *Por quê:* os controles humanos ficam pequenos e na beirada; o animal ocupa a imagem. *(1)*
 - Os ícones abrem, abaixo deles, o Histórico (vacinas), o Peso, os Cuidados (`cuidados.md`), a
-  Saúde (`saude.md`), a Rotina (`rotina.md`), as Medicações (por enquanto só um aviso de que chegam
-  na fase 3) e o Perfil (que inclui a Tutoria); tocar de novo fecha. Os ícones quebram em duas
-  linhas quando não cabem. O ícone do Perfil é um gato ou um cachorro, conforme o chefe. Em
-  cada ícone, o botão Remover de cada linha só aparece depois de tocar no lápis ao lado do título. A foto e
-  as etiquetas ficam dentro do editar perfil. *(1, ícones novos 2)*
+  Saúde (`saude.md`), a Rotina (`rotina.md`), as Medicações (cadastradas, em uso e encerradas) e o
+  Perfil (que inclui a Tutoria); tocar de novo fecha. Os ícones quebram em duas linhas quando não
+  cabem. O ícone do Perfil é um gato ou um cachorro, conforme o chefe. Em cada ícone, o botão
+  Remover de cada linha só aparece depois de tocar no lápis ao lado do título. A foto e as etiquetas
+  ficam dentro do editar perfil. *(1, ícones Cuidados, Saúde e Rotina 2)*
   *Por quê:* a página tinha oito seções seguidas e um botão vermelho em cada linha, fácil de tocar
   sem querer.
 - Cada chefe tem uma aura (cor de fundo e luz de sol). São três, repetidas na ordem em que os chefes
@@ -38,9 +38,9 @@ Nada por enquanto.
   um botão por chefe para trocar. Fechar volta para a tela de antes. *(1)*
 - Registrar é um botão flutuante de + em todas as telas (some quando o Cartão de Saúde está aberto).
   Ao tocar, abre um leque (speed dial) com Vacina, Peso, Cuidado, Diário, Consulta e Medicações.
-  Vacina, peso, cuidado ("Antipulgas, vermífugo ou higiene"), diário ("Algo estranho hoje") e
-  consulta ("Reunião com o Conselho Médico") abrem a gaveta já no formulário *(2 para os três
-  últimos)*; Medicações leva ao ícone de Medicações da página do chefe. Ao salvar, a gaveta fecha e um aviso curto confirma. Do Mural
+  Todos abrem a gaveta já no formulário: cuidado ("Antipulgas, vermífugo ou higiene"), diário
+  ("Algo estranho hoje") e consulta ("Reunião com o Conselho Médico") são da fase 2. Ao salvar, a
+  gaveta fecha e um aviso curto confirma. Do Mural
   a um peso salvo são três toques: Registrar, Peso, Salvar. A página do chefe só mostra o histórico
   (sem formulário). O que ainda não existe aparece apagado, com a fase em que entra. *(1)*
   *Por quê:* registrar é o laço que repetimos todo dia; não pode exigir rolar a página.
