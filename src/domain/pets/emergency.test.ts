@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatPhone, normalizeEmergency, telHref } from './emergency';
+import { formatPhone, mapsDirectionsHref, normalizeEmergency, telHref } from './emergency';
 
 describe('normalizeEmergency', () => {
   it('accepts an empty input as all blank', () => {
@@ -42,6 +42,15 @@ describe('formatPhone', () => {
 
   it('is idempotent', () => {
     expect(formatPhone(formatPhone('11912345678'))).toBe('(11) 91234-5678');
+  });
+});
+
+describe('mapsDirectionsHref', () => {
+  it('points to the address and leaves the origin to the current location', () => {
+    const url = new URL(mapsDirectionsHref('Av. Paulista, 1000 - São Paulo'));
+    expect(url.origin + url.pathname).toBe('https://www.google.com/maps/dir/');
+    expect(url.searchParams.get('destination')).toBe('Av. Paulista, 1000 - São Paulo');
+    expect(url.searchParams.has('origin')).toBe(false);
   });
 });
 
