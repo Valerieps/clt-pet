@@ -62,7 +62,7 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 | `pet_allergies` | `pet_id`, `kind` (`drug`, `food`), `description` | Em vermelho no perfil e no Cartão SOS |
 | `weights` | `id`, `pet_id`, `grams`, `on_date`, `member_id`, `created_at` | Quem pesou fica no registro |
 | `vaccinations` | `pet_id`, `vaccine`, `applied_on`, `next_due_on`, `batch`, `maker`, `vet`, `member_id` | `next_due_on` vem do protocolo e é editável |
-| `push_subscriptions` | `member_id`, `endpoint`, `keys` | Um por aparelho; o endpoint só pode ser de uma origem de ADR-008 |
+| `push_subscriptions` | `endpoint`, `member_id`, `p256dh`, `auth` | Um por aparelho; o endpoint só pode ser de uma origem de ADR-008 |
 | `reminders_sent` | `pet_id`, `item`, `due_on`, `stage` (`30d`, `7d`, `due`, `escalated`), `sent_at` | Evita avisar duas vezes |
 
 ## Fluxo de eventos

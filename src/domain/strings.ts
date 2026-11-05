@@ -123,6 +123,18 @@ export const strings = {
     },
   },
 
+  push: {
+    title: 'Avisos no celular',
+    explain: 'Receba os lembretes dos chefes neste aparelho. Cada aparelho precisa ser ativado.',
+    enable: 'Ativar avisos neste aparelho',
+    disable: 'Desativar avisos neste aparelho',
+    on: 'Os avisos estão ligados neste aparelho.',
+    denied: 'As notificações estão bloqueadas neste navegador. Libere nas configurações do aparelho para ativar.',
+    unsupported: 'Este navegador não recebe avisos. No iPhone, adicione o app à tela inicial primeiro.',
+    notConfigured: 'Os avisos ainda não foram configurados no servidor.',
+    failed: 'Não consegui ativar os avisos. Tenta de novo?',
+  },
+
   home: {
     greeting: (greeting: string, name: string) => `${greeting}, ${name}!`,
     nameLabel: 'Meu nome',

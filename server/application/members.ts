@@ -186,5 +186,6 @@ export function removeMember(ctx: Context, actor: Member, input: { memberId?: un
 
   ctx.sql.run('UPDATE members SET active = 0, removed_at = ? WHERE id = ?', nowIso(ctx), target.id);
   ctx.sql.run('DELETE FROM sessions WHERE member_id = ?', target.id);
+  ctx.sql.run('DELETE FROM push_subscriptions WHERE member_id = ?', target.id);
   return { ok: true, value: null, changed: ['members'], disconnect: [target.id] };
 }

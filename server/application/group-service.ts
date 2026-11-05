@@ -18,7 +18,12 @@ import {
 } from './members';
 import type { Clock, IdGenerator, Sql } from './ports';
 import { addWeight, linkTutor, listPets, photoOf, removeWeight, setPhoto, setTags, setTutor, updatePet } from './pets';
+import { dropDevices, pushInfo, subscribe, unsubscribe } from './push';
+import { planReminders, type PushMessage, type ReminderSource } from './reminders';
 import { migrate } from './schema';
+
+/** The features with due dates register here (vaccines, when the carteirinha exists). */
+const REMINDER_SOURCES: readonly ReminderSource[] = [];
 
 type Input = Record<string, unknown>;
 
@@ -30,6 +35,7 @@ const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | n
   members: (ctx) => listMembers(ctx),
   invites: (ctx, actor) => listInvites(ctx, actor),
   pets: (ctx) => listPets(ctx),
+  push: (ctx) => pushInfo(ctx),
 };
 
 /** Every command the API runs; each checks the actor's role itself. */
@@ -43,6 +49,8 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'pet.setTutor': setTutor,
   'pet.setPhoto': setPhoto,
   'pet.setTags': setTags,
+  'push.subscribe': subscribe,
+  'push.unsubscribe': unsubscribe,
   'weight.add': addWeight,
   'weight.remove': removeWeight,
 };
@@ -50,8 +58,15 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
 export class GroupService {
   private readonly ctx: Context;
 
-  constructor(sql: Sql, clock: Clock, ids: IdGenerator) {
-    this.ctx = { sql, clock, ids };
+  /** `sources` are the features with due dates; `vapidPublicKey` is null where push is not set up. */
+  constructor(
+    sql: Sql,
+    clock: Clock,
+    ids: IdGenerator,
+    private readonly sources: readonly ReminderSource[] = REMINDER_SOURCES,
+    vapidPublicKey: string | null = null,
+  ) {
+    this.ctx = { sql, clock, ids, vapidPublicKey };
   }
 
   migrate(): void {
@@ -97,11 +112,18 @@ export class GroupService {
 
   /**
    * Runs the time-based jobs that are due (ADR-004: one cron, every few minutes; each job decides
-   * whether it is due). Returns the topics that changed, for the open apps.
+   * whether it is due). Returns the topics that changed, for the open apps, and the pushes the
+   * caller must send now: their stages are already recorded, so each goes out once.
    */
-  tick(): Topic[] {
+  tick(): { changed: Topic[]; pushes: PushMessage[] } {
     this.ctx.sql.run('DELETE FROM sessions WHERE expires_at <= ?', this.ctx.clock.now().toISOString());
-    return [];
+    const pushes = this.ctx.sql.transaction(() => planReminders(this.ctx, this.sources));
+    return { changed: [], pushes };
+  }
+
+  /** Forgets devices a push service reported as gone. */
+  dropDevices(endpoints: readonly string[]): void {
+    this.ctx.sql.transaction(() => dropDevices(this.ctx, endpoints));
   }
 }
 

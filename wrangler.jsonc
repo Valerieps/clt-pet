@@ -1,5 +1,5 @@
 // Cloudflare Worker: the app's files, the API, the live connection and the cron (ADR-004).
-// Secrets are not here: set GOOGLE_CLIENT_SECRET and BOOTSTRAP_ADMIN_EMAILS with
+// Secrets are not here: set GOOGLE_CLIENT_SECRET, BOOTSTRAP_ADMIN_EMAILS and VAPID_PRIVATE_KEY with
 // `npx wrangler secret put <NAME>`, and locally in .dev.vars (see .dev.vars.example).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
@@ -21,14 +21,20 @@
   "triggers": { "crons": ["*/5 * * * *"] },
   "vars": {
     // Public: the OAuth client ID from Google Cloud (README.md). The secret is a secret.
-    "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com"
+    "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com",
+    // Public VAPID key and contact for push (ADR-008). Generate the pair with `npm run vapid`; the
+    // private key is the secret VAPID_PRIVATE_KEY.
+    "VAPID_PUBLIC_KEY": "REPLACE_ME",
+    "VAPID_SUBJECT": "mailto:souza.pereira.valeria@gmail.com"
   },
   // Branch previews (`wrangler preview`, ADR-004) refuse to deploy without this block. Each preview
   // gets its own empty Group namespace, never production's data; it has no secrets and no cron, and
   // Google sign-in does not work there (ADR-005), so the public client ID is enough.
   "previews": {
     "vars": {
-      "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com"
+      "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com",
+      "VAPID_PUBLIC_KEY": "REPLACE_ME",
+      "VAPID_SUBJECT": "mailto:souza.pereira.valeria@gmail.com"
     },
     "durable_objects": {
       "bindings": [{ "name": "GROUP", "class_name": "Group" }]

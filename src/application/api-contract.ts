@@ -54,6 +54,12 @@ export interface PetView {
   readonly weights: readonly WeightEntryView[];
 }
 
+/** What the app needs to subscribe this device to push. */
+export interface PushInfo {
+  /** The VAPID public key (base64url); null where the server has no push set up. */
+  readonly publicKey: string | null;
+}
+
 /** Where a chefe's photo is served (GET, signed-in members only). */
 export const petPhotoPath = (petId: string, version: string) => `/api/pets/${petId}/photo?v=${encodeURIComponent(version)}`;
 
@@ -68,6 +74,7 @@ export interface Queries {
   /** The chefes that are not retired, with weights. */
   pets: { input: Record<string, never>; output: PetView[] };
   me: { input: Record<string, never>; output: MeView };
+  push: { input: Record<string, never>; output: PushInfo };
   members: { input: Record<string, never>; output: MemberListItem[] };
   /** Admins only. */
   invites: { input: Record<string, never>; output: InviteView[] };
@@ -89,6 +96,9 @@ export interface Commands {
   'pet.setPhoto': { input: { petId: string; image: string | null }; output: PetView };
   /** Replaces the personality tags (docs/spec/voz-dos-chefes.md). */
   'pet.setTags': { input: { petId: string; tags: string[] }; output: PetView };
+  /** Saves this device's push subscription (the endpoint must be a push service of ADR-008). */
+  'push.subscribe': { input: { endpoint: string; p256dh: string; auth: string }; output: null };
+  'push.unsubscribe': { input: { endpoint: string }; output: null };
   'weight.add': { input: { petId: string; grams: number; onDate: string }; output: PetView };
   'weight.remove': { input: { weightId: string }; output: PetView };
 }

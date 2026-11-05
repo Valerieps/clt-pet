@@ -21,3 +21,20 @@ export interface LiveUpdates {
   start(): void;
   stop(): void;
 }
+
+/** This device's push state. `unsupported`: no service worker or push here (an iPhone before the app is on the home screen). */
+export type PushState = 'unsupported' | 'denied' | 'off' | 'on';
+
+export interface PushSubscriptionKeys {
+  readonly endpoint: string;
+  readonly p256dh: string;
+  readonly auth: string;
+}
+
+export interface PushDevice {
+  state(): Promise<PushState>;
+  /** Asks permission and subscribes with the server's public key; null when it did not work. */
+  enable(publicKey: string): Promise<PushSubscriptionKeys | null>;
+  /** Unsubscribes this device; returns the endpoint it had, or null. */
+  disable(): Promise<string | null>;
+}
