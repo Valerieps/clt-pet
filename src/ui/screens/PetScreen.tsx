@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import type { MeView, PetUpdate, PetView } from '../../application/api-contract';
 import { nameSize, dueLabel } from '../../domain/navigation';
 import { daysBetween } from '../../domain/reminders/reminders';
@@ -24,7 +24,7 @@ import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
-import { BackBar, CameraIcon, Faces, MeLink } from '../parts';
+import { BackBar, CameraIcon, CatIcon, DogIcon, Faces, HistoryIcon, MeLink, ScaleIcon } from '../parts';
 import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
 import { Link, usePath } from '../router';
@@ -40,15 +40,6 @@ const vaccinesT = strings.vaccines;
 export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
   const { chefes, loading, failed } = useChefia();
   const chefe = chefes.find((c) => c.pet.id === petId);
-  const path = usePath();
-
-  // Arriving at /chefes/<id>#vacinas (from the Registrar drawer) scrolls to that part of the page.
-  const found = chefe !== undefined;
-  useEffect(() => {
-    if (!found) return;
-    const id = window.location.hash.slice(1);
-    if (id) document.getElementById(id)?.scrollIntoView();
-  }, [found, path]);
 
   if (!chefe) {
     return (
@@ -69,6 +60,18 @@ export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
 function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]; me: MeView }) {
   const { pet, aura } = chefe;
   const name = pet.profile.name;
+  const path = usePath();
+  const [tab, setTab] = useState<Tab | null>(null);
+  const [editingHistory, setEditingHistory] = useState(false);
+
+  // Arriving at /chefes/<id>#vacinas (from the Registrar drawer or an item) opens the tab that holds it.
+  useEffect(() => {
+    const target = TAB_OF_HASH[window.location.hash.slice(1)];
+    if (!target) return;
+    setTab(target);
+    requestAnimationFrame(() => document.getElementById('abas')?.scrollIntoView());
+  }, [path]);
+
   return (
     <>
       <section className={`hero sunbg ${aura}`}>
@@ -95,16 +98,41 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
         </div>
       </section>
       <main className="ground-sheet">
+        <div id="abas" className="tabs" role="tablist">
+          {(
+            [
+              ['history', strings.chefe.sections.history, <HistoryIcon key="h" />],
+              ['weight', strings.chefe.sections.weight, <ScaleIcon key="w" />],
+              ['profile', strings.chefe.sections.profile, pet.species === 'cat' ? <CatIcon key="p" /> : <DogIcon key="p" />],
+            ] as const
+          ).map(([key, label, icon]) => (
+            <button
+              key={key}
+              type="button"
+              role="tab"
+              className={`tab${tab === key ? ' on' : ''}`}
+              aria-selected={tab === key}
+              aria-label={label}
+              title={label}
+              onClick={() => setTab(tab === key ? null : key)}
+            >
+              {icon}
+            </button>
+          ))}
+        </div>
+        {tab && (
+          <div className="tab-panel" role="tabpanel">
+            {tab === 'history' && <HistoryPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
+            {tab === 'weight' && <WeightPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
+            {tab === 'profile' && <ProfilePanel pet={pet} myId={me.id} />}
+          </div>
+        )}
         <div className="actions">
           <Link to={`/chefes/${pet.id}/registrar`} className="btn">
             {strings.register.button}
           </Link>
-          <Link to={`/chefes/${pet.id}#historico`} className="btn line">
-            {strings.register.history}
-          </Link>
         </div>
         <Summary chefe={chefe} />
-        <PetDetails pet={pet} myId={me.id} />
       </main>
     </>
   );
@@ -122,7 +150,6 @@ function Summary({ chefe }: { chefe: Chefe }) {
 
   return (
     <>
-      {nothingDemanded && <div className="calm-note">{strings.chefe.allGood}</div>}
       {!nothingDemanded && (
         <div>
           <p className="lbl">{strings.chefe.requires}</p>
@@ -176,30 +203,51 @@ function birthText(birthDate: string, estimated: boolean): string {
   return estimated ? t.profile.ageEstimated(age) : `${formatDate(birthDate)} · ${t.profile.age(age)}`;
 }
 
-function PetDetails({ pet, myId }: { pet: PetView; myId: string }) {
+type Tab = 'history' | 'weight' | 'profile';
+const TAB_OF_HASH: Record<string, Tab | undefined> = { historico: 'history', vacinas: 'history', peso: 'weight', perfil: 'profile', tutoria: 'profile' };
+
+function EditToggle({ editing, onToggle }: { editing: boolean; onToggle: () => void }) {
+  return (
+    <div>
+      <button type="button" className="secondary" onClick={onToggle}>
+        {editing ? strings.chefe.doneEditing : strings.chefe.editHistory}
+      </button>
+    </div>
+  );
+}
+
+/** The vaccines (and what else gets logged over time); remove buttons show only while editing. */
+function HistoryPanel({ pet, editing, onToggle }: { pet: PetView; editing: boolean; onToggle: () => void }) {
+  return (
+    <>
+      <EditToggle editing={editing} onToggle={onToggle} />
+      <div id="vacinas">
+        <Vaccines pet={pet} removable={editing} />
+      </div>
+    </>
+  );
+}
+
+function WeightPanel({ pet, editing, onToggle }: { pet: PetView; editing: boolean; onToggle: () => void }) {
+  return (
+    <>
+      <EditToggle editing={editing} onToggle={onToggle} />
+      <div id="peso">
+        <Weight pet={pet} removable={editing} />
+      </div>
+    </>
+  );
+}
+
+/** The profile and the tutoria, together. */
+function ProfilePanel({ pet, myId }: { pet: PetView; myId: string }) {
   const [editing, setEditing] = useState(false);
-  const [editingHistory, setEditingHistory] = useState(false);
-  const { profile } = pet;
-  const missing = missingFields(profile, pet.allergiesAnswered);
+  const missing = missingFields(pet.profile, pet.allergiesAnswered);
   const s = strings.chefe.sections;
 
   return (
     <>
-      <Fold id="historico" title={s.history} also={['peso', 'vacinas']} defaultOpen>
-        <div>
-          <button type="button" className="secondary" onClick={() => setEditingHistory((v) => !v)}>
-            {editingHistory ? strings.chefe.doneEditing : strings.chefe.editHistory}
-          </button>
-        </div>
-        <div id="peso">
-          <Weight pet={pet} removable={editingHistory} />
-        </div>
-        <div id="vacinas">
-          <Vaccines pet={pet} removable={editingHistory} />
-        </div>
-      </Fold>
-
-      <Fold id="perfil" title={s.profile}>
+      <div id="perfil" className="stack">
         {missing.length > 0 && (
           <p className="notice">
             {t.missingTitle} {missing.map((m) => t.missing[m]).join(', ')}.
@@ -214,29 +262,12 @@ function PetDetails({ pet, myId }: { pet: PetView; myId: string }) {
         ) : (
           <ProfileSummary pet={pet} onEdit={() => setEditing(true)} />
         )}
-      </Fold>
-
-      <Fold id="tutoria" title={s.tutoria}>
+      </div>
+      <div id="tutoria" className="stack">
+        <h2>{s.tutoria}</h2>
         <Tutoria pet={pet} myId={myId} />
-      </Fold>
+      </div>
     </>
-  );
-}
-
-/** A section of the chefe's page that folds. It opens when the page is reached through its link (#id or one of `also`). */
-function Fold({ id, title, also = [], defaultOpen = false, children }: { id: string; title: string; also?: string[]; defaultOpen?: boolean; children: ReactNode }) {
-  const path = usePath();
-  const [open, setOpen] = useState(defaultOpen);
-  const ids = also.join(',');
-  useEffect(() => {
-    const target = window.location.hash.slice(1);
-    if (target === id || (target && ids.split(',').includes(target))) setOpen(true);
-  }, [path, id, ids]);
-  return (
-    <details id={id} className="fold" open={open} onToggle={(event) => setOpen(event.currentTarget.open)}>
-      <summary>{title}</summary>
-      <div className="fold-body">{children}</div>
-    </details>
   );
 }
 

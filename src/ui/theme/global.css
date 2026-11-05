@@ -350,8 +350,8 @@ a:hover {
 
 .hero {
   position: relative;
-  /* Short phones (667px tall) must see the Registrar button without scrolling. */
-  height: clamp(370px, 56dvh, 520px);
+  /* Tall, to give the portrait room; the tabs and Registrar sit just below the fold on short phones. */
+  height: clamp(430px, 64dvh, 600px);
   padding: 14px 16px 0;
   overflow: hidden;
 }
@@ -437,48 +437,49 @@ a:hover {
   background: var(--color-surface);
 }
 
-/* Sections of the chefe's page that fold: the header reads like the list items above. */
-.fold {
-  border-top: 1px solid var(--color-border);
-}
-
-.fold > summary {
+/* Icon tabs at the top of the white part: history, weight, profile. */
+.tabs {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 52px;
-  font-weight: 700;
-  cursor: pointer;
-  list-style: none;
+  justify-content: center;
+  gap: 12px;
 }
 
-.fold > summary::-webkit-details-marker {
-  display: none;
-}
-
-.fold > summary::after {
-  content: '+';
-  font-size: 20px;
+.tab {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: transparent;
   color: var(--color-text-muted);
 }
 
-.fold[open] > summary::after {
-  content: '\2212';
+.tab.on {
+  background: var(--color-text);
+  border-color: var(--color-text);
+  color: var(--color-surface);
 }
 
-.fold-body {
+.tab svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tab-panel {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-bottom: var(--space-4);
 }
 
-.calm-note {
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: var(--color-sol-soft);
-  color: var(--color-sol-ink);
-  font-weight: 700;
+.stack {
+  min-width: 0;
 }
 
 /* ---------- Items ---------- */
