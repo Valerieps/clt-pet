@@ -782,6 +782,35 @@ button:disabled {
   color: var(--color-text);
 }
 
+/* The + that opens Registrar, floating above the handle on every screen. */
+.fab {
+  position: fixed;
+  right: max(16px, calc(50vw - 224px));
+  bottom: 76px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+}
+
+.fab svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.shell:has(input:focus, select:focus, textarea:focus) .fab {
+  display: none;
+}
+
 .grip {
   width: 36px;
   height: 4px;

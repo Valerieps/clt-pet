@@ -5,8 +5,8 @@ import { swipeTarget } from '../domain/navigation';
 import { strings } from '../domain/strings';
 import { useLiveStatus, useServices } from './backend-context';
 import { useChefia } from './chefia';
-import { BackBar, ManualHandle } from './parts';
-import { navigate, usePath } from './router';
+import { BackBar, ManualHandle, PlusIcon } from './parts';
+import { Link, navigate, usePath } from './router';
 import { Invites } from './screens/Invites';
 import { Members } from './screens/Members';
 import { Mural } from './screens/Mural';
@@ -113,6 +113,11 @@ function Shell({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
       <Screen me={me} onSignOut={onSignOut} />
       {register && <RegisterDrawer petId={decodeURIComponent(register[1]!)} />}
       {manual && <Manual petId={manual[1] ? decodeURIComponent(manual[1]) : null} />}
+      {!manual && !register && manualPetId && (
+        <Link to={`/chefes/${manualPetId}/registrar`} className="fab" aria-label={strings.register.button} title={strings.register.button}>
+          <PlusIcon />
+        </Link>
+      )}
       {!manual && <ManualHandle to={manualPetId ? `/sos/${manualPetId}` : '/sos'} />}
     </div>
   );

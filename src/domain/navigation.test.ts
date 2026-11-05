@@ -19,9 +19,13 @@ describe('initialOf', () => {
 
 describe('nameSize', () => {
   it('shrinks long names and caps short ones', () => {
-    expect(nameSize('Panda')).toBe(NAME_SIZE_MAX);
-    expect(nameSize('Berenice')).toBeLessThan(nameSize('Paçoca'));
-    expect(nameSize('Paçoca')).toBeLessThan(NAME_SIZE_MAX);
+    expect(nameSize('Berenice')).toBe(NAME_SIZE_MAX);
+    expect(nameSize('Bia')).toBe(NAME_SIZE_MAX);
+    expect(nameSize('Sebastiana')).toBeLessThan(NAME_SIZE_MAX);
+  });
+  it('gives Berenice, Panda and Paçoca the same size', () => {
+    expect(nameSize('Panda')).toBe(nameSize('Berenice'));
+    expect(nameSize('Paçoca')).toBe(nameSize('Berenice'));
   });
   it('keeps a 20-letter name narrower than a small phone', () => {
     // Anton capitals are about 0.42em wide; 343px is a 375px screen minus the hero gutters.
