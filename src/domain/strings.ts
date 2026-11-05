@@ -21,13 +21,56 @@ export const strings = {
   },
 
   nav: {
-    main: 'Navegação principal',
-    home: 'Início',
+    main: 'Chefes',
+    mural: 'Mural',
+    pending: 'Tem exigência',
+    settings: 'Configurações',
+    back: 'Voltar',
+    backToMural: 'Voltar ao Mural',
+    close: 'Fechar',
+    manual: 'Manual de Sobrevivência',
+    signOut: 'Sair',
+  },
+
+  // The registration drawer: what can be registered for a chefe. Items marked with a phase are
+  // not built yet (docs/ROADMAP.md) and show as disabled.
+  register: {
+    title: (name: string) => `Registrar para ${name}`,
+    button: 'Registrar',
+    history: 'Tudo que já foi feito',
+    vaccine: 'Vacina',
+    weight: 'Peso',
+    soon: [
+      { label: 'Dose dada', phase: 'F3' },
+      { label: 'Antipulgas ou vermífugo', phase: 'F2' },
+      { label: 'Algo estranho hoje', phase: 'F2' },
+      { label: 'Reunião com o Conselho Médico', phase: 'F2' },
+    ],
+    lastWeight: (weight: string) => `último: ${weight}`,
+    noWeight: 'sem registro',
+  },
+
+  // A chefe's page.
+  chefe: {
+    requires: 'Exige',
+    next: 'A seguir',
+    allGood: 'Tudo em dia!',
+    noPortrait: 'Ainda sem retrato',
+    weightAlert: 'Advertência',
+    dueOn: (date: string) => `vence em ${date}`,
+  },
+
+  settings: {
+    title: 'Configurações',
+    chefes: 'Chefes',
+    allChefes: 'Todos os chefes',
+    chefesHint: 'tutoria e perfil',
+    access: 'Avisos e acesso',
     members: 'Membros',
     invites: 'Convites',
-    pets: 'Chefes',
-    sos: 'SOS',
-    signOut: 'Sair',
+    account: 'Minha conta',
+    admin: 'Administrador do grupo',
+    member: 'Membro do grupo',
   },
 
   // Neutral tone, no jokes (docs/spec/voz-dos-chefes.md).
@@ -44,6 +87,8 @@ export const strings = {
     callClinic: (name: string | null) => `Ligar para a clínica 24 h${name ? ` (${name})` : ''}`,
     noVet: 'Veterinário principal: não informado',
     noClinic: 'Clínica 24 h: não informada',
+    clinicAddress: 'Endereço da clínica',
+    address: (address: string) => `Endereço: ${address}`,
     plan: 'Plano de saúde ou convênio',
     planLine: (name: string | null, number: string | null) => [name, number && `nº ${number}`].filter(Boolean).join(' · '),
     noPlan: 'Sem plano ou convênio informado',
@@ -189,8 +234,15 @@ export const strings = {
     removeConfirm: 'Apagar esse registro de vacina?',
   },
 
-  home: {
+  mural: {
     greeting: (greeting: string, name: string) => `${greeting}, ${name}!`,
+    title: 'Mural da Chefia',
+    empty: 'Nenhum chefe cadastrado.',
+    allGood: 'Tudo em dia',
+    allergiesMissing: 'Falta informar as alergias.',
+    allergiesPill: 'Alergias em branco',
+    fillAllergies: 'Informar alergias',
+    openPet: (name: string) => `Ver ${name}`,
     nameLabel: 'Meu nome',
     save: 'Salvar',
   },

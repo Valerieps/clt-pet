@@ -22,6 +22,7 @@ interface PetRow {
   food_brand: string | null;
   food_daily: string | null;
   allergies_answered: number;
+  serious_mode: number;
   weight_alert_percent: number;
   tutor_member_id: string | null;
   tutor_email: string;
@@ -30,6 +31,7 @@ interface PetRow {
   vet_phone: string | null;
   clinic_name: string | null;
   clinic_phone: string | null;
+  clinic_address: string | null;
   plan_name: string | null;
   plan_number: string | null;
 }
@@ -70,12 +72,14 @@ function toView(ctx: Context, row: PetRow): PetView {
     tags,
     photoVersion: ctx.sql.all<{ updated_at: string }>('SELECT updated_at FROM pet_photos WHERE pet_id = ?', row.id)[0]?.updated_at ?? null,
     allergiesAnswered: row.allergies_answered === 1,
+    seriousMode: row.serious_mode === 1,
     weightAlertPercent: row.weight_alert_percent,
     emergency: {
       vetName: row.vet_name,
       vetPhone: row.vet_phone,
       clinicName: row.clinic_name,
       clinicPhone: row.clinic_phone,
+      clinicAddress: row.clinic_address,
       planName: row.plan_name,
       planNumber: row.plan_number,
     },
@@ -179,11 +183,12 @@ export function setEmergency(ctx: Context, _actor: Member, input: Record<string,
   const emergency = normalizeEmergency(input);
   if (!emergency) return failure('invalid');
   ctx.sql.run(
-    `UPDATE pets SET vet_name = ?, vet_phone = ?, clinic_name = ?, clinic_phone = ?, plan_name = ?, plan_number = ? WHERE id = ?`,
+    `UPDATE pets SET vet_name = ?, vet_phone = ?, clinic_name = ?, clinic_phone = ?, clinic_address = ?, plan_name = ?, plan_number = ? WHERE id = ?`,
     emergency.vetName,
     emergency.vetPhone,
     emergency.clinicName,
     emergency.clinicPhone,
+    emergency.clinicAddress,
     emergency.planName,
     emergency.planNumber,
     pet.id,

@@ -47,6 +47,8 @@ export interface PetView {
   readonly photoVersion: string | null;
   /** False until someone saves the allergies once, so the screen can say "nenhuma alergia informada". */
   readonly allergiesAnswered: boolean;
+  /** The per-chefe switch that turns the humor off (docs/spec/voz-dos-chefes.md). */
+  readonly seriousMode: boolean;
   readonly weightAlertPercent: number;
   readonly emergency: Emergency;
   readonly tutorMemberId: string | null;
