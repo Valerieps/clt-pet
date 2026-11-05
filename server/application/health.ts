@@ -116,7 +116,7 @@ export function listVisits(ctx: Context): VisitView[] {
 export const visitReminders: ReminderSource = (ctx) =>
   listVisits(ctx)
     .filter((v) => v.returnOn !== null)
-    .map((v) => ({ petId: v.petId, item: `Retorno: ${v.title}`, dueOn: v.returnOn! }));
+    .map((v) => ({ petId: v.petId, item: `Retorno: ${v.title}`, dueOn: v.returnOn!, tab: 'saude' }));
 
 export function addVisit(ctx: Context, actor: Member, input: Record<string, unknown>): CommandResult<VisitView> {
   const visit = normalizeVisit(input, todayInBrasilia(ctx));

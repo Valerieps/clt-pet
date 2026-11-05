@@ -46,7 +46,7 @@ import { HealthPanel } from './Health';
 import { RoutinePanel } from './Routine';
 import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
-import { Link, useHash, usePath } from '../router';
+import { Link, navigate, useHash, usePath } from '../router';
 import { useQuery } from '../use-query';
 import { Vaccines } from './Vaccines';
 import { WeightChart } from './WeightChart';
@@ -296,6 +296,7 @@ function ProfilePanel({ pet, myId }: { pet: PetView; myId: string }) {
             <PhotoControls pet={pet} />
             <Tags pet={pet} />
             <ProfileForm pet={pet} onDone={() => setEditing(false)} />
+            <Retire pet={pet} />
           </>
         ) : (
           <ProfileSummary pet={pet} onEdit={() => setEditing(true)} />
@@ -644,6 +645,7 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
   return (
     <>
       <p>{pet.tutorName ? t.tutor(pet.tutorName) : t.tutorPending(pet.tutorEmail)}</p>
+      {pet.tutorUntil && <p className="notice">{t.tutoria.lent(formatDate(pet.tutorUntil), pet.tutorReturnName)}</p>}
       <p className="muted">{t.tutoria.reserve}</p>
       {others.length > 0 && (
         <form className="row wrap" onSubmit={change}>
@@ -666,7 +668,100 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
           {error}
         </p>
       )}
+      {others.length > 0 && <LendTutoria pet={pet} candidates={others} myId={myId} />}
     </>
+  );
+}
+
+/** Passes the tutoria for a period; it comes back on its own on the chosen day (docs/spec/chefes.md). */
+function LendTutoria({ pet, candidates, myId }: { pet: PetView; candidates: readonly { id: string; name: string }[]; myId: string }) {
+  const { backend } = useServices();
+  const [open, setOpen] = useState(false);
+  const [memberId, setMemberId] = useState(candidates[0]?.id ?? '');
+  const [until, setUntil] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const tomorrow = new Date(Date.now() + 86_400_000).toLocaleDateString('sv-SE');
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    const result = await backend.command('pet.lendTutoria', { petId: pet.id, memberId, until });
+    if (result.ok) {
+      setOpen(false);
+      setError(null);
+    } else setError(result.error === 'invalid' ? t.tutoria.lendInvalid : strings.genericError);
+  }
+
+  if (!open) {
+    return (
+      <div>
+        <button type="button" className="secondary" onClick={() => setOpen(true)}>
+          {t.tutoria.lend}
+        </button>
+      </div>
+    );
+  }
+  return (
+    <form className="stack" onSubmit={submit}>
+      <label>
+        {t.tutoria.lendTo}
+        <select value={memberId} onChange={(e) => setMemberId(e.target.value)}>
+          {candidates.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.name}
+              {m.id === myId ? ` ${strings.members.you}` : ''}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {t.tutoria.lendUntil}
+        <input required type="date" min={tomorrow} value={until} onChange={(e) => setUntil(e.target.value)} />
+      </label>
+      {error && (
+        <p className="notice" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="row">
+        <button type="submit">{t.tutoria.lendConfirm}</button>
+        <button type="button" className="secondary" onClick={() => setOpen(false)}>
+          {t.profile.cancel}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+/** Aposentadoria: the chefe leaves the Mural; the history stays. */
+function Retire({ pet }: { pet: PetView }) {
+  const toast = useToast();
+  const confirm = useConfirm();
+  const { backend } = useServices();
+  const [error, setError] = useState<string | null>(null);
+
+  async function retire() {
+    if (!(await confirm(t.retire.confirm(pet.profile.name)))) return;
+    const result = await backend.command('pet.retire', { petId: pet.id });
+    if (result.ok) {
+      toast(t.retire.done(pet.profile.name));
+      navigate('/', { replace: true });
+    } else setError(strings.genericError);
+  }
+
+  return (
+    <div className="stack">
+      <p className="muted">{t.retire.explain}</p>
+      <div>
+        <button type="button" className="secondary danger" onClick={() => void retire()}>
+          {t.retire.button}
+        </button>
+      </div>
+      {error && (
+        <p className="notice" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 

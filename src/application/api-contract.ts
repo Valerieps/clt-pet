@@ -56,6 +56,12 @@ export interface PetView {
   readonly tutorMemberId: string | null;
   readonly tutorEmail: string;
   readonly tutorName: string | null;
+  /** While the tutoria is lent: the day it goes back (docs/spec/chefes.md, "Tutoria"). */
+  readonly tutorUntil: string | null;
+  /** Who takes the tutoria back on `tutorUntil`. */
+  readonly tutorReturnName: string | null;
+  /** YYYY-MM-DD: when the chefe was registered in the app (its "chegada"). */
+  readonly arrivedOn: string;
   /** Oldest first. */
   readonly weights: readonly WeightEntryView[];
 }
@@ -77,6 +83,15 @@ export interface VaccinationView {
   readonly maker: string | null;
   readonly vet: string | null;
   readonly byName: string;
+}
+
+/** A chefe that left (docs/spec/chefes.md, "Aposentadoria"); its history stays in the database. */
+export interface RetiredPetView {
+  readonly id: string;
+  readonly name: string;
+  readonly species: Species;
+  readonly arrivedOn: string;
+  readonly retiredOn: string;
 }
 
 /** A parasite or hygiene record (docs/spec/cuidados.md). */
@@ -192,6 +207,8 @@ export interface Queries {
   pets: { input: Record<string, never>; output: PetView[] };
   /** Every dose registered for the chefes that are not retired, oldest application first. */
   vaccinations: { input: Record<string, never>; output: VaccinationView[] };
+  /** Newest retirement first. */
+  retiredPets: { input: Record<string, never>; output: RetiredPetView[] };
   /** Parasite and hygiene records of the chefes that are not retired, oldest first. */
   care: { input: Record<string, never>; output: CareView[] };
   /** Every condition, active and resolved. */
@@ -222,7 +239,13 @@ export interface Commands {
   'pet.update': { input: PetUpdate; output: PetView };
   /** Any member edits the vet, 24 h clinic and health plan shown on the Cartão SOS. */
   'pet.setEmergency': { input: { petId: string } & Emergency; output: PetView };
-  /** Makes `memberId` the tutor responsável; the other members stay as reservas. */
+  /** The Exame Admissional: a new chefe, with only the name and species; the actor is its tutor. */
+  'pet.create': { input: { name: string; species: Species }; output: PetView };
+  /** Retires a chefe (death or adoption): it leaves the Mural; its history stays. */
+  'pet.retire': { input: { petId: string }; output: null };
+  /** Lends the tutoria to `memberId` until `until` (a future date); the current tutor takes it back that day. */
+  'pet.lendTutoria': { input: { petId: string; memberId: string; until: string }; output: PetView };
+  /** Makes `memberId` the tutor responsável; the other members stay as reservas. Ends a lent tutoria. */
   'pet.setTutor': { input: { petId: string; memberId: string }; output: PetView };
   /** `image` is a base64 JPEG (at most PHOTO_MAX_BASE64 characters); null takes the photo away. */
   'pet.setPhoto': { input: { petId: string; image: string | null }; output: PetView };

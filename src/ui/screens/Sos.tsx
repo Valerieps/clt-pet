@@ -10,6 +10,7 @@ import { useChefia } from '../chefia';
 import { CloseIcon, Layer, PhoneIcon, WarningIcon, useEscape } from '../parts';
 import { PetPhoto } from '../PetPhoto';
 import { goBack, navigate } from '../router';
+import { useQuery } from '../use-query';
 
 const t = strings.sos;
 
@@ -59,6 +60,11 @@ function Card({ pet }: { pet: PetView }) {
   const [editing, setEditing] = useState(false);
   const { profile, emergency } = pet;
   const latest = latestWeight(pet.weights);
+  const allConditions = useQuery('conditions', {}, ['conditions', 'pets']);
+  // Active conditions only, grave ones first.
+  const conditions = (allConditions.data ?? [])
+    .filter((c) => c.petId === pet.id && c.resolvedOn === null)
+    .sort((a, b) => Number(b.grave) - Number(a.grave));
 
   return (
     <>
@@ -84,6 +90,17 @@ function Card({ pet }: { pet: PetView }) {
         </div>
       ) : (
         <p className="meta">{t.noAllergies}</p>
+      )}
+
+      {conditions.length > 0 && (
+        <div className={conditions.some((c) => c.grave) ? 'allergy' : undefined} role="region" aria-label={t.conditions} style={{ marginBottom: 0 }}>
+          {conditions.map((c) => (
+            <p key={c.id} className="allergy-line">
+              {c.grave && <WarningIcon />}
+              {t.condition(c.name, c.grave)}
+            </p>
+          ))}
+        </div>
       )}
 
       <dl className="kv">

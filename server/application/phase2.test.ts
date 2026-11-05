@@ -51,7 +51,7 @@ describe('care', () => {
   it('reminds only the parasite items, at their next due date', () => {
     service.command('h-v', 'care.add', { petIds: ['pet-pacoca'], category: 'parasite', item: 'Antipulgas', doneOn: '2026-10-01', intervalDays: 30 });
     service.command('h-v', 'care.add', { petIds: ['pet-pacoca'], category: 'hygiene', item: 'Banho', doneOn: '2026-10-01', intervalDays: 15 });
-    expect(careReminders(ctx())).toEqual([{ petId: 'pet-pacoca', item: 'Antipulgas', dueOn: '2026-10-31' }]);
+    expect(careReminders(ctx())).toEqual([{ petId: 'pet-pacoca', item: 'Antipulgas', dueOn: '2026-10-31', tab: 'cuidados' }]);
   });
 });
 
@@ -79,7 +79,7 @@ describe('visits', () => {
       returnOn: '2026-12-01',
     });
     expect(result).toMatchObject({ ok: true, changed: ['visits'], value: { title: 'Check-up', returnOn: '2026-12-01', byName: 'Valéria' } });
-    expect(visitReminders(ctx())).toEqual([{ petId: 'pet-berenice', item: 'Retorno: Check-up', dueOn: '2026-12-01' }]);
+    expect(visitReminders(ctx())).toEqual([{ petId: 'pet-berenice', item: 'Retorno: Check-up', dueOn: '2026-12-01', tab: 'saude' }]);
     const [visit] = query<VisitView[]>('visits');
     expect(service.command('h-v', 'visit.remove', { visitId: visit.id })).toMatchObject({ ok: true });
     expect(service.command('h-v', 'visit.remove', { visitId: visit.id })).toEqual({ ok: false, error: 'not_found' });
@@ -164,5 +164,43 @@ describe('sitter links', () => {
   it('needs at least one existing chefe', () => {
     expect(service.command('h-v', 'sitter.create', { label: 'Ana', petIds: ['nope'] })).toEqual({ ok: false, error: 'not_found' });
     expect(service.command('h-v', 'sitter.create', { label: 'Ana', petIds: [] })).toEqual({ ok: false, error: 'invalid' });
+  });
+});
+
+describe('admission, retirement and lent tutoria', () => {
+  const pets = () => query<{ id: string; tutorName: string | null; tutorUntil: string | null; tutorReturnName: string | null }[]>('pets');
+
+  it('admits a new chefe with the actor as tutor', () => {
+    const result = service.command('h-v', 'pet.create', { name: ' Tico ', species: 'dog' });
+    expect(result).toMatchObject({ ok: true, value: { profile: { name: 'Tico' }, species: 'dog', tutorName: 'Valéria', arrivedOn: '2026-11-04' } });
+    expect(service.command('h-v', 'pet.create', { name: 'Tico', species: 'fish' })).toEqual({ ok: false, error: 'invalid' });
+  });
+
+  it('retires a chefe: it leaves the lists and its reminders stop', () => {
+    service.command('h-v', 'care.add', { petIds: ['pet-panda'], category: 'parasite', item: 'Vermífugo', doneOn: '2026-10-01', intervalDays: 90 });
+    expect(service.command('h-v', 'pet.retire', { petId: 'pet-panda' })).toMatchObject({ ok: true, changed: ['pets'] });
+    expect(pets().map((p) => p.id)).not.toContain('pet-panda');
+    expect(query<CareView[]>('care')).toEqual([]);
+    expect(careReminders(ctx())).toEqual([]);
+    expect(query<{ id: string; retiredOn: string }[]>('retiredPets')).toMatchObject([{ id: 'pet-panda', retiredOn: '2026-11-04' }]);
+  });
+
+  it('lends the tutoria until a day, then gives it back', () => {
+    service.command('h-v', 'invite.create', { email: 'csrgamboa@gmail.com' });
+    service.signIn({ sub: 'c', email: 'csrgamboa@gmail.com', name: 'Cesar', picture: null }, 'h-c', []);
+    const cesar = (service.query('h-c', 'me', {}) as { value: { id: string } }).value.id;
+    expect(service.command('h-v', 'pet.lendTutoria', { petId: 'pet-berenice', memberId: cesar, until: '2026-11-04' })).toEqual({
+      ok: false,
+      error: 'invalid',
+    });
+    expect(service.command('h-v', 'pet.lendTutoria', { petId: 'pet-berenice', memberId: cesar, until: '2026-11-10' })).toMatchObject({
+      ok: true,
+      value: { tutorName: 'Cesar', tutorUntil: '2026-11-10', tutorReturnName: 'Valéria' },
+    });
+    clock.set('2026-11-09T15:00:00Z');
+    expect(service.tick().changed).toEqual([]);
+    clock.set('2026-11-10T15:00:00Z');
+    expect(service.tick().changed).toEqual(['pets']);
+    expect(pets().find((p) => p.id === 'pet-berenice')).toMatchObject({ tutorName: 'Valéria', tutorUntil: null, tutorReturnName: null });
   });
 });

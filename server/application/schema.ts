@@ -214,6 +214,12 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       created_at TEXT NOT NULL
     )`,
   ],
+  // 9: the tutoria lent for a period (docs/spec/chefes.md): who takes it back and on which day.
+  [
+    `ALTER TABLE pets ADD COLUMN tutor_until TEXT`,
+    `ALTER TABLE pets ADD COLUMN tutor_return_member_id TEXT REFERENCES members(id)`,
+    `ALTER TABLE pets ADD COLUMN tutor_return_email TEXT`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

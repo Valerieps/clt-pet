@@ -43,7 +43,7 @@ export function listCare(ctx: Context): CareView[] {
 export const careReminders: ReminderSource = (ctx) => {
   const all = listCare(ctx).filter((c) => c.category === 'parasite');
   return [...new Set(all.map((c) => c.petId))].flatMap((petId) =>
-    currentCare(all.filter((c) => c.petId === petId)).map((c) => ({ petId, item: c.item, dueOn: careDueDate(c) })),
+    currentCare(all.filter((c) => c.petId === petId)).map((c) => ({ petId, item: c.item, dueOn: careDueDate(c), tab: 'cuidados' })),
   );
 };
 

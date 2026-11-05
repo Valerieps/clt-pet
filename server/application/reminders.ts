@@ -13,6 +13,8 @@ export interface DueItem {
   readonly item: string;
   /** YYYY-MM-DD. */
   readonly dueOn: string;
+  /** The tab of the chefe's page the notification opens (docs/spec/navegacao.md): "vacinas", "cuidados", "saude". */
+  readonly tab: string;
 }
 
 /** Where due items come from. Each feature that has due dates (vaccines first) adds one. */
@@ -99,7 +101,7 @@ export function planReminders(ctx: Context, sources: readonly ReminderSource[], 
             dias: daysFor(due.dueOn, now),
             funcionario: recipient.name,
           })}${stage === 'escalated' && pet.tutor_name ? ` Responsável: ${pet.tutor_name}.` : ''}`;
-          const payload: PushPayload = { title: pet.name, body, url: '/', tag: `${pet.id}:${due.item}:${due.dueOn}` };
+          const payload: PushPayload = { title: pet.name, body, url: `/chefes/${pet.id}#${due.tab}`, tag: `${pet.id}:${due.item}:${due.dueOn}` };
           for (const device of devicesOf(ctx, recipient.id)) messages.push({ ...device, payload: JSON.stringify(payload) });
         }
       }

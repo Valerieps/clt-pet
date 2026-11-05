@@ -30,7 +30,23 @@ import {
   type SignInResult,
 } from './members';
 import type { Clock, IdGenerator, Sql } from './ports';
-import { addWeight, linkTutor, listPets, photoOf, removeWeight, setEmergency, setPhoto, setTags, setTutor, updatePet } from './pets';
+import {
+  addWeight,
+  createPet,
+  lendTutoria,
+  linkTutor,
+  listPets,
+  listRetiredPets,
+  photoOf,
+  removeWeight,
+  retirePet,
+  returnTutorias,
+  setEmergency,
+  setPhoto,
+  setTags,
+  setTutor,
+  updatePet,
+} from './pets';
 import { dropDevices, pushInfo, subscribe, unsubscribe } from './push';
 import { planReminders, type PushMessage, type ReminderSource } from './reminders';
 import { migrate } from './schema';
@@ -49,6 +65,7 @@ const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | n
   members: (ctx) => listMembers(ctx),
   invites: (ctx, actor) => listInvites(ctx, actor),
   pets: (ctx) => listPets(ctx),
+  retiredPets: (ctx) => listRetiredPets(ctx),
   push: (ctx) => pushInfo(ctx),
   vaccinations: (ctx) => listVaccinations(ctx),
   care: (ctx) => listCare(ctx),
@@ -69,6 +86,9 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'pet.update': updatePet,
   'pet.setEmergency': setEmergency,
   'pet.setTutor': setTutor,
+  'pet.create': createPet,
+  'pet.retire': retirePet,
+  'pet.lendTutoria': lendTutoria,
   'pet.setPhoto': setPhoto,
   'pet.setTags': setTags,
   'push.subscribe': subscribe,
@@ -163,8 +183,9 @@ export class GroupService {
    */
   tick(): { changed: Topic[]; pushes: PushMessage[] } {
     this.ctx.sql.run('DELETE FROM sessions WHERE expires_at <= ?', this.ctx.clock.now().toISOString());
+    const returned = this.ctx.sql.transaction(() => returnTutorias(this.ctx));
     const pushes = this.ctx.sql.transaction(() => planReminders(this.ctx, this.sources));
-    return { changed: [], pushes };
+    return { changed: returned ? ['pets'] : [], pushes };
   }
 
   /** Forgets devices a push service reported as gone. */
