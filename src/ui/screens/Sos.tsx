@@ -1,50 +1,52 @@
-// The Cartão SOS (docs/spec/cartao-sos.md): the SOS button opens the list of chefes, one more tap
-// opens the chefe's card. Neutral tone, no jokes.
+// The Manual de Sobrevivência / Cartão SOS (docs/spec/cartao-sos.md): a drawer that opens from the
+// handle on every screen. Sober: no aura, no jokes. Neutral tone.
 import { useState, type FormEvent } from 'react';
 import type { PetView } from '../../application/api-contract';
 import { EMERGENCY_ADDRESS_MAX, EMERGENCY_TEXT_MAX, formatPhone, telHref } from '../../domain/pets/emergency';
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
+import { useChefia } from '../chefia';
+import { Layer, PhoneIcon, WarningIcon, useEscape } from '../parts';
 import { PetPhoto } from '../PetPhoto';
-import { Link } from '../router';
-import { useQuery } from '../use-query';
+import { goBack, navigate } from '../router';
 
 const t = strings.sos;
 
-export function SosList() {
-  const pets = useQuery('pets', {}, ['pets']);
-  return (
-    <section>
-      <h1>{t.title}</h1>
-      <p>{t.pick}</p>
-      {pets.error && !pets.data && <p className="notice">{strings.genericError}</p>}
-      <ul className="list">
-        {pets.data?.map((pet) => (
-          <li key={pet.id} className="card">
-            <Link to={`/sos/${pet.id}`}>
-              <strong>{pet.profile.name}</strong>
-            </Link>{' '}
-            <span className="muted">{strings.pets.species[pet.species]}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
+/** `petId` is the chefe of the screen below; without it, the first chefe. */
+export function Manual({ petId }: { petId: string | null }) {
+  const { chefes, loading, failed } = useChefia();
+  const chefe = chefes.find((c) => c.pet.id === petId) ?? (petId ? undefined : chefes[0]);
+  const close = () => goBack(chefe ? `/chefes/${chefe.pet.id}` : '/');
+  useEscape(close);
 
-export function SosCard({ petId }: { petId: string }) {
-  const pets = useQuery('pets', {}, ['pets']);
-  const pet = pets.data?.find((p) => p.id === petId);
   return (
-    <section>
-      <p>
-        <Link to="/sos">{t.back}</Link>
-      </p>
-      {pets.error && !pets.data && <p className="notice">{strings.genericError}</p>}
-      {pets.data && !pet && <p className="notice">{strings.pets.notFound}</p>}
-      {pet && <Card pet={pet} />}
-    </section>
+    <Layer>
+      <button type="button" className="scrim" aria-label={strings.nav.close} onClick={close} />
+      <div className="drawer" role="dialog" aria-label={strings.nav.manual}>
+        <span className="grip" />
+        <h2>{strings.nav.manual}</h2>
+        {failed && <p className="notice">{strings.genericError}</p>}
+        {!loading && !failed && chefes.length === 0 && <p className="muted">{strings.pets.empty}</p>}
+        {chefes.length > 1 && (
+          <div className="chips">
+            {chefes.map((c) => (
+              <button
+                key={c.pet.id}
+                type="button"
+                className="chip"
+                aria-pressed={c.pet.id === chefe?.pet.id}
+                onClick={() => navigate(`/sos/${c.pet.id}`, { replace: true })}
+              >
+                {c.pet.profile.name}
+              </button>
+            ))}
+          </div>
+        )}
+        {petId && !chefe && !loading && <p className="notice">{strings.pets.notFound}</p>}
+        {chefe && <Card key={chefe.pet.id} pet={chefe.pet} />}
+      </div>
+    </Layer>
   );
 }
 
@@ -55,47 +57,60 @@ function Card({ pet }: { pet: PetView }) {
 
   return (
     <>
-      <div className="pet-header">
+      <div className="manual-who">
         <PetPhoto pet={pet} />
-        <h1>
-          {t.title}: {profile.name}
-        </h1>
+        <div>
+          <p style={{ fontSize: 18, fontWeight: 700 }}>{profile.name}</p>
+          <p className="meta">
+            {strings.pets.species[pet.species]} · {latest ? t.weight(formatKilos(latest.grams)) : t.noWeight}
+          </p>
+          {profile.microchip && <p className="meta">{strings.pets.profile.microchip}: {profile.microchip}</p>}
+        </div>
       </div>
-      <p>{latest ? t.weight(formatKilos(latest.grams)) : t.noWeight}</p>
 
-      <div className="allergy" role="region" aria-label={t.allergies}>
-        <h2>{t.allergies}</h2>
-        {profile.allergies.length === 0 ? (
-          <p>{t.noAllergies}</p>
-        ) : (
-          <ul>
-            {profile.allergies.map((a, i) => (
-              <li key={i}>{t.allergy(strings.pets.allergyKind[a.kind], a.description)}</li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {profile.allergies.length > 0 ? (
+        <div className="allergy" role="region" aria-label={t.allergies} style={{ marginBottom: 0 }}>
+          {profile.allergies.map((a, i) => (
+            <p key={i} className="allergy-line">
+              <WarningIcon />
+              {t.allergy(strings.pets.allergyKind[a.kind], a.description)}
+            </p>
+          ))}
+        </div>
+      ) : (
+        <p className="meta">{t.noAllergies}</p>
+      )}
+
+      <dl className="kv">
+        <dt>{t.plan}</dt>
+        <dd>{emergency.planName || emergency.planNumber ? t.planLine(emergency.planName, emergency.planNumber) : t.noPlan}</dd>
+      </dl>
 
       <div className="stack">
         {emergency.vetPhone ? (
-          <a className="button" href={telHref(emergency.vetPhone)}>
-            {t.callVet(emergency.vetName)}
+          <a className="call" href={telHref(emergency.vetPhone)}>
+            <PhoneIcon />
+            <span>
+              <strong>{t.callVet(emergency.vetName)}</strong>
+              <small>{emergency.vetPhone}</small>
+            </span>
           </a>
         ) : (
           <p className="muted">{t.noVet}</p>
         )}
         {emergency.clinicPhone ? (
-          <a className="button" href={telHref(emergency.clinicPhone)}>
-            {t.callClinic(emergency.clinicName)}
+          <a className="call alt" href={telHref(emergency.clinicPhone)}>
+            <PhoneIcon />
+            <span>
+              <strong>{t.callClinic(emergency.clinicName)}</strong>
+              <small className="meta">{emergency.clinicPhone}</small>
+            </span>
           </a>
         ) : (
           <p className="muted">{t.noClinic}</p>
         )}
         {emergency.clinicAddress && <p>{t.address(emergency.clinicAddress)}</p>}
       </div>
-
-      <h2>{t.plan}</h2>
-      <p>{emergency.planName || emergency.planNumber ? t.planLine(emergency.planName, emergency.planNumber) : t.noPlan}</p>
 
       {editing ? (
         <EmergencyForm pet={pet} onDone={() => setEditing(false)} />

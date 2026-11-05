@@ -7,3 +7,9 @@ export function PetPhoto({ pet, small = false }: { pet: PetView; small?: boolean
   if (!pet.photoVersion) return <span className={className} aria-hidden="true" />;
   return <img className={className} src={petPhotoPath(pet.id, pet.photoVersion)} alt={strings.pets.photo.alt(pet.profile.name)} />;
 }
+
+/** The portrait filling the arch of the chefe's page; null while there is no photo. */
+export function PetPortrait({ pet }: { pet: PetView }) {
+  if (!pet.photoVersion) return null;
+  return <img src={petPhotoPath(pet.id, pet.photoVersion)} alt={strings.pets.photo.alt(pet.profile.name)} />;
+}

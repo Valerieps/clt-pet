@@ -1,5 +1,8 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
-import type { PetUpdate, PetView } from '../../application/api-contract';
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import type { MeView, PetUpdate, PetView } from '../../application/api-contract';
+import { nameSize, dueLabel } from '../../domain/navigation';
+import { daysBetween } from '../../domain/reminders/reminders';
+import { boosterDate, currentDoses, vaccineStatus } from '../../domain/vaccines/vaccine';
 import {
   ageParts,
   birthDateFromAge,
@@ -18,29 +21,162 @@ import {
 import { ALERT_WINDOW_DAYS, formatKilos, latestWeight, parseKilos, weightAlert } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
-import { PetPhoto } from '../PetPhoto';
+import { todayLocal, useChefia, type Chefe } from '../chefia';
+import { BackBar, CameraIcon, Faces, MeLink } from '../parts';
+import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
-import { Link } from '../router';
+import { Link, usePath } from '../router';
 import { useQuery } from '../use-query';
 import { Vaccines } from './Vaccines';
 import { WeightChart } from './WeightChart';
 
 const t = strings.pets;
-const todayLocal = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD in the device's time zone
+const mural = strings.mural;
+const vaccinesT = strings.vaccines;
 
-export function PetScreen({ petId, myId }: { petId: string; myId: string }) {
-  const pets = useQuery('pets', {}, ['pets', 'members']);
-  const pet = pets.data?.find((p) => p.id === petId);
+/** A chefe's page (docs/spec/navegacao.md): the portrait in an arch under the aura, then what the chefe demands. */
+export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
+  const { chefes, loading, failed } = useChefia();
+  const chefe = chefes.find((c) => c.pet.id === petId);
+  const path = usePath();
+
+  // Arriving at /chefes/<id>#vacinas (from the Registrar drawer) scrolls to that part of the page.
+  const found = chefe !== undefined;
+  useEffect(() => {
+    if (!found) return;
+    const id = window.location.hash.slice(1);
+    if (id) document.getElementById(id)?.scrollIntoView();
+  }, [found, path]);
+
+  if (!chefe) {
+    return (
+      <>
+        <header className="page-header">
+          <BackBar to="/" label={strings.nav.backToMural} />
+        </header>
+        <main className="sheet">
+          {failed && <p className="notice">{strings.genericError}</p>}
+          {!loading && !failed && <p className="notice">{t.notFound}</p>}
+        </main>
+      </>
+    );
+  }
+  return <PetPage chefe={chefe} chefes={chefes} me={me} />;
+}
+
+function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]; me: MeView }) {
+  const { pet, aura } = chefe;
+  const name = pet.profile.name;
+  return (
+    <>
+      <section className={`hero sunbg ${aura}`}>
+        <div className="hero-top">
+          <Faces chefes={chefes} current={pet.id} onDark />
+          <MeLink me={me} />
+        </div>
+        <div className="arch">
+          {pet.photoVersion ? (
+            <PetPortrait pet={pet} />
+          ) : (
+            <span className="ph">
+              <CameraIcon />
+              {strings.chefe.noPortrait}
+            </span>
+          )}
+        </div>
+        <h1 className="monument" style={{ fontSize: nameSize(name) }}>
+          {name}
+        </h1>
+      </section>
+      <main className="ground-sheet">
+        <Summary chefe={chefe} />
+        <div className="actions">
+          <Link to={`/chefes/${pet.id}/registrar`} className="btn">
+            {strings.register.button}
+          </Link>
+          <Link to={`/chefes/${pet.id}#historico`} className="btn line">
+            {strings.register.history}
+          </Link>
+        </div>
+        <div id="historico">
+          <PetDetails pet={pet} myId={me.id} allPets={chefes.map((c) => c.pet)} />
+        </div>
+      </main>
+    </>
+  );
+}
+
+/** Under the name: tags, allergies, and what the chefe demands (Exige) and what is next (A seguir). */
+function Summary({ chefe }: { chefe: Chefe }) {
+  const { pet, status, doses } = chefe;
+  const today = todayLocal();
+  const { profile } = pet;
+  const current = currentDoses(doses).map((dose) => ({ dose, state: vaccineStatus(dose, today), due: boosterDate(dose) }));
+  const demanded = current.filter((c) => c.state !== 'ok').sort((a, b) => a.due.localeCompare(b.due));
+  const next = current.filter((c) => c.state === 'ok').sort((a, b) => a.due.localeCompare(b.due)).slice(0, 2);
+  const alert = weightAlert(pet.weights, pet.weightAlertPercent);
+  const nothingDemanded = demanded.length === 0 && !alert && !status.allergiesMissing;
 
   return (
-    <section>
-      <p>
-        <Link to="/chefes">{t.back}</Link>
-      </p>
-      {pets.error && !pets.data && <p className="notice">{strings.genericError}</p>}
-      {pets.data && !pet && <p className="notice">{t.notFound}</p>}
-      {pet && <PetDetails pet={pet} myId={myId} allPets={pets.data ?? []} />}
-    </section>
+    <>
+      {pet.tags.length > 0 && <p className="meta">{pet.tags.join(' · ')}</p>}
+      <p className="meta">{pet.tutorName ? t.tutor(pet.tutorName) : t.tutorPending(pet.tutorEmail)}</p>
+      {profile.allergies.length > 0 ? (
+        <div className="allergy" role="region" aria-label={t.allergiesTitle}>
+          {profile.allergies.map((a, i) => (
+            <p key={i}>
+              {t.allergyKind[a.kind]}: {a.description}
+            </p>
+          ))}
+        </div>
+      ) : (
+        <p className="meta">{pet.allergiesAnswered ? t.noAllergies : mural.allergiesMissing}</p>
+      )}
+      {nothingDemanded && <div className="calm-note">{strings.chefe.allGood}</div>}
+      {!nothingDemanded && (
+        <div>
+          <p className="lbl">{strings.chefe.requires}</p>
+          {alert && (
+            <Link to={`/chefes/${pet.id}#peso`} className="item">
+              <span>
+                <p>{strings.register.weight}</p>
+                <span className="meta">{t.weight.alert(alert.percent, `${formatKilos(alert.fromGrams)} em ${formatDate(alert.fromDate)}`, `${formatKilos(alert.toGrams)} em ${formatDate(alert.toDate)}`)}</span>
+              </span>
+              <span className="when late">{strings.chefe.weightAlert}</span>
+            </Link>
+          )}
+          {demanded.map(({ dose, state, due }) => (
+            <Link key={dose.id} to={`/chefes/${pet.id}#vacinas`} className="item">
+              <span>
+                <p>{dose.vaccine}</p>
+                <span className="meta">{formatDate(due)}</span>
+              </span>
+              <span className={`when${state === 'overdue' ? ' late' : ''}`}>{dueLabel(state === 'overdue', Math.abs(daysBetween(today, due)))}</span>
+            </Link>
+          ))}
+          {status.allergiesMissing && (
+            <Link to={`/chefes/${pet.id}#historico`} className="item">
+              <p>{t.allergiesTitle}</p>
+              <span className="when">{mural.allergiesPill}</span>
+            </Link>
+          )}
+        </div>
+      )}
+      {next.length > 0 && (
+        <div>
+          <p className="lbl">{strings.chefe.next}</p>
+          {next.map(({ dose, due }) => (
+            <Link key={dose.id} to={`/chefes/${pet.id}#vacinas`} className="item">
+              <span>
+                <p>{dose.vaccine}</p>
+                <span className="meta">{strings.chefe.dueOn(formatDate(due))}</span>
+              </span>
+              <span className="when ok">{vaccinesT.status.ok}</span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -57,27 +193,8 @@ function PetDetails({ pet, myId, allPets }: { pet: PetView; myId: string; allPet
 
   return (
     <>
-      <div className="pet-header">
-        <PetPhoto pet={pet} />
-        <h1>{profile.name}</h1>
-      </div>
       <PhotoControls pet={pet} />
       <Tags pet={pet} />
-
-      <div className="allergy" role="region" aria-label={t.allergiesTitle}>
-        <h2>{t.allergiesTitle}</h2>
-        {profile.allergies.length === 0 ? (
-          <p>{t.noAllergies}</p>
-        ) : (
-          <ul>
-            {profile.allergies.map((a, i) => (
-              <li key={i}>
-                {t.allergyKind[a.kind]}: {a.description}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
 
       {missing.length > 0 && (
         <p className="notice">
@@ -87,8 +204,12 @@ function PetDetails({ pet, myId, allPets }: { pet: PetView; myId: string; allPet
 
       {editing ? <ProfileForm pet={pet} onDone={() => setEditing(false)} /> : <ProfileSummary pet={pet} onEdit={() => setEditing(true)} />}
       <Tutoria pet={pet} myId={myId} />
-      <Weight pet={pet} />
-      <Vaccines pet={pet} allPets={allPets} />
+      <div id="peso">
+        <Weight pet={pet} />
+      </div>
+      <div id="vacinas">
+        <Vaccines pet={pet} allPets={allPets} />
+      </div>
     </>
   );
 }
