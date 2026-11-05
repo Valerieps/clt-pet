@@ -1,9 +1,9 @@
 // The chefes: profile, tutoria, allergies and weight (docs/spec/chefes.md).
 // Any member sees and edits any chefe; the actor only has to be signed in.
-import type { PetView, WeightEntryView } from '../../src/application/api-contract';
+import { PHOTO_MAX_BASE64, type PetView, type WeightEntryView } from '../../src/application/api-contract';
 import { normalizeEmail } from '../../src/domain/group/email';
 import { normalizeEmergency } from '../../src/domain/pets/emergency';
-import { normalizeProfile, type Allergy, type FoodKind, type Sex, type Species } from '../../src/domain/pets/pet';
+import { normalizeProfile, normalizeTags, type Allergy, type FoodKind, type Sex, type Species } from '../../src/domain/pets/pet';
 import { isValidAlertPercent, isValidGrams, isValidWeightDate } from '../../src/domain/pets/weight';
 import { failure, nowIso, type CommandResult, type Context } from './context';
 import { findMember, type Member } from './members';
@@ -14,6 +14,7 @@ interface PetRow {
   species: Species;
   breed: string | null;
   birth_date: string | null;
+  birth_estimated: number;
   sex: Sex | null;
   neutered: number | null;
   microchip: string | null;
@@ -57,6 +58,7 @@ function toView(ctx: Context, row: PetRow): PetView {
       name: row.name,
       breed: row.breed,
       birthDate: row.birth_date,
+      birthEstimated: row.birth_estimated === 1,
       sex: row.sex,
       neutered: row.neutered === null ? null : row.neutered === 1,
       microchip: row.microchip,
@@ -66,6 +68,7 @@ function toView(ctx: Context, row: PetRow): PetView {
       allergies,
     },
     tags,
+    photoVersion: ctx.sql.all<{ updated_at: string }>('SELECT updated_at FROM pet_photos WHERE pet_id = ?', row.id)[0]?.updated_at ?? null,
     allergiesAnswered: row.allergies_answered === 1,
     weightAlertPercent: row.weight_alert_percent,
     emergency: {
@@ -107,11 +110,12 @@ export function updatePet(ctx: Context, _actor: Member, input: Record<string, un
   if (!profile || !isValidAlertPercent(input.weightAlertPercent)) return failure('invalid');
 
   ctx.sql.run(
-    `UPDATE pets SET name = ?, breed = ?, birth_date = ?, sex = ?, neutered = ?, microchip = ?,
+    `UPDATE pets SET name = ?, breed = ?, birth_date = ?, birth_estimated = ?, sex = ?, neutered = ?, microchip = ?,
        food_kind = ?, food_brand = ?, food_daily = ?, allergies_answered = 1, weight_alert_percent = ? WHERE id = ?`,
     profile.name,
     profile.breed,
     profile.birthDate,
+    profile.birthEstimated ? 1 : 0,
     profile.sex,
     profile.neutered === null ? null : profile.neutered ? 1 : 0,
     profile.microchip,
@@ -126,6 +130,46 @@ export function updatePet(ctx: Context, _actor: Member, input: Record<string, un
     ctx.sql.run('INSERT INTO pet_allergies (pet_id, kind, description) VALUES (?, ?, ?)', pet.id, allergy.kind, allergy.description);
   }
   return reply(ctx, pet.id);
+}
+
+/** Replaces the personality tags; the order is kept. */
+export function setTags(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<PetView> {
+  const pet = findPet(ctx, input.petId);
+  if (!pet) return failure('not_found');
+  const tags = normalizeTags(input.tags);
+  if (!tags) return failure('invalid');
+  ctx.sql.run('DELETE FROM pet_tags WHERE pet_id = ?', pet.id);
+  for (const tag of tags) ctx.sql.run('INSERT INTO pet_tags (pet_id, tag) VALUES (?, ?)', pet.id, tag);
+  return reply(ctx, pet.id);
+}
+
+/** A JPEG the app already shrank; the first bytes of any JPEG encode as "/9j/" in base64. */
+const isJpegBase64 = (value: string) => value.length <= PHOTO_MAX_BASE64 && /^\/9j\/[A-Za-z0-9+/]+={0,2}$/.test(value);
+
+/** Sets or removes the photo. Its `updated_at` is also the version in the image's address. */
+export function setPhoto(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<PetView> {
+  const pet = findPet(ctx, input.petId);
+  if (!pet) return failure('not_found');
+  if (input.image === null) {
+    ctx.sql.run('DELETE FROM pet_photos WHERE pet_id = ?', pet.id);
+  } else if (typeof input.image === 'string' && isJpegBase64(input.image)) {
+    ctx.sql.run(
+      `INSERT INTO pet_photos (pet_id, image, updated_at) VALUES (?, ?, ?)
+       ON CONFLICT(pet_id) DO UPDATE SET image = excluded.image, updated_at = excluded.updated_at`,
+      pet.id,
+      input.image,
+      nowIso(ctx),
+    );
+  } else {
+    return failure('invalid');
+  }
+  return reply(ctx, pet.id);
+}
+
+/** The photo as base64 JPEG, for the Worker to serve; null without one. */
+export function photoOf(ctx: Context, petId: string): string | null {
+  if (!findPet(ctx, petId)) return null;
+  return ctx.sql.all<{ image: string }>('SELECT image FROM pet_photos WHERE pet_id = ?', petId)[0]?.image ?? null;
 }
 
 /** Saves the vet, 24 h clinic and health plan of the Cartão SOS; blank fields clear them. */

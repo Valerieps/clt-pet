@@ -6,6 +6,7 @@ import { EMERGENCY_TEXT_MAX, telHref } from '../../domain/pets/emergency';
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
+import { PetPhoto } from '../PetPhoto';
 import { Link } from '../router';
 import { useQuery } from '../use-query';
 
@@ -54,9 +55,12 @@ function Card({ pet }: { pet: PetView }) {
 
   return (
     <>
-      <h1>
-        {t.title}: {profile.name}
-      </h1>
+      <div className="pet-header">
+        <PetPhoto pet={pet} />
+        <h1>
+          {t.title}: {profile.name}
+        </h1>
+      </div>
       <p>{latest ? t.weight(formatKilos(latest.grams)) : t.noWeight}</p>
 
       <div className="allergy" role="region" aria-label={t.allergies}>

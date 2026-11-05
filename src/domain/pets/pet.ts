@@ -15,6 +15,8 @@ export interface PetProfile {
   readonly breed: string | null;
   /** ISO date (YYYY-MM-DD). */
   readonly birthDate: string | null;
+  /** True when `birthDate` was worked out from an estimated age, not read from a document. */
+  readonly birthEstimated: boolean;
   readonly sex: Sex | null;
   readonly neutered: boolean | null;
   readonly microchip: string | null;
@@ -28,6 +30,8 @@ export const PET_NAME_MAX = 40;
 export const TEXT_MAX = 80;
 export const MICROCHIP_MAX = 30;
 export const MAX_ALLERGIES = 20;
+export const MAX_TAGS = 6;
+export const TAG_MAX = 40;
 export const SPECIES: readonly Species[] = ['cat', 'dog'];
 const SEXES: readonly Sex[] = ['female', 'male'];
 const FOOD_KINDS: readonly FoodKind[] = ['dry', 'wet'];
@@ -87,6 +91,12 @@ export function normalizeProfile(raw: Record<string, unknown>, today: string): P
     birthDate = raw.birthDate;
   }
 
+  let birthEstimated = false;
+  if (raw.birthEstimated !== null && raw.birthEstimated !== undefined) {
+    if (typeof raw.birthEstimated !== 'boolean') return null;
+    birthEstimated = raw.birthEstimated && birthDate !== null;
+  }
+
   let neutered: boolean | null = null;
   if (raw.neutered !== null && raw.neutered !== undefined) {
     if (typeof raw.neutered !== 'boolean') return null;
@@ -96,7 +106,7 @@ export function normalizeProfile(raw: Record<string, unknown>, today: string): P
   const allergies = normalizeAllergies(raw.allergies);
   if (!allergies) return null;
 
-  return { name, breed, birthDate, sex, neutered, microchip, foodKind, foodBrand, foodDaily, allergies };
+  return { name, breed, birthDate, birthEstimated, sex, neutered, microchip, foodKind, foodBrand, foodDaily, allergies };
 }
 
 function normalizeAllergies(raw: unknown): Allergy[] | null {
@@ -111,6 +121,53 @@ function normalizeAllergies(raw: unknown): Allergy[] | null {
     if (description !== null) result.push({ kind, description });
   }
   return result;
+}
+
+/** Validates the raw tags of `pet.setTags`: trimmed, no repeats (ignoring case), at most MAX_TAGS. Null when wrong. */
+export function normalizeTags(raw: unknown): string[] | null {
+  if (!Array.isArray(raw) || raw.length > MAX_TAGS * 2) return null;
+  const tags: string[] = [];
+  for (const item of raw) {
+    const tag = text(item, TAG_MAX);
+    if (tag === undefined) return null;
+    if (tag === null) continue;
+    if (!tags.some((t) => t.toLowerCase() === tag.toLowerCase())) tags.push(tag);
+  }
+  return tags.length <= MAX_TAGS ? tags : null;
+}
+
+/** The birth date that makes a chefe `years` years and `months` months old on `today` (YYYY-MM-DD). */
+export function birthDateFromAge(years: number, months: number, today: string): string | null {
+  if (!Number.isInteger(years) || !Number.isInteger(months) || years < 0 || months < 0 || months > 11 || years > 40) return null;
+  if (years === 0 && months === 0) return null;
+  const [y, m, d] = today.split('-').map(Number);
+  const total = y * 12 + (m - 1) - (years * 12 + months);
+  const year = Math.floor(total / 12);
+  const month = total % 12;
+  const lastDay = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(year, month, Math.min(d, lastDay))).toISOString().slice(0, 10);
+}
+
+/** "3 anos e 2 meses", "8 meses", "menos de 1 mês". */
+export function formatAge(birthDate: string, today: string): string {
+  const [by, bm, bd] = birthDate.split('-').map(Number);
+  const [ty, tm, td] = today.split('-').map(Number);
+  const total = Math.max(0, (ty - by) * 12 + (tm - bm) - (td < bd ? 1 : 0));
+  const years = Math.floor(total / 12);
+  const months = total % 12;
+  if (total === 0) return 'menos de 1 mês';
+  const y = years === 1 ? '1 ano' : `${years} anos`;
+  const m = months === 1 ? '1 mês' : `${months} meses`;
+  if (years === 0) return m;
+  return months === 0 ? y : `${y} e ${m}`;
+}
+
+/** The age split in whole years and months, for the form that asks for an estimated age. */
+export function ageParts(birthDate: string, today: string): { years: number; months: number } {
+  const [by, bm, bd] = birthDate.split('-').map(Number);
+  const [ty, tm, td] = today.split('-').map(Number);
+  const total = Math.max(0, (ty - by) * 12 + (tm - bm) - (td < bd ? 1 : 0));
+  return { years: Math.floor(total / 12), months: total % 12 };
 }
 
 /** YYYY-MM-DD → DD/MM/YYYY. */

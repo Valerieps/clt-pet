@@ -17,8 +17,9 @@ import {
   type SignInResult,
 } from './members';
 import type { Clock, IdGenerator, Sql } from './ports';
-import { addWeight, linkTutor, listPets, removeWeight, setEmergency, setTutor, updatePet } from './pets';
+import { addWeight, linkTutor, listPets, photoOf, removeWeight, setEmergency, setPhoto, setTags, setTutor, updatePet } from './pets';
 import { migrate } from './schema';
+import { addVaccination, listVaccinations, removeVaccination } from './vaccines';
 
 type Input = Record<string, unknown>;
 
@@ -30,6 +31,7 @@ const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | n
   members: (ctx) => listMembers(ctx),
   invites: (ctx, actor) => listInvites(ctx, actor),
   pets: (ctx) => listPets(ctx),
+  vaccinations: (ctx) => listVaccinations(ctx),
 };
 
 /** Every command the API runs; each checks the actor's role itself. */
@@ -42,8 +44,12 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'pet.update': updatePet,
   'pet.setEmergency': setEmergency,
   'pet.setTutor': setTutor,
+  'pet.setPhoto': setPhoto,
+  'pet.setTags': setTags,
   'weight.add': addWeight,
   'weight.remove': removeWeight,
+  'vaccine.add': addVaccination,
+  'vaccine.remove': removeVaccination,
 };
 
 export class GroupService {
@@ -79,6 +85,11 @@ export class GroupService {
     const value = handler(this.ctx, actor, asInput(input));
     if (value instanceof QueryError) return failure(value.error);
     return value === null ? failure('forbidden') : { ok: true, value };
+  }
+
+  /** A chefe's photo (base64 JPEG) for a signed-in member; null when there is none. */
+  photo(sessionHash: string, petId: string): string | null {
+    return this.memberForSession(sessionHash) ? photoOf(this.ctx, petId) : null;
   }
 
   command(sessionHash: string, name: string, input: unknown): CommandResult<unknown> {

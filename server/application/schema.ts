@@ -86,7 +86,33 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     // Members who already joined take their chefes right away.
     `UPDATE pets SET tutor_member_id = (SELECT id FROM members WHERE members.email = pets.tutor_email AND members.active = 1)`,
   ],
-  // 3: each chefe's vet, 24 h clinic and health plan, for the Cartão SOS (docs/spec/cartao-sos.md).
+  // 3: the estimated age (docs/spec/chefes.md) and the photos (ADR-009).
+  [
+    `ALTER TABLE pets ADD COLUMN birth_estimated INTEGER NOT NULL DEFAULT 0`,
+    `CREATE TABLE pet_photos (
+      pet_id TEXT PRIMARY KEY REFERENCES pets(id),
+      image TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`,
+  ],
+  // 4: the vaccination card (docs/spec/vacinas.md). The booster date is computed from
+  // `applied_on` + `interval_days`, never stored.
+  [
+    `CREATE TABLE vaccinations (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      vaccine TEXT NOT NULL,
+      applied_on TEXT NOT NULL,
+      interval_days INTEGER NOT NULL,
+      lot TEXT,
+      maker TEXT,
+      vet TEXT,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX vaccinations_pet ON vaccinations(pet_id, applied_on)`,
+  ],
+  // 5: each chefe's vet, 24 h clinic and health plan, for the Cartão SOS (docs/spec/cartao-sos.md).
   [
     `ALTER TABLE pets ADD COLUMN vet_name TEXT`,
     `ALTER TABLE pets ADD COLUMN vet_phone TEXT`,
