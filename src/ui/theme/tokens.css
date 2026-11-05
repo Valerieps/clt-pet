@@ -1,21 +1,52 @@
 /*
  * Design tokens: every color, font and spacing value used by the UI lives here.
  * Change the look of the app by editing this file only. The dark theme, below, redefines every color.
+ * "Trabalho nas palavras, animal na imagem": a neutral, cool ground; each chefe has an aura
+ * (background + sunlight); the monumental lettering is only for the chefes.
  */
+@font-face {
+  font-family: 'Anton';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/Anton.woff2') format('woff2');
+}
+
+/* Figtree is a variable font: one file serves every weight. */
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('./fonts/Figtree.woff2') format('woff2');
+}
+
 :root {
   color-scheme: light;
 
-  --color-bg: #f4f2ed;
+  --color-bg: #eceef1;
   --color-surface: #ffffff;
-  --color-text: #1f1f1f;
-  /* 5:1 on --color-bg, above WCAG AA's 4.5:1 for small text */
-  --color-text-muted: #6b675f;
-  --color-border: #e4e0d8;
+  --color-text: #15141a;
+  /* 5.5:1 on --color-bg, above WCAG AA's 4.5:1 for small text */
+  --color-text-muted: #5b5f69;
+  --color-border: #dfe2e7;
+  --color-border-strong: #c4c8d0;
   --color-brand: #b4532a;
   --color-on-brand: #ffffff;
-  --color-danger: #b3261e;
+  --color-danger: #b42318;
+  --color-danger-soft: #fde8e6;
+  --color-ok: #1d6b43;
+  --color-ok-soft: #e3f3ea;
+  /* the sun: pending dots, the Mural face, the toast link */
+  --color-sol: #f4b43a;
+  --color-sol-soft: #fdf1d6;
+  --color-sol-ink: #7a4a00;
+  /* text on --color-text (buttons, the SOS call, the toast) */
+  --color-on-text: #ffffff;
+  --color-scrim: rgba(10, 10, 16, 0.58);
 
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: Anton, Impact, 'Arial Narrow', sans-serif;
+  --font-sans: Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-size-base: 15px;
 
   --space-1: 4px;
@@ -25,7 +56,17 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  --radius: 8px;
+  --radius: 12px;
+  --radius-card: 24px;
+  --radius-pill: 999px;
+
+  /* the auras never change with the theme: they are the chefes' own colors */
+  --aura-ber: #262145;
+  --aura-ber-glow: rgba(207, 200, 255, 0.5);
+  --aura-pan: #141c28;
+  --aura-pan-glow: rgba(255, 217, 138, 0.42);
+  --aura-pac: #6b3f1a;
+  --aura-pac-glow: rgba(255, 200, 97, 0.6);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,8 +78,15 @@
     --color-text: #ecebef;
     --color-text-muted: #a3a0aa;
     --color-border: #34313a;
+    --color-border-strong: #4a4652;
     --color-brand: #f0a27f;
     --color-on-brand: #17161a;
     --color-danger: #f2b8b5;
+    --color-danger-soft: #3a1714;
+    --color-ok: #8fd3ac;
+    --color-ok-soft: #12301f;
+    --color-sol-soft: #3a2f14;
+    --color-sol-ink: #f4c46a;
+    --color-on-text: #17161a;
   }
 }

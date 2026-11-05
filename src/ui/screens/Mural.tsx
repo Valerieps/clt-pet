@@ -1,95 +1,92 @@
-import { useState, type FormEvent } from 'react';
-import type { MeView, PetView, VaccinationView } from '../../application/api-contract';
-import { greetingFor } from '../../domain/greeting';
-import { NAME_MAX_LENGTH } from '../../domain/group/profile';
-import { dailyPhrase, muralStatus, splitByTutor } from '../../domain/mural';
+import type { MeView } from '../../application/api-contract';
+import { dailyPhrase, splitByTutor } from '../../domain/mural';
+import { dateLabel, dueLabel, initialOf } from '../../domain/navigation';
 import { strings } from '../../domain/strings';
-import { useServices } from '../backend-context';
-import { PetPhoto } from '../PetPhoto';
+import { todayLocal, useChefia, type Chefe } from '../chefia';
+import { Faces, MeLink } from '../parts';
 import { Link } from '../router';
-import { useQuery } from '../use-query';
-import { PushToggle } from './PushToggle';
 
 const t = strings.mural;
-const todayLocal = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD in the device's time zone
 
-/** The home screen (docs/spec/mural.md): one card per chefe, "Meus chefes" first. */
+/** The home screen (docs/spec/mural.md): the chefes that need attention as cards, the rest as a calm line. */
 export function Mural({ me }: { me: MeView }) {
-  const pets = useQuery('pets', {}, ['pets']);
-  const vaccinations = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
+  const { chefes, failed } = useChefia();
   const today = todayLocal();
-  const { mine, others } = splitByTutor(pets.data ?? [], me.id);
-  const doses = vaccinations.data ?? [];
+  // "Meus chefes" first; inside each group the original order (and so the auras) is kept.
+  const mine = new Set(splitByTutor(chefes.map((c) => c.pet), me.id).mine.map((p) => p.id));
+  const ordered = [...chefes.filter((c) => mine.has(c.pet.id)), ...chefes.filter((c) => !mine.has(c.pet.id))];
+  const attention = ordered.filter((c) => c.status.needsAttention);
+  const calm = ordered.filter((c) => !c.status.needsAttention);
 
-  return (
-    <section>
-      <h1>{t.greeting(greetingFor(new Date()), me.name)}</h1>
-      {pets.error && !pets.data && <p className="notice">{strings.genericError}</p>}
-      {pets.data?.length === 0 && <p className="muted">{t.empty}</p>}
-      <PetCards title={t.mine} pets={mine} doses={doses} today={today} />
-      <PetCards title={t.others} pets={others} doses={doses} today={today} />
-      <Account me={me} />
-    </section>
-  );
-}
-
-function PetCards({ title, pets, doses, today }: { title: string; pets: readonly PetView[]; doses: readonly VaccinationView[]; today: string }) {
-  if (pets.length === 0) return null;
   return (
     <>
-      <h2>{title}</h2>
-      <ul className="list">
-        {pets.map((pet) => {
-          const forMural = { id: pet.id, name: pet.profile.name, seriousMode: pet.seriousMode, allergiesAnswered: pet.allergiesAnswered };
-          const status = muralStatus(forMural, doses.filter((d) => d.petId === pet.id), today);
-          const phrase = dailyPhrase(forMural, status, today);
-          return (
-            <li key={pet.id} className="card pet-header">
-              <PetPhoto pet={pet} />
-              <div className="grow">
-                <Link to={`/chefes/${pet.id}`}>
-                  <strong>{pet.profile.name}</strong>
-                </Link>{' '}
-                <span data-status={status.needsAttention ? 'overdue' : undefined}>{status.needsAttention ? t.needsAttention : t.allGood}</span>
-                {status.allergiesMissing && <p className="muted">{t.allergiesMissing}</p>}
-                {phrase && <p>{phrase}</p>}
-                <Link to={`/sos/${pet.id}`}>{t.sos}</Link>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+      <header className="mural-header">
+        <div className="spread">
+          <div>
+            <p className="lbl">{dateLabel(new Date())}</p>
+            <h1 className="monument" style={{ fontSize: 40, marginTop: 4 }}>
+              {t.title}
+            </h1>
+          </div>
+          <MeLink me={me} />
+        </div>
+        <Faces chefes={chefes} current="mural" />
+      </header>
+      <main className="mural-list">
+        {failed && <p className="notice">{strings.genericError}</p>}
+        {chefes.length === 0 && !failed && <p className="muted">{t.empty}</p>}
+        {attention.map((chefe) => (
+          <AttentionCard key={chefe.pet.id} chefe={chefe} today={today} />
+        ))}
+        {calm.map((chefe) => (
+          <CalmLine key={chefe.pet.id} chefe={chefe} today={today} />
+        ))}
+      </main>
     </>
   );
 }
 
-function Account({ me }: { me: MeView }) {
-  const { backend } = useServices();
-  const [name, setName] = useState(me.name);
-  const [error, setError] = useState<string | null>(null);
+function phraseOf({ pet, status }: Chefe, today: string): string | null {
+  return dailyPhrase({ id: pet.id, name: pet.profile.name, seriousMode: pet.seriousMode, allergiesAnswered: pet.allergiesAnswered }, status, today);
+}
 
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    const result = await backend.command('member.rename', { name });
-    setError(result.ok ? null : strings.genericError);
-  }
-
+function AttentionCard({ chefe, today }: { chefe: Chefe; today: string }) {
+  const { pet, aura, status } = chefe;
+  const name = pet.profile.name;
+  const phrase = phraseOf(chefe, today);
+  const pill = status.vaccine ? `${status.vaccine.item} · ${dueLabel(status.vaccine.overdue, status.vaccine.days)}` : t.allergiesPill;
   return (
-    <details>
-      <summary>{t.account}</summary>
-      <form className="row" onSubmit={submit}>
-        <label className="grow">
-          <span className="muted">{t.nameLabel}</span>
-          <input required maxLength={NAME_MAX_LENGTH} value={name} onChange={(e) => setName(e.target.value)} />
-        </label>
-        <button type="submit">{t.save}</button>
-      </form>
-      <PushToggle />
-      {error && (
-        <p className="notice" role="alert">
-          {error}
-        </p>
-      )}
-    </details>
+    <article className={`mural-card sunbg ${aura}`}>
+      <Link to={`/chefes/${pet.id}`}>
+        <span className="monument">{name}</span>
+        <span className="when on-dark">{pill}</span>
+      </Link>
+      {phrase && <p>{phrase}</p>}
+      {status.allergiesMissing && <p>{t.allergiesMissing}</p>}
+      <div className="actions">
+        {status.vaccine ? (
+          <Link to={`/chefes/${pet.id}/registrar`} className="btn light">
+            {strings.register.button}
+          </Link>
+        ) : (
+          <Link to={`/chefes/${pet.id}`} className="btn light">
+            {t.fillAllergies}
+          </Link>
+        )}
+        <Link to={`/chefes/${pet.id}`} className="btn ghost">
+          {t.openPet(name)}
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+function CalmLine({ chefe, today }: { chefe: Chefe; today: string }) {
+  const { pet, aura } = chefe;
+  return (
+    <Link to={`/chefes/${pet.id}`} className={`mural-calm ${aura}`}>
+      <span className="dot">{initialOf(pet.profile.name)}</span>
+      <span>{phraseOf(chefe, today) ?? t.allGood}</span>
+    </Link>
   );
 }

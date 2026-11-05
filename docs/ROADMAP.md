@@ -12,6 +12,7 @@ O que ainda não está pronto.
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
 | Modo sério: o interruptor por chefe na tela do chefe | 1 | `spec/voz-dos-chefes.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase nos lembretes e no Mural quando eles forem feitos |
+| Navegação: "Lembrar amanhã", abrir a exigência pelo aviso, "Desfazer", incluir outros chefes no Registrar, Manual do Funcionário Temporário | 1 e 2 | `spec/navegacao.md` | O desenho (`CLT Pet — Navegação`) já os mostra; a fase 1 entregou a estrutura, a fileira de rostos, as auras, a alça do Manual e a gaveta de Registrar |
 | Fases 2, 3 e 4 | 2 a 4 | `SPEC.md` | Cada uma ganha seus arquivos em `spec/` na vez dela |
 
 ## O código ainda não segue o spec
@@ -37,9 +38,11 @@ Nada por enquanto.
 - [ ] `spec/chefes.md`: só nome e espécie são obrigatórios no cadastro; os tutores são ligados pelos
   e-mails `souza.pereira.valeria@gmail.com` e `csrgamboa@gmail.com`.
 - [ ] `spec/mural.md`: "Exige atenção" quando há vacina atrasada ou a vencer em 30 dias, ou alergia em
-  branco; os dois funcionários veem "Meus chefes" primeiro e "Outros chefes" abaixo; só com a
-  alergia em branco o card mostra o aviso no lugar da frase; o formulário do nome e o aviso no
-  celular ficam em "Minha conta", no fim do Mural.
+  branco; os dois funcionários veem os próprios chefes primeiro; o formulário do nome e o aviso no
+  celular ficam nas Configurações.
+- [ ] `spec/navegacao.md`: as três auras (Berenice, Panda, Paçoca no desenho) são dadas na ordem em
+  que os chefes aparecem, não pelas tags; o modo escuro continua, com as auras iguais; o scroll da
+  gaveta de Registrar usa as seções de vacina e peso da página do chefe, sem formulário próprio.
 - [ ] `spec/vacinas.md`: só a vacina e a data são obrigatórias no registro.
 - [ ] `spec/acesso-e-membros.md`: eu e o Cesar somos os dois admins.
 - [ ] `spec/chefes.md`: o peso aceita de 100 g a 150 kg, nunca com data futura (no horário de
