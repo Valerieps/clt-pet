@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { missingFields, normalizeProfile, type PetProfile } from './pet';
+import { ageParts, birthDateFromAge, formatAge, missingFields, normalizeProfile, normalizeTags, type PetProfile } from './pet';
 import { formatKilos, latestWeight, parseKilos, weightAlert } from './weight';
 
 const TODAY = '2026-11-04';
@@ -74,5 +74,35 @@ describe('weight', () => {
     expect(weightAlert([{ grams: 4000, onDate: '2026-08-01' }, { grams: 3000, onDate: '2026-11-01' }], 10)).toBeNull();
     expect(weightAlert([{ grams: 4000, onDate: '2026-11-01' }], 10)).toBeNull();
     expect(weightAlert([{ grams: 4000, onDate: '2026-09-10' }, { grams: 3700, onDate: '2026-11-01' }], 5)).not.toBeNull();
+  });
+});
+
+describe('normalizeTags', () => {
+  it('trims, drops blanks and repeats, and caps the count', () => {
+    expect(normalizeTags([' Exigente ', '', 'exigente', 'Juíza'])).toEqual(['Exigente', 'Juíza']);
+    expect(normalizeTags(['a', 'b', 'c', 'd', 'e', 'f', 'g'])).toBeNull();
+    expect(normalizeTags(['x'.repeat(41)])).toBeNull();
+    expect(normalizeTags('a')).toBeNull();
+    expect(normalizeTags([3])).toBeNull();
+  });
+});
+
+describe('estimated age', () => {
+  it('turns years and months into a birth date, clamping the day', () => {
+    expect(birthDateFromAge(3, 0, '2026-11-04')).toBe('2023-11-04');
+    expect(birthDateFromAge(0, 8, '2026-11-04')).toBe('2026-03-04');
+    expect(birthDateFromAge(1, 9, '2026-11-04')).toBe('2025-02-04');
+    expect(birthDateFromAge(0, 9, '2026-11-30')).toBe('2026-02-28');
+    expect(birthDateFromAge(0, 0, '2026-11-04')).toBeNull();
+    expect(birthDateFromAge(1, 12, '2026-11-04')).toBeNull();
+    expect(birthDateFromAge(-1, 0, '2026-11-04')).toBeNull();
+  });
+
+  it('writes the age in words', () => {
+    expect(formatAge('2023-11-04', '2026-11-04')).toBe('3 anos');
+    expect(formatAge('2025-09-04', '2026-11-04')).toBe('1 ano e 2 meses');
+    expect(formatAge('2026-03-04', '2026-11-04')).toBe('8 meses');
+    expect(formatAge('2026-10-05', '2026-11-04')).toBe('menos de 1 mês');
+    expect(ageParts('2025-09-04', '2026-11-04')).toEqual({ years: 1, months: 2 });
   });
 });

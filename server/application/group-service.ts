@@ -17,7 +17,7 @@ import {
   type SignInResult,
 } from './members';
 import type { Clock, IdGenerator, Sql } from './ports';
-import { addWeight, linkTutor, listPets, removeWeight, setTutor, updatePet } from './pets';
+import { addWeight, linkTutor, listPets, photoOf, removeWeight, setPhoto, setTags, setTutor, updatePet } from './pets';
 import { migrate } from './schema';
 
 type Input = Record<string, unknown>;
@@ -41,6 +41,8 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'member.rename': rename,
   'pet.update': updatePet,
   'pet.setTutor': setTutor,
+  'pet.setPhoto': setPhoto,
+  'pet.setTags': setTags,
   'weight.add': addWeight,
   'weight.remove': removeWeight,
 };
@@ -78,6 +80,11 @@ export class GroupService {
     const value = handler(this.ctx, actor, asInput(input));
     if (value instanceof QueryError) return failure(value.error);
     return value === null ? failure('forbidden') : { ok: true, value };
+  }
+
+  /** A chefe's photo (base64 JPEG) for a signed-in member; null when there is none. */
+  photo(sessionHash: string, petId: string): string | null {
+    return this.memberForSession(sessionHash) ? photoOf(this.ctx, petId) : null;
   }
 
   command(sessionHash: string, name: string, input: unknown): CommandResult<unknown> {
