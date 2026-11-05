@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import type { MeView, PetUpdate, PetView } from '../../application/api-contract';
 import { nameSize, dueLabel } from '../../domain/navigation';
 import { daysBetween } from '../../domain/reminders/reminders';
@@ -24,10 +24,10 @@ import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
-import { BackBar, CameraIcon, CatIcon, DogIcon, Faces, MeLink, ScaleIcon, VaccineIcon } from '../parts';
+import { BackBar, CameraIcon, CatIcon, CheckIcon, DogIcon, Faces, MeLink, PencilIcon, PillIcon, ScaleIcon, VaccineIcon } from '../parts';
 import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
-import { Link, usePath } from '../router';
+import { Link, useHash, usePath } from '../router';
 import { useQuery } from '../use-query';
 import { Vaccines } from './Vaccines';
 import { WeightChart } from './WeightChart';
@@ -61,6 +61,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
   const { pet, aura } = chefe;
   const name = pet.profile.name;
   const path = usePath();
+  const hash = useHash();
   const [tab, setTab] = useState<Tab | null>(null);
   const [editingHistory, setEditingHistory] = useState(false);
 
@@ -70,7 +71,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
     if (!target) return;
     setTab(target);
     requestAnimationFrame(() => document.getElementById('abas')?.scrollIntoView());
-  }, [path]);
+  }, [path, hash]);
 
   return (
     <>
@@ -103,6 +104,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
             [
               ['history', strings.chefe.sections.history, <VaccineIcon key="h" />],
               ['weight', strings.chefe.sections.weight, <ScaleIcon key="w" />],
+              ['medication', strings.chefe.sections.medication, <PillIcon key="m" />],
               ['profile', strings.chefe.sections.profile, pet.species === 'cat' ? <CatIcon key="p" /> : <DogIcon key="p" />],
             ] as const
           ).map(([key, label, icon]) => (
@@ -124,6 +126,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
           <div className="tab-panel" role="tabpanel">
             {tab === 'history' && <HistoryPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
             {tab === 'weight' && <WeightPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
+            {tab === 'medication' && <p className="muted">{strings.chefe.medicationSoon}</p>}
             {tab === 'profile' && <ProfilePanel pet={pet} myId={me.id} />}
           </div>
         )}
@@ -198,39 +201,33 @@ function birthText(birthDate: string, estimated: boolean): string {
   return estimated ? t.profile.ageEstimated(age) : `${formatDate(birthDate)} · ${t.profile.age(age)}`;
 }
 
-type Tab = 'history' | 'weight' | 'profile';
-const TAB_OF_HASH: Record<string, Tab | undefined> = { historico: 'history', vacinas: 'history', peso: 'weight', perfil: 'profile', tutoria: 'profile' };
+type Tab = 'history' | 'weight' | 'medication' | 'profile';
+const TAB_OF_HASH: Record<string, Tab | undefined> = { historico: 'history', vacinas: 'history', peso: 'weight', medicacoes: 'medication', perfil: 'profile', tutoria: 'profile' };
 
+/** A pencil beside the section title; while editing it turns into a check. */
 function EditToggle({ editing, onToggle }: { editing: boolean; onToggle: () => void }) {
+  const label = editing ? strings.chefe.doneEditing : strings.chefe.editHistory;
   return (
-    <div>
-      <button type="button" className="secondary" onClick={onToggle}>
-        {editing ? strings.chefe.doneEditing : strings.chefe.editHistory}
-      </button>
-    </div>
+    <button type="button" className="icon-btn" aria-label={label} title={label} aria-pressed={editing} onClick={onToggle}>
+      {editing ? <CheckIcon /> : <PencilIcon />}
+    </button>
   );
 }
 
 /** The vaccines (and what else gets logged over time); remove buttons show only while editing. */
 function HistoryPanel({ pet, editing, onToggle }: { pet: PetView; editing: boolean; onToggle: () => void }) {
   return (
-    <>
-      <EditToggle editing={editing} onToggle={onToggle} />
-      <div id="vacinas">
-        <Vaccines pet={pet} removable={editing} />
-      </div>
-    </>
+    <div id="vacinas">
+      <Vaccines pet={pet} removable={editing} action={<EditToggle editing={editing} onToggle={onToggle} />} />
+    </div>
   );
 }
 
 function WeightPanel({ pet, editing, onToggle }: { pet: PetView; editing: boolean; onToggle: () => void }) {
   return (
-    <>
-      <EditToggle editing={editing} onToggle={onToggle} />
-      <div id="peso">
-        <Weight pet={pet} removable={editing} />
-      </div>
-    </>
+    <div id="peso">
+      <Weight pet={pet} removable={editing} action={<EditToggle editing={editing} onToggle={onToggle} />} />
+    </div>
   );
 }
 
@@ -627,7 +624,7 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
   );
 }
 
-function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
+function Weight({ pet, removable, action }: { pet: PetView; removable: boolean; action?: ReactNode }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const [error, setError] = useState<string | null>(null);
@@ -642,7 +639,10 @@ function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
 
   return (
     <>
-      <h2>{t.weight.title}</h2>
+      <div className="spread">
+        <h2>{t.weight.title}</h2>
+        {action}
+      </div>
       <p>{latest ? t.currentWeight(formatKilos(latest.grams)) : t.noWeight}</p>
       {alert && (
         <p className="notice" role="status">
