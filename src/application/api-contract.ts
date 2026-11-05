@@ -1,6 +1,8 @@
 // The contract between the app and the server: query and command names, inputs and outputs.
 // Types only. The server imports it with `import type`, so nothing here runs on either side.
+import type { CareCategory } from '../domain/care/care';
 import type { Role } from '../domain/group/roles';
+import type { VisitKind } from '../domain/health/health';
 import type { Emergency } from '../domain/pets/emergency';
 import type { Frequency } from '../domain/medications/medication';
 import type { PetProfile, Species } from '../domain/pets/pet';
@@ -55,6 +57,12 @@ export interface PetView {
   readonly tutorMemberId: string | null;
   readonly tutorEmail: string;
   readonly tutorName: string | null;
+  /** While the tutoria is lent: the day it goes back (docs/spec/chefes.md, "Tutoria"). */
+  readonly tutorUntil: string | null;
+  /** Who takes the tutoria back on `tutorUntil`. */
+  readonly tutorReturnName: string | null;
+  /** YYYY-MM-DD: when the chefe was registered in the app (its "chegada"). */
+  readonly arrivedOn: string;
   /** Oldest first. */
   readonly weights: readonly WeightEntryView[];
 }
@@ -77,6 +85,113 @@ export interface VaccinationView {
   readonly vet: string | null;
   readonly byName: string;
 }
+
+/** A chefe that left (docs/spec/chefes.md, "Aposentadoria"); its history stays in the database. */
+export interface RetiredPetView {
+  readonly id: string;
+  readonly name: string;
+  readonly species: Species;
+  readonly arrivedOn: string;
+  readonly retiredOn: string;
+}
+
+/** A parasite or hygiene record (docs/spec/cuidados.md). */
+export interface CareView {
+  readonly id: string;
+  readonly petId: string;
+  readonly category: CareCategory;
+  readonly item: string;
+  /** YYYY-MM-DD. */
+  readonly doneOn: string;
+  readonly intervalDays: number;
+  readonly note: string | null;
+  readonly byName: string;
+}
+
+export interface ConditionView {
+  readonly id: string;
+  readonly petId: string;
+  readonly name: string;
+  readonly grave: boolean;
+  readonly since: string | null;
+  readonly notes: string | null;
+  /** Null while the condition is active. */
+  readonly resolvedOn: string | null;
+  readonly byName: string;
+}
+
+export interface VisitView {
+  readonly id: string;
+  readonly petId: string;
+  readonly kind: VisitKind;
+  readonly onDate: string;
+  readonly title: string;
+  readonly vet: string | null;
+  readonly notes: string | null;
+  readonly returnOn: string | null;
+  readonly byName: string;
+}
+
+export interface DiaryEntryView {
+  readonly id: string;
+  readonly petId: string;
+  readonly onDate: string;
+  readonly text: string;
+  readonly byName: string;
+}
+
+export interface MealView {
+  readonly id: string;
+  readonly petId: string;
+  /** HH:MM. */
+  readonly at: string;
+  readonly amount: string | null;
+  readonly note: string | null;
+}
+
+/** A pet sitter's link, as the members see it. The token is part of the address they hand over. */
+export interface SitterLinkView {
+  readonly id: string;
+  readonly label: string;
+  readonly petIds: readonly string[];
+  readonly note: string | null;
+  /** The last day the link opens. */
+  readonly expiresOn: string;
+  readonly expired: boolean;
+  readonly token: string;
+  readonly byName: string;
+}
+
+/** What the sitter's page shows about one chefe (docs/spec/manual-temporario.md). */
+export interface SitterPetView {
+  readonly id: string;
+  readonly name: string;
+  readonly species: Species;
+  readonly tags: readonly string[];
+  readonly photoVersion: string | null;
+  readonly microchip: string | null;
+  readonly allergies: PetProfile['allergies'];
+  readonly graveConditions: readonly { readonly name: string; readonly notes: string | null }[];
+  readonly food: { readonly kind: PetProfile['foodKind']; readonly brand: string | null; readonly daily: string | null };
+  readonly meals: readonly MealView[];
+  readonly emergency: Emergency;
+}
+
+export interface SitterManualView {
+  readonly label: string;
+  readonly note: string | null;
+  readonly expiresOn: string;
+  /** The tutors' names, to call. */
+  readonly tutors: readonly string[];
+  readonly pets: readonly SitterPetView[];
+}
+
+/** Where the sitter's page reads from; the token is the credential (no sign-in). */
+export const sitterManualPath = (token: string) => `/api/temporario/${token}`;
+export const sitterPhotoPath = (token: string, petId: string, version: string) =>
+  `/api/temporario/${token}/foto/${petId}?v=${encodeURIComponent(version)}`;
+/** The page the sitter opens. */
+export const sitterPagePath = (token: string) => `/temporario/${token}`;
 
 export interface MedicationView {
   readonly id: string;
@@ -106,6 +221,19 @@ export interface Queries {
   pets: { input: Record<string, never>; output: PetView[] };
   /** Every dose registered for the chefes that are not retired, oldest application first. */
   vaccinations: { input: Record<string, never>; output: VaccinationView[] };
+  /** Newest retirement first. */
+  retiredPets: { input: Record<string, never>; output: RetiredPetView[] };
+  /** Parasite and hygiene records of the chefes that are not retired, oldest first. */
+  care: { input: Record<string, never>; output: CareView[] };
+  /** Every condition, active and resolved. */
+  conditions: { input: Record<string, never>; output: ConditionView[] };
+  /** Consultas, exames and laudos, oldest first. */
+  visits: { input: Record<string, never>; output: VisitView[] };
+  diary: { input: Record<string, never>; output: DiaryEntryView[] };
+  /** By time of day. */
+  meals: { input: Record<string, never>; output: MealView[] };
+  /** The links not revoked, newest first. */
+  sitterLinks: { input: Record<string, never>; output: SitterLinkView[] };
   /** Every medication registered for the chefes that are not retired, oldest start first. */
   medications: { input: Record<string, never>; output: MedicationView[] };
   me: { input: Record<string, never>; output: MeView };
@@ -127,7 +255,13 @@ export interface Commands {
   'pet.update': { input: PetUpdate; output: PetView };
   /** Any member edits the vet, 24 h clinic and health plan shown on the Cartão SOS. */
   'pet.setEmergency': { input: { petId: string } & Emergency; output: PetView };
-  /** Makes `memberId` the tutor responsável; the other members stay as reservas. */
+  /** The Exame Admissional: a new chefe, with only the name and species; the actor is its tutor. */
+  'pet.create': { input: { name: string; species: Species }; output: PetView };
+  /** Retires a chefe (death or adoption): it leaves the Mural; its history stays. */
+  'pet.retire': { input: { petId: string }; output: null };
+  /** Lends the tutoria to `memberId` until `until` (a future date); the current tutor takes it back that day. */
+  'pet.lendTutoria': { input: { petId: string; memberId: string; until: string }; output: PetView };
+  /** Makes `memberId` the tutor responsável; the other members stay as reservas. Ends a lent tutoria. */
   'pet.setTutor': { input: { petId: string; memberId: string }; output: PetView };
   /** `image` is a base64 JPEG (at most PHOTO_MAX_BASE64 characters); null takes the photo away. */
   'pet.setPhoto': { input: { petId: string; image: string | null }; output: PetView };
@@ -152,6 +286,29 @@ export interface Commands {
     output: VaccinationView[];
   };
   'vaccine.remove': { input: { vaccinationId: string }; output: null };
+  /** One parasite or hygiene record for every chefe in `petIds`; the interval defaults to 365 days. */
+  'care.add': {
+    input: { petIds: string[]; category: CareCategory; item: string; doneOn: string; intervalDays?: number; note?: string | null };
+    output: CareView[];
+  };
+  'care.remove': { input: { careId: string }; output: null };
+  'condition.add': { input: { petId: string; name: string; grave?: boolean; since?: string | null; notes?: string | null }; output: ConditionView };
+  /** `resolvedOn` null reopens the condition; omitted means today. */
+  'condition.resolve': { input: { conditionId: string; resolvedOn?: string | null }; output: ConditionView };
+  'condition.remove': { input: { conditionId: string }; output: null };
+  'visit.add': {
+    input: { petId: string; kind: VisitKind; onDate: string; title: string; vet?: string | null; notes?: string | null; returnOn?: string | null };
+    output: VisitView;
+  };
+  'visit.remove': { input: { visitId: string }; output: null };
+  /** `onDate` defaults to today. */
+  'diary.add': { input: { petId: string; text: string; onDate?: string }; output: DiaryEntryView };
+  'diary.remove': { input: { entryId: string }; output: null };
+  'meal.add': { input: { petId: string; at: string; amount?: string | null; note?: string | null }; output: MealView };
+  'meal.remove': { input: { mealId: string }; output: null };
+  /** The link lasts `days` days (1 to 90, default 7), counting today. */
+  'sitter.create': { input: { label: string; petIds: string[]; note?: string | null; days?: number }; output: SitterLinkView };
+  'sitter.revoke': { input: { linkId: string }; output: null };
   /** One medication for one chefe; `endOn` empty or missing is continuous use. */
   'medication.add': {
     input: { petId: string; name: string; dose: string; frequency: Frequency; startOn: string; endOn?: string | null };
@@ -164,7 +321,19 @@ export type QueryName = keyof Queries;
 export type CommandName = keyof Commands;
 
 /** What a live message says changed; the screens that show it refetch. */
-export type Topic = 'me' | 'members' | 'invites' | 'pets' | 'vaccinations' | 'medications';
+export type Topic =
+  | 'me'
+  | 'members'
+  | 'invites'
+  | 'pets'
+  | 'vaccinations'
+  | 'medications'
+  | 'care'
+  | 'conditions'
+  | 'visits'
+  | 'diary'
+  | 'meals'
+  | 'sitter';
 
 export interface LiveMessage {
   readonly type: 'changed';

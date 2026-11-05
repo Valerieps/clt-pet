@@ -5,20 +5,29 @@ import { strings } from '../../domain/strings';
 import { useChefia } from '../chefia';
 import { ChevronLeftIcon, CloseIcon, Layer, useEscape } from '../parts';
 import { goBack } from '../router';
+import { CareForm } from './Care';
+import { VisitForm } from './Health';
 import { MedicationForm, VaccineForm, WeightForm } from './RegisterForms';
+import { DiaryForm } from './Routine';
 
 const t = strings.register;
 
-type Step = 'menu' | 'weight' | 'vaccine' | 'medication';
+type Step = 'menu' | 'weight' | 'vaccine' | 'medication' | 'care' | 'diary' | 'visit';
 
-/** What can be registered for a chefe (docs/spec/navegacao.md). Vaccine and weight open their form right here. */
+/** The hash the speed dial opens the drawer with, per form. */
+const STEP_OF_HASH: Record<string, Step | undefined> = {
+  vacina: 'vaccine',
+  peso: 'weight',
+  medicacao: 'medication',
+  cuidado: 'care',
+  diario: 'diary',
+  consulta: 'visit',
+};
+
+/** What can be registered for a chefe (docs/spec/navegacao.md). Every form opens right here. */
 export function RegisterDrawer({ petId }: { petId: string }) {
   const { chefes } = useChefia();
-  // The speed dial opens straight on a form: /registrar#vacina or /registrar#peso.
-  const [step, setStep] = useState<Step>(() => {
-    const hash = window.location.hash.slice(1);
-    return hash === 'vacina' ? 'vaccine' : hash === 'peso' ? 'weight' : hash === 'medicacao' ? 'medication' : 'menu';
-  });
+  const [step, setStep] = useState<Step>(() => STEP_OF_HASH[window.location.hash.slice(1)] ?? 'menu');
   const chefe = chefes.find((c) => c.pet.id === petId);
   const close = () => goBack(`/chefes/${petId}`);
   useEscape(close);
@@ -26,7 +35,22 @@ export function RegisterDrawer({ petId }: { petId: string }) {
 
   const { pet, status } = chefe;
   const latest = latestWeight(pet.weights);
-  const title = step === 'weight' ? t.weight : step === 'vaccine' ? t.vaccine : step === 'medication' ? t.newMedication : t.title(pet.profile.name);
+  const allPets = chefes.map((c) => c.pet);
+  const titles: Record<Step, string> = {
+    menu: t.title(pet.profile.name),
+    weight: t.weight,
+    vaccine: t.vaccine,
+    medication: t.newMedication,
+    care: t.care,
+    diary: t.diary,
+    visit: t.visit,
+  };
+  const simple: [Step, string][] = [
+    ['medication', t.newMedication],
+    ['care', t.care],
+    ['diary', t.diary],
+    ['visit', t.visit],
+  ];
   return (
     <Layer>
       <button type="button" className="scrim" aria-label={strings.nav.close} onClick={close} />
@@ -38,7 +62,7 @@ export function RegisterDrawer({ petId }: { petId: string }) {
               <ChevronLeftIcon />
             </button>
           )}
-          <h2>{title}</h2>
+          <h2>{titles[step]}</h2>
           <button type="button" className="close" aria-label={strings.nav.close} onClick={close}>
             <CloseIcon />
           </button>
@@ -53,10 +77,12 @@ export function RegisterDrawer({ petId }: { petId: string }) {
               <p>{t.weight}</p>
               <span className="meta">{latest ? t.lastWeight(formatKilos(latest.grams)) : t.noWeight}</span>
             </button>
-            <button type="button" className="item" onClick={() => setStep('medication')}>
-              <p>{t.newMedication}</p>
-              <span />
-            </button>
+            {simple.map(([key, label]) => (
+              <button key={key} type="button" className="item" onClick={() => setStep(key)}>
+                <p>{label}</p>
+                <span />
+              </button>
+            ))}
             {t.soon.map((item) => (
               <div key={item.label} className="item" aria-disabled="true">
                 <p>
@@ -68,13 +94,12 @@ export function RegisterDrawer({ petId }: { petId: string }) {
             ))}
           </div>
         )}
-        {step !== 'menu' && (
-          <>
-            {step === 'weight' && <WeightForm pet={pet} onSaved={close} />}
-            {step === 'medication' && <MedicationForm pet={pet} onSaved={close} />}
-            {step === 'vaccine' && <VaccineForm pet={pet} allPets={chefes.map((c) => c.pet)} onSaved={close} />}
-          </>
-        )}
+        {step === 'weight' && <WeightForm pet={pet} onSaved={close} />}
+        {step === 'vaccine' && <VaccineForm pet={pet} allPets={allPets} onSaved={close} />}
+        {step === 'medication' && <MedicationForm pet={pet} onSaved={close} />}
+        {step === 'care' && <CareForm pet={pet} allPets={allPets} onSaved={close} />}
+        {step === 'diary' && <DiaryForm pet={pet} onSaved={close} />}
+        {step === 'visit' && <VisitForm pet={pet} onSaved={close} />}
       </div>
     </Layer>
   );

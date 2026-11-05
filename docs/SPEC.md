@@ -28,7 +28,7 @@ Cada fase precisa ser usável sozinha. Cada regra em `spec/` diz de que fase val
 | 3 | Central de notificações com horário de silêncio, medicação diária com trava anti-duplicidade e estoque, Dossiê para o Conselho Médico (PDF) |
 | 4 | Ideias sem prioridade: ler a carteirinha física e exames por foto, Avaliação de Desempenho, Funcionário do Mês, aniversários, escore de condição corporal |
 
-As fases 2 a 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos ficam fora do app.
+As fases 3 e 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos ficam fora do app.
 
 ## Arquivos
 
@@ -43,6 +43,10 @@ As fases 2 a 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos
 | [spec/lembretes.md](spec/lembretes.md) | Push, prazos e escalonamento para o funcionário reserva |
 | [spec/mural.md](spec/mural.md) | O Mural da Chefia, a tela inicial |
 | [spec/navegacao.md](spec/navegacao.md) | Os dois níveis, a fileira de rostos, a aura de cada chefe e o Manual a um gesto |
+| [spec/cuidados.md](spec/cuidados.md) | Parasitas e higiene: registro, modelos, prazo e status (fase 2) |
+| [spec/saude.md](spec/saude.md) | Condições de saúde, consultas, exames e laudos (fase 2) |
+| [spec/rotina.md](spec/rotina.md) | Alimentação e o diário do chefe (fase 2) |
+| [spec/manual-temporario.md](spec/manual-temporario.md) | O link de uma página só para o pet sitter (fase 2) |
 | [spec/_modelo.md](spec/_modelo.md) | Modelo para um arquivo de feature novo |
 
 Os termos estão definidos em [GLOSSARIO.md](GLOSSARIO.md).

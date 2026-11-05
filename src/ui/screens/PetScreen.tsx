@@ -3,6 +3,7 @@ import type { MeView, PetUpdate, PetView } from '../../application/api-contract'
 import { nameSize, dueLabel } from '../../domain/navigation';
 import { daysBetween } from '../../domain/reminders/reminders';
 import { boosterDate, currentDoses, vaccineStatus } from '../../domain/vaccines/vaccine';
+import { careDueDate, careStatus, currentCare } from '../../domain/care/care';
 import {
   ageParts,
   birthDateFromAge,
@@ -24,10 +25,28 @@ import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
-import { BackBar, CameraIcon, CatIcon, CheckIcon, DogIcon, Faces, MeLink, PencilIcon, PillIcon, ScaleIcon, VaccineIcon } from '../parts';
+import {
+  BackBar,
+  BowlIcon,
+  CameraIcon,
+  CatIcon,
+  CheckIcon,
+  DogIcon,
+  Faces,
+  MeLink,
+  PencilIcon,
+  PillIcon,
+  ScaleIcon,
+  ShieldIcon,
+  StethoscopeIcon,
+  VaccineIcon,
+} from '../parts';
+import { CarePanel } from './Care';
+import { HealthPanel } from './Health';
+import { RoutinePanel } from './Routine';
 import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
-import { Link, useHash, usePath } from '../router';
+import { Link, navigate, useHash, usePath } from '../router';
 import { useQuery } from '../use-query';
 import { Medications } from './Medications';
 import { Vaccines } from './Vaccines';
@@ -105,6 +124,9 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
             [
               ['history', strings.chefe.sections.history, <VaccineIcon key="h" />],
               ['weight', strings.chefe.sections.weight, <ScaleIcon key="w" />],
+              ['care', strings.chefe.sections.care, <ShieldIcon key="c" />],
+              ['health', strings.chefe.sections.health, <StethoscopeIcon key="s" />],
+              ['routine', strings.chefe.sections.routine, <BowlIcon key="r" />],
               ['medication', strings.chefe.sections.medication, <PillIcon key="m" />],
               ['profile', strings.chefe.sections.profile, pet.species === 'cat' ? <CatIcon key="p" /> : <DogIcon key="p" />],
             ] as const
@@ -127,6 +149,9 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
           <div className="tab-panel" role="tabpanel">
             {tab === 'history' && <HistoryPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
             {tab === 'weight' && <WeightPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
+            {tab === 'care' && <CarePanel chefe={chefe} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
+            {tab === 'health' && <HealthPanel pet={pet} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
+            {tab === 'routine' && <RoutinePanel pet={pet} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
             {tab === 'medication' && <MedicationPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
             {tab === 'profile' && <ProfilePanel pet={pet} myId={me.id} />}
           </div>
@@ -139,9 +164,19 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
 
 /** Under the name: what the chefe demands (Exige) and what is next (A seguir). */
 function Summary({ chefe }: { chefe: Chefe }) {
-  const { pet, status, doses } = chefe;
+  const { pet, status, doses, care } = chefe;
   const today = todayLocal();
-  const current = currentDoses(doses).map((dose) => ({ dose, state: vaccineStatus(dose, today), due: boosterDate(dose) }));
+  // Vaccines and parasite care share "Exige" and "A seguir"; hygiene only shows in its tab.
+  const current = [
+    ...currentDoses(doses).map((dose) => ({ id: dose.id, label: dose.vaccine, hash: 'vacinas', state: vaccineStatus(dose, today), due: boosterDate(dose) })),
+    ...currentCare(care.filter((c) => c.category === 'parasite')).map((c) => ({
+      id: c.id,
+      label: c.item,
+      hash: 'cuidados',
+      state: careStatus(c, today),
+      due: careDueDate(c),
+    })),
+  ];
   const demanded = current.filter((c) => c.state !== 'ok').sort((a, b) => a.due.localeCompare(b.due));
   const next = current.filter((c) => c.state === 'ok').sort((a, b) => a.due.localeCompare(b.due)).slice(0, 2);
   const alert = weightAlert(pet.weights, pet.weightAlertPercent);
@@ -161,10 +196,10 @@ function Summary({ chefe }: { chefe: Chefe }) {
               <span className="when late">{strings.chefe.weightAlert}</span>
             </Link>
           )}
-          {demanded.map(({ dose, state, due }) => (
-            <Link key={dose.id} to={`/chefes/${pet.id}#vacinas`} className="item">
+          {demanded.map(({ id, label, hash, state, due }) => (
+            <Link key={id} to={`/chefes/${pet.id}#${hash}`} className="item">
               <span>
-                <p>{dose.vaccine}</p>
+                <p>{label}</p>
                 <span className="meta">{formatDate(due)}</span>
               </span>
               <span className={`when${state === 'overdue' ? ' late' : ''}`}>{dueLabel(state === 'overdue', Math.abs(daysBetween(today, due)))}</span>
@@ -181,10 +216,10 @@ function Summary({ chefe }: { chefe: Chefe }) {
       {next.length > 0 && (
         <div>
           <p className="lbl">{strings.chefe.next}</p>
-          {next.map(({ dose, due }) => (
-            <Link key={dose.id} to={`/chefes/${pet.id}#vacinas`} className="item">
+          {next.map(({ id, label, hash, due }) => (
+            <Link key={id} to={`/chefes/${pet.id}#${hash}`} className="item">
               <span>
-                <p>{dose.vaccine}</p>
+                <p>{label}</p>
                 <span className="meta">{strings.chefe.dueOn(formatDate(due))}</span>
               </span>
               <span className="when ok">{vaccinesT.status.ok}</span>
@@ -202,8 +237,19 @@ function birthText(birthDate: string, estimated: boolean): string {
   return estimated ? t.profile.ageEstimated(age) : `${formatDate(birthDate)} · ${t.profile.age(age)}`;
 }
 
-type Tab = 'history' | 'weight' | 'medication' | 'profile';
-const TAB_OF_HASH: Record<string, Tab | undefined> = { historico: 'history', vacinas: 'history', peso: 'weight', medicacoes: 'medication', perfil: 'profile', tutoria: 'profile' };
+type Tab = 'history' | 'weight' | 'care' | 'health' | 'routine' | 'medication' | 'profile';
+const TAB_OF_HASH: Record<string, Tab | undefined> = {
+  historico: 'history',
+  vacinas: 'history',
+  peso: 'weight',
+  cuidados: 'care',
+  saude: 'health',
+  rotina: 'routine',
+  diario: 'routine',
+  medicacoes: 'medication',
+  perfil: 'profile',
+  tutoria: 'profile',
+};
 
 /** A pencil beside the section title; while editing it turns into a check. */
 function EditToggle({ editing, onToggle }: { editing: boolean; onToggle: () => void }) {
@@ -259,6 +305,7 @@ function ProfilePanel({ pet, myId }: { pet: PetView; myId: string }) {
             <PhotoControls pet={pet} />
             <Tags pet={pet} />
             <ProfileForm pet={pet} onDone={() => setEditing(false)} />
+            <Retire pet={pet} />
           </>
         ) : (
           <ProfileSummary pet={pet} onEdit={() => setEditing(true)} />
@@ -607,6 +654,7 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
   return (
     <>
       <p>{pet.tutorName ? t.tutor(pet.tutorName) : t.tutorPending(pet.tutorEmail)}</p>
+      {pet.tutorUntil && <p className="notice">{t.tutoria.lent(formatDate(pet.tutorUntil), pet.tutorReturnName)}</p>}
       <p className="muted">{t.tutoria.reserve}</p>
       {others.length > 0 && (
         <form className="row wrap" onSubmit={change}>
@@ -629,7 +677,100 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
           {error}
         </p>
       )}
+      {others.length > 0 && <LendTutoria pet={pet} candidates={others} myId={myId} />}
     </>
+  );
+}
+
+/** Passes the tutoria for a period; it comes back on its own on the chosen day (docs/spec/chefes.md). */
+function LendTutoria({ pet, candidates, myId }: { pet: PetView; candidates: readonly { id: string; name: string }[]; myId: string }) {
+  const { backend } = useServices();
+  const [open, setOpen] = useState(false);
+  const [memberId, setMemberId] = useState(candidates[0]?.id ?? '');
+  const [until, setUntil] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const tomorrow = new Date(Date.now() + 86_400_000).toLocaleDateString('sv-SE');
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    const result = await backend.command('pet.lendTutoria', { petId: pet.id, memberId, until });
+    if (result.ok) {
+      setOpen(false);
+      setError(null);
+    } else setError(result.error === 'invalid' ? t.tutoria.lendInvalid : strings.genericError);
+  }
+
+  if (!open) {
+    return (
+      <div>
+        <button type="button" className="secondary" onClick={() => setOpen(true)}>
+          {t.tutoria.lend}
+        </button>
+      </div>
+    );
+  }
+  return (
+    <form className="stack" onSubmit={submit}>
+      <label>
+        {t.tutoria.lendTo}
+        <select value={memberId} onChange={(e) => setMemberId(e.target.value)}>
+          {candidates.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.name}
+              {m.id === myId ? ` ${strings.members.you}` : ''}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        {t.tutoria.lendUntil}
+        <input required type="date" min={tomorrow} value={until} onChange={(e) => setUntil(e.target.value)} />
+      </label>
+      {error && (
+        <p className="notice" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="row">
+        <button type="submit">{t.tutoria.lendConfirm}</button>
+        <button type="button" className="secondary" onClick={() => setOpen(false)}>
+          {t.profile.cancel}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+/** Aposentadoria: the chefe leaves the Mural; the history stays. */
+function Retire({ pet }: { pet: PetView }) {
+  const toast = useToast();
+  const confirm = useConfirm();
+  const { backend } = useServices();
+  const [error, setError] = useState<string | null>(null);
+
+  async function retire() {
+    if (!(await confirm(t.retire.confirm(pet.profile.name)))) return;
+    const result = await backend.command('pet.retire', { petId: pet.id });
+    if (result.ok) {
+      toast(t.retire.done(pet.profile.name));
+      navigate('/', { replace: true });
+    } else setError(strings.genericError);
+  }
+
+  return (
+    <div className="stack">
+      <p className="muted">{t.retire.explain}</p>
+      <div>
+        <button type="button" className="secondary danger" onClick={() => void retire()}>
+          {t.retire.button}
+        </button>
+      </div>
+      {error && (
+        <p className="notice" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
   );
 }
 

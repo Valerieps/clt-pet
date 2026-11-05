@@ -16,13 +16,24 @@ import { Pets } from './screens/Pets';
 import { RegisterDrawer } from './screens/Register';
 import { Settings } from './screens/Settings';
 import { SignIn } from './screens/SignIn';
+import { SitterLinks } from './screens/SitterLinks';
+import { SitterPage } from './screens/SitterPage';
 import { Manual } from './screens/Sos';
 import { ConfirmProvider } from './confirm';
 import { ToastProvider } from './toast';
 import { useQuery } from './use-query';
 
-/** The app's screens; the home is the Mural da Chefia (docs/spec/mural.md, docs/spec/navegacao.md). */
+const SITTER_PAGE = /^\/temporario\/([a-f0-9]{64})$/;
+
+/** The pet sitter's page opens without signing in (docs/spec/manual-temporario.md); everything else needs a member. */
 export function App() {
+  const path = usePath();
+  const sitter = SITTER_PAGE.exec(path);
+  return sitter ? <SitterPage token={sitter[1]!} /> : <MemberApp />;
+}
+
+/** The app's screens; the home is the Mural da Chefia (docs/spec/mural.md, docs/spec/navegacao.md). */
+function MemberApp() {
   const { backend, live } = useServices();
   const me = useQuery('me', {}, ['me']);
   const signedIn = me.data !== undefined && me.error !== 'unauthenticated';
@@ -155,6 +166,12 @@ function Screen({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
     return (
       <SubPage>
         <Pets />
+      </SubPage>
+    );
+  if (path === '/temporario')
+    return (
+      <SubPage>
+        <SitterLinks />
       </SubPage>
     );
   if (path === '/convites' && canManageGroup(me))

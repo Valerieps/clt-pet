@@ -120,6 +120,21 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
     });
   }
 
+  // The pet sitter's page (docs/spec/manual-temporario.md): read-only, no sign-in; the token is the credential.
+  const sitter = /^\/api\/temporario\/([a-f0-9]{64})(?:\/foto\/([\w-]+))?$/.exec(path);
+  if (sitter && request.method === 'GET') {
+    const [, token, petId] = sitter;
+    if (petId) {
+      const image = await group(env).sitterPhoto(token, petId);
+      if (!image) return json({ error: 'not_found' }, 404);
+      return new Response(Uint8Array.from(atob(image), (c) => c.charCodeAt(0)), {
+        headers: { ...SECURITY_HEADERS, 'Cache-Control': 'private, no-store', 'Content-Type': 'image/jpeg', 'X-Robots-Tag': 'noindex' },
+      });
+    }
+    const manual = await group(env).sitterManual(token);
+    return manual ? json({ value: manual }, 200, { 'X-Robots-Tag': 'noindex' }) : json({ error: 'not_found' }, 404);
+  }
+
   if (!sameOrigin(request, url)) return json({ error: 'forbidden' }, 403);
 
   if (path === '/api/live' && request.headers.get('Upgrade') === 'websocket') {

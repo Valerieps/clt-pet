@@ -37,6 +37,9 @@ e o peso.
   notificações (`lembretes.md`). *(1)*
 - O responsável pode passar a tutoria por um período (viagem, plantão), com data de volta
   automática. *(2)*
+- Na Tutoria do perfil, eu escolho para quem e até que dia (a partir de amanhã). No dia da volta,
+  logo cedo, a tutoria volta sozinha para quem a emprestou. Trocar o responsável de vez cancela o
+  empréstimo. *(2)*
 
 ## Alergias e restrições
 
@@ -73,4 +76,10 @@ e o peso.
 
 - Eu posso aposentar um chefe (falecimento ou doação). Ele sai do Mural e o histórico fica guardado.
   *(2)*
+- O botão Aposentar fica no editar perfil, com confirmação. O chefe aposentado sai do Mural, dos
+  lembretes, do Cartão de Saúde e dos links do pet sitter, e aparece em "Aposentados", na lista de
+  chefes das Configurações: "{nome} — chefe de {ano de chegada} a {ano}". *(2)*
+- O ano de chegada é o ano em que o chefe entrou no app. *(2)*
 - Outros pets podem ser incluídos depois pelo Exame Admissional. *(2)*
+- O Exame Admissional fica na lista de chefes das Configurações e pede só o nome e a espécie; quem
+  cadastra é o tutor responsável. O resto se completa no perfil. *(2)*

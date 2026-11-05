@@ -1,9 +1,19 @@
 // The chefes: profile, tutoria, allergies and weight (docs/spec/chefes.md).
 // Any member sees and edits any chefe; the actor only has to be signed in.
-import { PHOTO_MAX_BASE64, type PetView, type WeightEntryView } from '../../src/application/api-contract';
+import { PHOTO_MAX_BASE64, type PetView, type RetiredPetView, type WeightEntryView } from '../../src/application/api-contract';
 import { normalizeEmail } from '../../src/domain/group/email';
 import { normalizeEmergency } from '../../src/domain/pets/emergency';
-import { normalizeProfile, normalizeTags, type Allergy, type FoodKind, type Sex, type Species } from '../../src/domain/pets/pet';
+import {
+  isIsoDate,
+  isSpecies,
+  normalizePetName,
+  normalizeProfile,
+  normalizeTags,
+  type Allergy,
+  type FoodKind,
+  type Sex,
+  type Species,
+} from '../../src/domain/pets/pet';
 import { isValidAlertPercent, isValidGrams, isValidWeightDate } from '../../src/domain/pets/weight';
 import { failure, nowIso, type CommandResult, type Context } from './context';
 import { findMember, type Member } from './members';
@@ -34,10 +44,14 @@ interface PetRow {
   clinic_address: string | null;
   plan_name: string | null;
   plan_number: string | null;
+  tutor_until: string | null;
+  return_name: string | null;
+  created_at: string;
 }
 
-const PET_SELECT = `SELECT pets.*, members.name AS tutor_name FROM pets
-  LEFT JOIN members ON members.id = pets.tutor_member_id AND members.active = 1`;
+const PET_SELECT = `SELECT pets.*, members.name AS tutor_name, back.name AS return_name FROM pets
+  LEFT JOIN members ON members.id = pets.tutor_member_id AND members.active = 1
+  LEFT JOIN members AS back ON back.id = pets.tutor_return_member_id AND back.active = 1`;
 
 /** Today in Brasília (UTC-3), as YYYY-MM-DD: the date a weight or birthday is judged against. */
 export function todayInBrasilia(ctx: Context): string {
@@ -86,6 +100,9 @@ function toView(ctx: Context, row: PetRow): PetView {
     tutorMemberId: row.tutor_member_id,
     tutorEmail: row.tutor_email,
     tutorName: row.tutor_name,
+    tutorUntil: row.tutor_until,
+    tutorReturnName: row.tutor_until ? row.return_name : null,
+    arrivedOn: row.created_at.slice(0, 10),
     weights: weights.map((w): WeightEntryView => ({ id: w.id, grams: w.grams, onDate: w.on_date, byName: w.name })),
   };
 }
@@ -203,8 +220,92 @@ export function setTutor(ctx: Context, _actor: Member, input: Record<string, unk
   if (typeof input.memberId !== 'string') return failure('invalid');
   const member = findMember(ctx, input.memberId);
   if (!member || !member.active) return failure('not_found');
-  ctx.sql.run('UPDATE pets SET tutor_member_id = ?, tutor_email = ? WHERE id = ?', member.id, normalizeEmail(member.email), pet.id);
+  ctx.sql.run(
+    `UPDATE pets SET tutor_member_id = ?, tutor_email = ?, tutor_until = NULL, tutor_return_member_id = NULL, tutor_return_email = NULL
+     WHERE id = ?`,
+    member.id,
+    normalizeEmail(member.email),
+    pet.id,
+  );
   return reply(ctx, pet.id);
+}
+
+/**
+ * Lends the tutoria until a future day (a trip, a shift); the current tutor takes it back that day
+ * (`returnTutorias`, run by the cron). Lending again keeps the original tutor as the one who returns.
+ */
+export function lendTutoria(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<PetView> {
+  const pet = findPet(ctx, input.petId);
+  if (!pet) return failure('not_found');
+  const today = todayInBrasilia(ctx);
+  if (typeof input.memberId !== 'string' || typeof input.until !== 'string' || !isIsoDate(input.until) || input.until <= today) return failure('invalid');
+  const member = findMember(ctx, input.memberId);
+  if (!member || !member.active) return failure('not_found');
+  if (member.id === pet.tutor_member_id) return failure('invalid');
+  const [current] = ctx.sql.all<{ tutor_member_id: string | null; tutor_email: string; tutor_return_member_id: string | null; tutor_return_email: string | null }>(
+    'SELECT tutor_member_id, tutor_email, tutor_return_member_id, tutor_return_email FROM pets WHERE id = ?',
+    pet.id,
+  );
+  const returnId = current.tutor_return_email ? current.tutor_return_member_id : current.tutor_member_id;
+  const returnEmail = current.tutor_return_email ?? current.tutor_email;
+  ctx.sql.run(
+    `UPDATE pets SET tutor_member_id = ?, tutor_email = ?, tutor_until = ?, tutor_return_member_id = ?, tutor_return_email = ? WHERE id = ?`,
+    member.id,
+    normalizeEmail(member.email),
+    input.until,
+    returnId,
+    returnEmail,
+    pet.id,
+  );
+  return reply(ctx, pet.id);
+}
+
+/** Gives every lent tutoria back once its day comes. True when something changed. */
+export function returnTutorias(ctx: Context): boolean {
+  const due = ctx.sql.all<{ id: string }>('SELECT id FROM pets WHERE tutor_until IS NOT NULL AND tutor_until <= ?', todayInBrasilia(ctx));
+  for (const { id } of due) {
+    ctx.sql.run(
+      `UPDATE pets SET tutor_email = tutor_return_email,
+         tutor_member_id = (SELECT members.id FROM members WHERE members.email = pets.tutor_return_email AND members.active = 1),
+         tutor_until = NULL, tutor_return_member_id = NULL, tutor_return_email = NULL
+       WHERE id = ?`,
+      id,
+    );
+  }
+  return due.length > 0;
+}
+
+/** The Exame Admissional: only the name and the species; whoever registers is the tutor. */
+export function createPet(ctx: Context, actor: Member, input: Record<string, unknown>): CommandResult<PetView> {
+  const name = normalizePetName(input.name);
+  if (!name || !isSpecies(input.species)) return failure('invalid');
+  const id = `pet-${ctx.ids.next()}`;
+  ctx.sql.run(
+    'INSERT INTO pets (id, name, species, tutor_member_id, tutor_email, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    id,
+    name,
+    input.species,
+    actor.id,
+    normalizeEmail(actor.email),
+    nowIso(ctx),
+  );
+  return reply(ctx, id);
+}
+
+/** Retires a chefe: it leaves the Mural, the reminders and every list; its records stay in the database. */
+export function retirePet(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<null> {
+  const pet = findPet(ctx, input.petId);
+  if (!pet) return failure('not_found');
+  ctx.sql.run('UPDATE pets SET retired_at = ? WHERE id = ?', nowIso(ctx), pet.id);
+  return { ok: true, value: null, changed: ['pets'] };
+}
+
+export function listRetiredPets(ctx: Context): RetiredPetView[] {
+  return ctx.sql
+    .all<{ id: string; name: string; species: Species; created_at: string; retired_at: string }>(
+      'SELECT id, name, species, created_at, retired_at FROM pets WHERE retired_at IS NOT NULL ORDER BY retired_at DESC',
+    )
+    .map((r) => ({ id: r.id, name: r.name, species: r.species, arrivedOn: r.created_at.slice(0, 10), retiredOn: r.retired_at.slice(0, 10) }));
 }
 
 /** Registers a weight with its date; who weighed is the actor. */

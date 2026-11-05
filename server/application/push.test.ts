@@ -38,9 +38,9 @@ describe('push.subscribe', () => {
     expect(subscribe('h-val')).toMatchObject({ ok: true });
     expect(subscribe('h-ces')).toMatchObject({ ok: true });
     // Berenice's tutor is Valéria, who no longer owns the device; Paçoca's is Cesar, who does.
-    items = [{ petId: 'pet-berenice', item: 'Vacina V4', dueOn: '2026-11-04' }];
+    items = [{ petId: 'pet-berenice', item: 'Vacina V4', dueOn: '2026-11-04', tab: 'vacinas' }];
     expect(service.tick().pushes).toEqual([]);
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-04' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-04', tab: 'vacinas' }];
     expect(service.tick().pushes.map((p) => p.endpoint)).toEqual([ENDPOINT]);
   });
 
@@ -68,10 +68,10 @@ describe('push.subscribe', () => {
   it('only lets a member remove their own devices', () => {
     subscribe('h-val');
     service.command('h-ces', 'push.unsubscribe', { endpoint: ENDPOINT });
-    items = [{ petId: 'pet-berenice', item: 'Vacina V4', dueOn: '2026-11-04' }];
+    items = [{ petId: 'pet-berenice', item: 'Vacina V4', dueOn: '2026-11-04', tab: 'vacinas' }];
     expect(service.tick().pushes).toHaveLength(1);
     service.command('h-val', 'push.unsubscribe', { endpoint: ENDPOINT });
-    items = [{ petId: 'pet-panda', item: 'Vacina V4', dueOn: '2026-11-04' }];
+    items = [{ petId: 'pet-panda', item: 'Vacina V4', dueOn: '2026-11-04', tab: 'vacinas' }];
     expect(service.tick().pushes).toEqual([]);
   });
 
@@ -79,7 +79,7 @@ describe('push.subscribe', () => {
     subscribe('h-ces');
     const [cesar] = (service.query('h-val', 'members', {}) as { value: { id: string; name: string }[] }).value.filter((m) => m.name === 'Cesar');
     service.command('h-val', 'member.remove', { memberId: cesar.id });
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-04' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-04', tab: 'vacinas' }];
     expect(service.tick().pushes).toEqual([]);
   });
 });
@@ -93,7 +93,7 @@ describe('tick reminders', () => {
   });
 
   it('tells the responsável 7 days ahead, in the chefe’s voice with the item and the days', () => {
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11', tab: 'vacinas' }];
     const { pushes } = service.tick();
     expect(pushes).toHaveLength(1);
     expect(pushes[0].endpoint).toBe('https://updates.push.services.mozilla.com/cesar');
@@ -103,7 +103,7 @@ describe('tick reminders', () => {
   });
 
   it('sends each stage once', () => {
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11', tab: 'vacinas' }];
     expect(service.tick().pushes).toHaveLength(1);
     expect(service.tick().pushes).toEqual([]);
     clock.set('2026-11-05T12:00:00Z');
@@ -114,7 +114,7 @@ describe('tick reminders', () => {
   });
 
   it('waits for 9h in Brasília', () => {
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11', tab: 'vacinas' }];
     clock.set('2026-11-04T11:55:00Z');
     expect(service.tick().pushes).toEqual([]);
     clock.set('2026-11-04T12:00:00Z');
@@ -122,7 +122,7 @@ describe('tick reminders', () => {
   });
 
   it('after the date, nags the responsável and warns the reserva with the responsável’s name', () => {
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-03' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-03', tab: 'vacinas' }];
     const { pushes } = service.tick();
     expect(pushes.map((p) => p.endpoint).sort()).toEqual(['https://fcm.googleapis.com/fcm/send/valeria', 'https://updates.push.services.mozilla.com/cesar']);
     const reserve = pushes.find((p) => p.endpoint.includes('valeria'))!;
@@ -132,7 +132,7 @@ describe('tick reminders', () => {
   });
 
   it('uses the neutral wording in serious mode', () => {
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11', tab: 'vacinas' }];
     // serious_mode has no command yet (see the roadmap), so set the column directly.
     const sql = (service as unknown as { ctx: { sql: { run(q: string, ...b: string[]): void } } }).ctx.sql;
     sql.run("UPDATE pets SET serious_mode = 1 WHERE id = 'pet-pacoca'");
@@ -144,7 +144,7 @@ describe('tick reminders', () => {
     fresh.migrate();
     fresh.signIn(profile(VALERIA, 'Valéria'), 'h-val', [VALERIA]);
     fresh.command('h-val', 'invite.create', { email: CESAR });
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11', tab: 'vacinas' }];
     expect(fresh.tick().pushes).toEqual([]);
     fresh.signIn(profile(CESAR, 'Cesar'), 'h-ces', []);
     fresh.command('h-ces', 'push.subscribe', { endpoint: ENDPOINT, ...KEYS });
@@ -152,10 +152,10 @@ describe('tick reminders', () => {
   });
 
   it('drops devices the push service reports gone', () => {
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11', tab: 'vacinas' }];
     const [push] = service.tick().pushes;
     service.dropDevices([push.endpoint]);
-    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-04' }];
+    items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-04', tab: 'vacinas' }];
     expect(service.tick().pushes).toEqual([]);
   });
 });

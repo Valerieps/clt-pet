@@ -44,7 +44,7 @@ export function listVaccinations(ctx: Context): VaccinationView[] {
 export const vaccineReminders: ReminderSource = (ctx) => {
   const all = listVaccinations(ctx);
   return [...new Set(all.map((v) => v.petId))].flatMap((petId) =>
-    currentDoses(all.filter((v) => v.petId === petId)).map((v) => ({ petId, item: `Vacina ${v.vaccine}`, dueOn: boosterDate(v) })),
+    currentDoses(all.filter((v) => v.petId === petId)).map((v) => ({ petId, item: `Vacina ${v.vaccine}`, dueOn: boosterDate(v), tab: 'vacinas' })),
   );
 };
 

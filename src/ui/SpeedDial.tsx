@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { strings } from '../domain/strings';
-import { PillIcon, PlusIcon, ScaleIcon, VaccineIcon, useEscape } from './parts';
+import { BowlIcon, PillIcon, PlusIcon, ScaleIcon, ShieldIcon, StethoscopeIcon, VaccineIcon, useEscape } from './parts';
 import { Link, useHash, usePath } from './router';
 
 /** The floating + on every screen: opens a speed dial with what can be registered for the chefe. */
@@ -16,6 +16,9 @@ export function SpeedDial({ petId }: { petId: string }) {
   const actions = [
     { to: `/chefes/${petId}/registrar#vacina`, label: t.vaccine, icon: <VaccineIcon /> },
     { to: `/chefes/${petId}/registrar#peso`, label: t.weight, icon: <ScaleIcon /> },
+    { to: `/chefes/${petId}/registrar#cuidado`, label: t.care, icon: <ShieldIcon /> },
+    { to: `/chefes/${petId}/registrar#diario`, label: t.diary, icon: <BowlIcon /> },
+    { to: `/chefes/${petId}/registrar#consulta`, label: t.visit, icon: <StethoscopeIcon /> },
     { to: `/chefes/${petId}/registrar#medicacao`, label: t.medication, icon: <PillIcon /> },
   ];
   return (

@@ -37,6 +37,10 @@ export function Settings({ me, onSignOut }: { me: MeView; onSignOut: () => void 
             <p>{t.allChefes}</p>
             <span className="meta">{t.chefesHint}</span>
           </Link>
+          <Link to="/temporario" className="item">
+            <p>{t.sitter}</p>
+            <span className="meta">{t.sitterHint}</span>
+          </Link>
         </section>
         <section>
           <p className="lbl">{t.access}</p>

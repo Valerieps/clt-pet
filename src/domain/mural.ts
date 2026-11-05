@@ -1,5 +1,6 @@
 // The Mural da Chefia (docs/spec/mural.md): each chefe's overall status and the phrase of the day.
 // Pure: the caller passes today's date and the doses.
+import { careDueDate, careStatus, currentCare, type CareRecord } from './care/care';
 import { daysBetween } from './reminders/reminders';
 import { boosterDate, currentDoses, vaccineStatus, type Dose } from './vaccines/vaccine';
 import { fillPhrase, pickTemplate, toneFor } from './voice/voice';
@@ -17,18 +18,27 @@ export interface MuralStatus {
   readonly allergiesMissing: boolean;
   /** The weight alert (docs/spec/pets/weight): the percent the newest weight moved, or null. */
   readonly weightChange: { readonly percent: number } | null;
-  /** The most urgent vaccine: the one whose booster date is earliest. */
+  /** The most urgent vaccine or parasite care: the one whose due date is earliest. */
   readonly vaccine: { readonly item: string; readonly overdue: boolean; readonly days: number } | null;
 }
 
-export function muralStatus(pet: MuralPet, doses: readonly Dose[], today: string, weightAlertPercent: number | null = null): MuralStatus {
-  let worst: { item: string; overdue: boolean; due: string } | null = null;
-  for (const dose of currentDoses(doses)) {
-    const status = vaccineStatus(dose, today);
-    if (status === 'ok') continue;
-    const due = boosterDate(dose);
-    if (!worst || due < worst.due) worst = { item: `Vacina ${dose.vaccine}`, overdue: status === 'overdue', due };
-  }
+/**
+ * `parasites` are the parasite care records (docs/spec/cuidados.md): late or due soon, they demand
+ * attention like a vaccine. Hygiene stays on the chefe's page only.
+ */
+export function muralStatus(
+  pet: MuralPet,
+  doses: readonly Dose[],
+  today: string,
+  weightAlertPercent: number | null = null,
+  parasites: readonly CareRecord[] = [],
+): MuralStatus {
+  const pending = [
+    ...currentDoses(doses).map((dose) => ({ item: `Vacina ${dose.vaccine}`, status: vaccineStatus(dose, today), due: boosterDate(dose) })),
+    ...currentCare(parasites).map((record) => ({ item: record.item, status: careStatus(record, today), due: careDueDate(record) })),
+  ].filter((p) => p.status !== 'ok');
+  const first = pending.reduce<(typeof pending)[number] | null>((best, p) => (!best || p.due < best.due ? p : best), null);
+  const worst = first && { item: first.item, overdue: first.status === 'overdue', due: first.due };
   const allergiesMissing = !pet.allergiesAnswered;
   return {
     needsAttention: worst !== null || allergiesMissing || weightAlertPercent !== null,
@@ -64,6 +74,9 @@ export function dailyPhrase(pet: MuralPet, status: MuralStatus, today: string): 
     dias: status.vaccine?.days,
   });
 }
+
+/** "Lembrar amanhã": a card snoozed on `snoozedOn` stays a calm line for the rest of that day only. */
+export const isSnoozed = (snoozedOn: string | null, today: string): boolean => snoozedOn === today;
 
 /** "Meus chefes" first (the ones whose tutor is the member), then the rest, each in the original order. */
 export function splitByTutor<T extends { readonly tutorMemberId: string | null }>(pets: readonly T[], memberId: string): { mine: T[]; others: T[] } {

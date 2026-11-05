@@ -33,6 +33,9 @@ conferidas pelo `src/security.test.ts`, que roda em todo build.
 - A sessão é um cookie `HttpOnly`, `Secure`, `SameSite=Lax`; o banco guarda só o hash do token.
   Remover um membro corta o acesso na hora.
 - Toda chamada que muda dados, e a conexão ao vivo, precisa vir da própria origem do app (`Origin`).
+- A única leitura sem sessão é a página do pet sitter: o token aleatório do link é a credencial, o
+  link vence em até 90 dias e pode ser desativado, e a página só lê o mínimo para cuidar dos chefes
+  (ADR-010).
 - Segredos que chegam ao servidor (de webhooks, por exemplo) são comparados em tempo constante
   (`constantTimeEqual`).
 
@@ -42,4 +45,5 @@ conferidas pelo `src/security.test.ts`, que roda em todo build.
 - Links abrem com `target="_blank" rel="noopener noreferrer"`.
 - Dependências mínimas, com versões exatas, instaladas com `npm ci` e empacotadas no build; nada de CDN.
 - A CSP é injetada no build de produção (ADR-002) e os cabeçalhos ficam em `public/_headers`.
-- Nenhum dado pessoal vai para a URL: as entradas da API vão sempre no corpo JSON.
+- Nenhum dado pessoal vai para a URL: as entradas da API vão sempre no corpo JSON. A exceção é o
+  token do link do pet sitter, que é o próprio link (ADR-010).

@@ -437,8 +437,15 @@ a:hover {
 /* Icon tabs at the top of the white part: history, weight, profile. */
 .tabs {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
+}
+
+/* Free text typed by a member (notes, diary): keep its line breaks. */
+.pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .tab {

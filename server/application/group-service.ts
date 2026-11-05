@@ -1,7 +1,20 @@
 // The single entry to the group's data. The Durable Object calls it; every method is synchronous,
 // so a command runs alone and inside one transaction (ADR-004).
-import type { ApiResult, CommandName, Commands, QueryName, Queries, Topic } from '../../src/application/api-contract';
+import type { ApiResult, CommandName, Commands, QueryName, Queries, SitterManualView, Topic } from '../../src/application/api-contract';
 import { failure, QueryError, type CommandResult, type Context } from './context';
+import { addCare, careReminders, listCare, removeCare } from './care';
+import {
+  addCondition,
+  addVisit,
+  listConditions,
+  listVisits,
+  removeCondition,
+  removeVisit,
+  resolveCondition,
+  visitReminders,
+} from './health';
+import { addDiary, addMeal, listDiary, listMeals, removeDiary, removeMeal } from './routine';
+import { createSitterLink, listSitterLinks, revokeSitterLink, sitterManual, sitterPhoto } from './sitter';
 import { createInvite, listInvites, revokeInvite } from './invites';
 import {
   listMembers,
@@ -17,7 +30,23 @@ import {
   type SignInResult,
 } from './members';
 import type { Clock, IdGenerator, Sql } from './ports';
-import { addWeight, linkTutor, listPets, photoOf, removeWeight, setEmergency, setPhoto, setTags, setTutor, updatePet } from './pets';
+import {
+  addWeight,
+  createPet,
+  lendTutoria,
+  linkTutor,
+  listPets,
+  listRetiredPets,
+  photoOf,
+  removeWeight,
+  retirePet,
+  returnTutorias,
+  setEmergency,
+  setPhoto,
+  setTags,
+  setTutor,
+  updatePet,
+} from './pets';
 import { dropDevices, pushInfo, subscribe, unsubscribe } from './push';
 import { planReminders, type PushMessage, type ReminderSource } from './reminders';
 import { migrate } from './schema';
@@ -25,7 +54,7 @@ import { addMedication, listMedications, removeMedication } from './medications'
 import { addVaccination, listVaccinations, removeVaccination, vaccineReminders } from './vaccines';
 
 /** The features with due dates register here. */
-const REMINDER_SOURCES: readonly ReminderSource[] = [vaccineReminders];
+const REMINDER_SOURCES: readonly ReminderSource[] = [vaccineReminders, careReminders, visitReminders];
 
 type Input = Record<string, unknown>;
 
@@ -37,8 +66,15 @@ const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | n
   members: (ctx) => listMembers(ctx),
   invites: (ctx, actor) => listInvites(ctx, actor),
   pets: (ctx) => listPets(ctx),
+  retiredPets: (ctx) => listRetiredPets(ctx),
   push: (ctx) => pushInfo(ctx),
   vaccinations: (ctx) => listVaccinations(ctx),
+  care: (ctx) => listCare(ctx),
+  conditions: (ctx) => listConditions(ctx),
+  visits: (ctx) => listVisits(ctx),
+  diary: (ctx) => listDiary(ctx),
+  meals: (ctx) => listMeals(ctx),
+  sitterLinks: (ctx) => listSitterLinks(ctx),
   medications: (ctx) => listMedications(ctx),
 };
 
@@ -52,6 +88,9 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'pet.update': updatePet,
   'pet.setEmergency': setEmergency,
   'pet.setTutor': setTutor,
+  'pet.create': createPet,
+  'pet.retire': retirePet,
+  'pet.lendTutoria': lendTutoria,
   'pet.setPhoto': setPhoto,
   'pet.setTags': setTags,
   'push.subscribe': subscribe,
@@ -60,6 +99,19 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'weight.remove': removeWeight,
   'vaccine.add': addVaccination,
   'vaccine.remove': removeVaccination,
+  'care.add': addCare,
+  'care.remove': removeCare,
+  'condition.add': addCondition,
+  'condition.resolve': resolveCondition,
+  'condition.remove': removeCondition,
+  'visit.add': addVisit,
+  'visit.remove': removeVisit,
+  'diary.add': addDiary,
+  'diary.remove': removeDiary,
+  'meal.add': addMeal,
+  'meal.remove': removeMeal,
+  'sitter.create': createSitterLink,
+  'sitter.revoke': revokeSitterLink,
   'medication.add': addMedication,
   'medication.remove': removeMedication,
 };
@@ -111,6 +163,15 @@ export class GroupService {
     return this.memberForSession(sessionHash) ? photoOf(this.ctx, petId) : null;
   }
 
+  /** The pet sitter's page: no session, the token is the credential. Null for an unknown, revoked or expired link. */
+  sitterManual(token: string): SitterManualView | null {
+    return sitterManual(this.ctx, token);
+  }
+
+  sitterPhoto(token: string, petId: string): string | null {
+    return sitterPhoto(this.ctx, token, petId);
+  }
+
   command(sessionHash: string, name: string, input: unknown): CommandResult<unknown> {
     const actor = this.memberForSession(sessionHash);
     if (!actor) return failure('unauthenticated');
@@ -126,8 +187,9 @@ export class GroupService {
    */
   tick(): { changed: Topic[]; pushes: PushMessage[] } {
     this.ctx.sql.run('DELETE FROM sessions WHERE expires_at <= ?', this.ctx.clock.now().toISOString());
+    const returned = this.ctx.sql.transaction(() => returnTutorias(this.ctx));
     const pushes = this.ctx.sql.transaction(() => planReminders(this.ctx, this.sources));
-    return { changed: [], pushes };
+    return { changed: returned ? ['pets'] : [], pushes };
   }
 
   /** Forgets devices a push service reported as gone. */

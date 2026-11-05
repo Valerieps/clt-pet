@@ -158,6 +158,83 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     )`,
     `CREATE INDEX medications_pet ON medications(pet_id, start_on)`,
   ],
+  // 9: phase 2 — parasite and hygiene care, conditions, consultas/exames/laudos, the diary, the
+  // meals and the pet sitter's links (docs/spec/cuidados.md, saude.md, rotina.md, manual-temporario.md).
+  // The due date of a care record is computed from `done_on` + `interval_days`, never stored.
+  [
+    `CREATE TABLE care_records (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      category TEXT NOT NULL,
+      item TEXT NOT NULL,
+      done_on TEXT NOT NULL,
+      interval_days INTEGER NOT NULL,
+      note TEXT,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX care_records_pet ON care_records(pet_id, done_on)`,
+    `CREATE TABLE conditions (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      name TEXT NOT NULL,
+      grave INTEGER NOT NULL DEFAULT 0,
+      since TEXT,
+      notes TEXT,
+      resolved_on TEXT,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX conditions_pet ON conditions(pet_id)`,
+    `CREATE TABLE visits (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      kind TEXT NOT NULL,
+      on_date TEXT NOT NULL,
+      title TEXT NOT NULL,
+      vet TEXT,
+      notes TEXT,
+      return_on TEXT,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX visits_pet ON visits(pet_id, on_date)`,
+    `CREATE TABLE diary (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      on_date TEXT NOT NULL,
+      text TEXT NOT NULL,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX diary_pet ON diary(pet_id, on_date)`,
+    `CREATE TABLE meals (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      at TEXT NOT NULL,
+      amount TEXT,
+      note TEXT,
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX meals_pet ON meals(pet_id, at)`,
+    `CREATE TABLE sitter_links (
+      id TEXT PRIMARY KEY,
+      token TEXT NOT NULL UNIQUE,
+      label TEXT NOT NULL,
+      pet_ids TEXT NOT NULL,
+      note TEXT,
+      expires_on TEXT NOT NULL,
+      revoked_at TEXT,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+  ],
+  // 10: the tutoria lent for a period (docs/spec/chefes.md): who takes it back and on which day.
+  [
+    `ALTER TABLE pets ADD COLUMN tutor_until TEXT`,
+    `ALTER TABLE pets ADD COLUMN tutor_return_member_id TEXT REFERENCES members(id)`,
+    `ALTER TABLE pets ADD COLUMN tutor_return_email TEXT`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

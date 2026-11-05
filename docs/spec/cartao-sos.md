@@ -3,7 +3,7 @@
 O Cartão de Saúde: o que eu preciso saber de um chefe numa emergência.
 
 - **Entra aqui:** o conteúdo do Cartão SOS e como chego nele.
-- **Não entra aqui:** o cadastro dos dados em si (`chefes.md`) e as condições de saúde (fase 2).
+- **Não entra aqui:** o cadastro dos dados em si (`chefes.md`) e das condições de saúde (`saude.md`).
 
 ## Em aberto
 
@@ -20,7 +20,9 @@ O Cartão de Saúde: o que eu preciso saber de um chefe numa emergência.
 
 - O Cartão SOS mostra a foto do chefe, o peso atual, as alergias em vermelho, as condições ativas e
   os remédios em uso. *(1)*
-  Por quê: condições e remédios dependem da fase 2 e da 3; até lá o cartão mostra só o que já existe.
+  Por quê: os remédios dependem da fase 3; até lá o cartão mostra só o que já existe.
+- As condições ativas aparecem logo abaixo das alergias: as graves em vermelho, com o aviso, e as
+  outras em letra comum. *(2)*
 - Dois botões ligam direto para o veterinário principal e para a clínica 24 h. *(1)*
 - O cartão mostra o endereço da clínica 24 h, se houver, como link para o Google Maps com o trajeto
   da minha localização atual até a clínica. *(1)*
