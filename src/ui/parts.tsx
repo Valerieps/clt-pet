@@ -23,6 +23,10 @@ export const WarningIcon = () => <Icon path="M12 4 3 20h18zM12 10v4M12 17h.01" /
 export const PhoneIcon = () => <Icon path="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z" />;
 export const HeartbeatIcon = () => <Icon path="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10zM8 12h2l1-2 2 4 1-2h2" />;
 export const CloseIcon = () => <Icon path="M6 6l12 12M18 6 6 18" />;
+export const HistoryIcon = () => <Icon path="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2" />;
+export const ScaleIcon = () => <Icon path="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 9a4 4 0 0 1 8 0M12 9l2-2" />;
+export const CatIcon = () => <Icon path="M5 20V6l4 3h6l4-3v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zM9.5 13h.01M14.5 13h.01M11 16l1 1 1-1" />;
+export const DogIcon = () => <Icon path="M8 5 4 8l-1 7 3 2 1 3h8l1-3 3-2-1-7-4-3-2 1h-2zM9.5 12h.01M14.5 12h.01M11 16h2" />;
 
 /** The main navigation: the Mural, then one round face per chefe. A sun dot marks what needs attention. */
 export function Faces({ chefes, current, onDark = false }: { chefes: readonly Chefe[]; current: 'mural' | string; onDark?: boolean }) {

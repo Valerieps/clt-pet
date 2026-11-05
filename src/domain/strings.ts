@@ -37,7 +37,6 @@ export const strings = {
   register: {
     title: (name: string) => `Registrar para ${name}`,
     button: 'Registrar',
-    history: 'Tudo que já foi feito',
     vaccine: 'Vacina',
     weight: 'Peso',
     soon: [
@@ -54,10 +53,9 @@ export const strings = {
   chefe: {
     requires: 'Exige',
     next: 'A seguir',
-    allGood: 'Tudo em dia!',
     noPortrait: 'Ainda sem retrato',
     weightAlert: 'Advertência',
-    sections: { history: 'Histórico', profile: 'Perfil', tutoria: 'Tutoria' },
+    sections: { history: 'Histórico', weight: 'Peso', profile: 'Perfil', tutoria: 'Tutoria' },
     editHistory: 'Editar histórico',
     doneEditing: 'Concluir',
     dueOn: (date: string) => `vence em ${date}`,
