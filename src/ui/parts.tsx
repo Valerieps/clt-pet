@@ -74,6 +74,15 @@ export function ManualHandle({ to }: { to: string }) {
   );
 }
 
+/** The live region of the confirmations; always in the page so screen readers announce what appears in it. */
+export function Toast({ message }: { message: string | null }) {
+  return (
+    <div className="toast-region" role="status" aria-live="polite">
+      {message && <p className="toast">{message}</p>}
+    </div>
+  );
+}
+
 export function Layer({ children }: { children: ReactNode }) {
   return <div className="layer">{children}</div>;
 }

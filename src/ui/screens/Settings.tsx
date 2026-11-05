@@ -7,6 +7,7 @@ import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
 import { BackBar } from '../parts';
 import { Link } from '../router';
+import { useToast } from '../toast';
 import { PushToggle } from './PushToggle';
 
 const t = strings.settings;
@@ -66,6 +67,7 @@ export function Settings({ me, onSignOut }: { me: MeView; onSignOut: () => void 
 }
 
 function Account({ me }: { me: MeView }) {
+  const toast = useToast();
   const { backend } = useServices();
   const [name, setName] = useState(me.name);
   const [error, setError] = useState<string | null>(null);
@@ -73,6 +75,7 @@ function Account({ me }: { me: MeView }) {
   async function submit(event: FormEvent) {
     event.preventDefault();
     const result = await backend.command('member.rename', { name });
+    if (result.ok) toast(strings.toast.name);
     setError(result.ok ? null : strings.genericError);
   }
 

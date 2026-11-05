@@ -16,6 +16,7 @@ import { RegisterDrawer } from './screens/Register';
 import { Settings } from './screens/Settings';
 import { SignIn } from './screens/SignIn';
 import { Manual } from './screens/Sos';
+import { ToastProvider } from './toast';
 import { useQuery } from './use-query';
 
 /** The app's screens; the home is the Mural da Chefia (docs/spec/mural.md, docs/spec/navegacao.md). */
@@ -51,7 +52,11 @@ export function App() {
     me.reload();
   }
 
-  return <Shell me={me.data} onSignOut={() => void signOut()} />;
+  return (
+    <ToastProvider>
+      <Shell me={me.data} onSignOut={() => void signOut()} />
+    </ToastProvider>
+  );
 }
 
 const REGISTER_PATH = /^\/chefes\/([^/]+)\/registrar$/;

@@ -11,12 +11,14 @@ import {
   vaccineStatus,
 } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
+import { useToast } from '../toast';
 import { useQuery } from '../use-query';
 
 const t = strings.vaccines;
 const todayLocal = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD in the device's time zone
 
 export function Vaccines({ pet, allPets }: { pet: PetView; allPets: readonly PetView[] }) {
+  const toast = useToast();
   const { backend } = useServices();
   const all = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
   const doses = (all.data ?? []).filter((v) => v.petId === pet.id);
@@ -44,6 +46,7 @@ export function Vaccines({ pet, allPets }: { pet: PetView; allPets: readonly Pet
       vet: vet || null,
     });
     if (result.ok) {
+      toast(strings.toast.vaccine(pet.profile.name));
       setVaccine('');
       setLot('');
       setMaker('');
