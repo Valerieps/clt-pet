@@ -8,7 +8,11 @@ Como eu me movo pelo app: dois níveis, as abas da página do chefe e o + que re
 
 ## Em aberto
 
-Nada por enquanto.
+- [ ] A higiene atrasada deve exigir atenção também no Mural? Hoje ela exige só na página do chefe.
+- [ ] O retorno de uma consulta deve exigir atenção no Mural? Hoje ele exige só na página do chefe
+  e gera aviso no celular.
+- [ ] O aviso no celular do retorno deve parar quando eu registro a consulta de retorno, como no
+  "Exige"? Hoje ele segue a data do retorno.
 
 ## Regras
 
