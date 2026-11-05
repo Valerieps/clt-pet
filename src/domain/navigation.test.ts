@@ -1,5 +1,22 @@
 import { describe, expect, it } from 'vitest';
-import { auraClass, dateLabel, dueLabel, initialOf, nameSize, NAME_SIZE_MAX, NAME_SIZE_MIN, swipeTarget } from './navigation';
+import { auraClass, dateLabel, dueLabel, initialOf, nameSize, NAME_SIZE_MAX, NAME_SIZE_MIN, swipeTarget, tabOfHash } from './navigation';
+
+describe('tabOfHash', () => {
+  it('opens the new tabs by their own hash', () => {
+    expect(['prazos', 'saude', 'peso', 'perfil'].map(tabOfHash)).toEqual(['prazos', 'saude', 'peso', 'perfil']);
+  });
+  it('keeps the old hashes working, as push and the Mural send them', () => {
+    expect(['historico', 'vacinas', 'cuidados'].map(tabOfHash)).toEqual(['prazos', 'prazos', 'prazos']);
+    expect(['saude', 'diario', 'medicacoes'].map(tabOfHash)).toEqual(['saude', 'saude', 'saude']);
+    expect(['rotina', 'perfil', 'tutoria'].map(tabOfHash)).toEqual(['perfil', 'perfil', 'perfil']);
+    expect(tabOfHash('peso')).toBe('peso');
+  });
+  it('accepts the leading # and ignores unknown hashes', () => {
+    expect(tabOfHash('#vacinas')).toBe('prazos');
+    expect(tabOfHash('')).toBeNull();
+    expect(tabOfHash('abas')).toBeNull();
+  });
+});
 
 describe('auraClass', () => {
   it('cycles through the three auras', () => {

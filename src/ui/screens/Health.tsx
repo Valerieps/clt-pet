@@ -1,6 +1,7 @@
 // Conditions, consultas, exames and laudos (docs/spec/saude.md). Clinical screens: no voice, no jokes.
-import { useState, type FormEvent, type ReactNode } from 'react';
-import type { PetView } from '../../application/api-contract';
+import { useState, type FormEvent } from 'react';
+import type { PetView, VisitView } from '../../application/api-contract';
+import { openReturns } from '../../domain/deadlines';
 import { NOTES_MAX, VISIT_KINDS, type VisitKind } from '../../domain/health/health';
 import { formatDate, TEXT_MAX } from '../../domain/pets/pet';
 import { strings } from '../../domain/strings';
@@ -9,6 +10,8 @@ import { todayLocal } from '../chefia';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
+import { Treatments } from './Medications';
+import { Diary } from './Routine';
 
 const t = strings.health;
 
@@ -20,16 +23,22 @@ function ErrorLine({ error }: { error: string | null }) {
   ) : null;
 }
 
-export function HealthPanel({ pet, removable, action }: { pet: PetView; removable: boolean; action?: ReactNode }) {
+/**
+ * The Saúde tab (docs/spec/navegacao.md): conditions, treatments, consultas and exames, and "algo estranho
+ * hoje". Fichas (conditions, treatments) get a button at the end of their section; acontecimentos come by the +.
+ */
+export function HealthPanel({ pet, editing }: { pet: PetView; editing: boolean }) {
   return (
-    <div id="saude" className="stack">
-      <Conditions pet={pet} removable={removable} action={action} />
-      <Visits pet={pet} removable={removable} />
-    </div>
+    <>
+      <Conditions pet={pet} removable={editing} />
+      <Treatments pet={pet} removable={editing} />
+      <Visits pet={pet} removable={editing} />
+      <Diary pet={pet} removable={editing} />
+    </>
   );
 }
 
-function Conditions({ pet, removable, action }: { pet: PetView; removable: boolean; action?: ReactNode }) {
+function Conditions({ pet, removable }: { pet: PetView; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const all = useQuery('conditions', {}, ['conditions', 'pets']);
@@ -48,11 +57,8 @@ function Conditions({ pet, removable, action }: { pet: PetView; removable: boole
   }
 
   return (
-    <section className="stack">
-      <div className="spread">
-        <h2>{t.conditionsTitle}</h2>
-        {action}
-      </div>
+    <section id="condicoes" className="stack">
+      <h3>{strings.chefe.sections.conditions}</h3>
       {mine.length === 0 && <p className="muted">{t.conditionsEmpty}</p>}
       <ul className="list">
         {active.map((c) => (
@@ -157,13 +163,15 @@ function ConditionForm({ pet, onDone }: { pet: PetView; onDone: () => void }) {
   );
 }
 
+/** Upcoming consultas and open returns first; every consulta, exame and laudo folded below. */
 function Visits({ pet, removable }: { pet: PetView; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const all = useQuery('visits', {}, ['visits', 'pets']);
-  const mine = (all.data ?? []).filter((v) => v.petId === pet.id).reverse();
+  const mine = (all.data ?? []).filter((v) => v.petId === pet.id);
   const today = todayLocal();
-  const [adding, setAdding] = useState(false);
+  const pending = new Set(openReturns(mine).map((v) => v.id));
+  const current = mine.filter((v) => v.onDate > today || pending.has(v.id));
   const [error, setError] = useState<string | null>(null);
 
   async function remove(visitId: string) {
@@ -172,47 +180,45 @@ function Visits({ pet, removable }: { pet: PetView; removable: boolean }) {
     setError(result.ok ? null : strings.genericError);
   }
 
-  return (
-    <section className="stack">
-      <h2>{t.visitsTitle}</h2>
-      {mine.length === 0 && <p className="muted">{t.visitsEmpty}</p>}
-      <ul className="list">
-        {mine.map((v) => (
-          <li key={v.id} className="card">
-            <div className="row">
-              <span className="grow">
-                <strong>
-                  {t.kinds[v.kind]}: {v.title}
-                </strong>{' '}
-                · {formatDate(v.onDate)}
-                {v.onDate > today && <span data-status="soon"> · {t.scheduled}</span>}
-              </span>
-              {removable && (
-                <button type="button" className="secondary danger" onClick={() => void remove(v.id)}>
-                  {t.remove}
-                </button>
-              )}
-            </div>
-            <span className="muted">{[v.vet, v.returnOn && t.returnOn(formatDate(v.returnOn)), t.by(v.byName)].filter(Boolean).join(' · ')}</span>
-            {v.notes && <p className="pre">{v.notes}</p>}
-          </li>
-        ))}
-      </ul>
-      <ErrorLine error={error} />
-      {adding ? (
-        <VisitForm pet={pet} onSaved={() => setAdding(false)} onCancel={() => setAdding(false)} />
-      ) : (
-        <div>
-          <button type="button" className="secondary" onClick={() => setAdding(true)}>
-            {t.addVisit}
+  const card = (v: VisitView) => (
+    <li key={v.id} className="card">
+      <div className="row">
+        <span className="grow">
+          <strong>
+            {t.kinds[v.kind]}: {v.title}
+          </strong>{' '}
+          · {formatDate(v.onDate)}
+          {v.onDate > today && <span data-status="soon"> · {t.scheduled}</span>}
+        </span>
+        {removable && (
+          <button type="button" className="secondary danger" onClick={() => void remove(v.id)}>
+            {t.remove}
           </button>
-        </div>
+        )}
+      </div>
+      <span className="muted">{[v.vet, v.returnOn && t.returnOn(formatDate(v.returnOn)), t.by(v.byName)].filter(Boolean).join(' · ')}</span>
+      {v.notes && <p className="pre">{v.notes}</p>}
+    </li>
+  );
+
+  return (
+    <section id="consultas" className="stack">
+      <h3>{strings.chefe.sections.visits}</h3>
+      {mine.length === 0 && <p className="muted">{t.visitsEmpty}</p>}
+      <ul className="list">{current.map(card)}</ul>
+      <ErrorLine error={error} />
+      {mine.length > 0 && (
+        <details className="fold" open={removable || undefined}>
+          <summary>{strings.chefe.history}</summary>
+          <ul className="list">{[...mine].reverse().map(card)}</ul>
+        </details>
       )}
     </section>
   );
 }
 
-export function VisitForm({ pet, onSaved, onCancel }: { pet: PetView; onSaved: () => void; onCancel?: () => void }) {
+/** Opened by the + only ("Consulta ou exame"). */
+export function VisitForm({ pet, onSaved }: { pet: PetView; onSaved: () => void }) {
   const toast = useToast();
   const { backend } = useServices();
   const [kind, setKind] = useState<VisitKind>('consulta');
@@ -265,13 +271,8 @@ export function VisitForm({ pet, onSaved, onCancel }: { pet: PetView; onSaved: (
         <input type="date" min={onDate} value={returnOn} onChange={(e) => setReturnOn(e.target.value)} />
       </label>
       <ErrorLine error={error} />
-      <div className="row">
+      <div className="form-actions">
         <button type="submit">{t.visitForm.save}</button>
-        {onCancel && (
-          <button type="button" className="secondary" onClick={onCancel}>
-            {t.cancel}
-          </button>
-        )}
       </div>
     </form>
   );

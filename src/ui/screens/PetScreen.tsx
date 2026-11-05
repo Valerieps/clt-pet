@@ -1,9 +1,8 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import type { MeView, PetUpdate, PetView } from '../../application/api-contract';
-import { nameSize, dueLabel } from '../../domain/navigation';
+import { pageDeadlines, type Deadline } from '../../domain/deadlines';
+import { nameSize, dueLabel, PET_TABS, tabOfHash, type PetTab } from '../../domain/navigation';
 import { daysBetween } from '../../domain/reminders/reminders';
-import { boosterDate, currentDoses, vaccineStatus } from '../../domain/vaccines/vaccine';
-import { careDueDate, careStatus, currentCare } from '../../domain/care/care';
 import {
   ageParts,
   birthDateFromAge,
@@ -25,36 +24,19 @@ import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
-import {
-  BackBar,
-  BowlIcon,
-  CameraIcon,
-  CatIcon,
-  CheckIcon,
-  DogIcon,
-  Faces,
-  MeLink,
-  PencilIcon,
-  PillIcon,
-  ScaleIcon,
-  ShieldIcon,
-  StethoscopeIcon,
-  VaccineIcon,
-} from '../parts';
-import { CarePanel } from './Care';
+import { BackBar, CalendarIcon, CameraIcon, CatIcon, CheckIcon, DogIcon, Faces, MeLink, PencilIcon, ScaleIcon, StethoscopeIcon } from '../parts';
 import { HealthPanel } from './Health';
-import { RoutinePanel } from './Routine';
+import { PrazosPanel } from './Prazos';
+import { Food } from './Routine';
 import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
 import { Link, navigate, useHash, usePath } from '../router';
 import { useQuery } from '../use-query';
-import { Medications } from './Medications';
-import { Vaccines } from './Vaccines';
 import { WeightChart } from './WeightChart';
 
 const t = strings.pets;
 const mural = strings.mural;
-const vaccinesT = strings.vaccines;
+const tabsT = strings.chefe.tabs;
 
 /** A chefe's page (docs/spec/navegacao.md): the portrait in an arch under the aura, then what the chefe demands. */
 export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
@@ -77,21 +59,33 @@ export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
   return <PetPage chefe={chefe} chefes={chefes} me={me} />;
 }
 
+const NOT_EDITING: Record<PetTab, boolean> = { prazos: false, saude: false, peso: false, perfil: false };
+
 function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]; me: MeView }) {
   const { pet, aura } = chefe;
   const name = pet.profile.name;
   const path = usePath();
   const hash = useHash();
-  const [tab, setTab] = useState<Tab | null>(null);
-  const [editingHistory, setEditingHistory] = useState(false);
+  const [tab, setTab] = useState<PetTab | null>(null);
+  // Each tab has its own pencil: editing one never turns on another.
+  const [editing, setEditing] = useState(NOT_EDITING);
+  const setTabEditing = (key: PetTab, value: boolean) => setEditing((all) => ({ ...all, [key]: value }));
 
-  // Arriving at /chefes/<id>#vacinas (from the Registrar drawer or an item) opens the tab that holds it.
+  // Arriving at /chefes/<id>#vacinas (from a push, the Mural or an item) opens the tab that holds it.
   useEffect(() => {
-    const target = TAB_OF_HASH[window.location.hash.slice(1)];
+    const key = window.location.hash.slice(1);
+    const target = tabOfHash(key);
     if (!target) return;
     setTab(target);
-    requestAnimationFrame(() => document.getElementById('abas')?.scrollIntoView());
+    requestAnimationFrame(() => (document.getElementById(key) ?? document.getElementById('abas'))?.scrollIntoView());
   }, [path, hash]);
+
+  const icons: Record<PetTab, ReactNode> = {
+    prazos: <CalendarIcon />,
+    saude: <StethoscopeIcon />,
+    peso: <ScaleIcon />,
+    perfil: pet.species === 'cat' ? <CatIcon /> : <DogIcon />,
+  };
 
   return (
     <>
@@ -120,40 +114,30 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
       </section>
       <main className="ground-sheet">
         <div id="abas" className="tabs" role="tablist">
-          {(
-            [
-              ['history', strings.chefe.sections.history, <VaccineIcon key="h" />],
-              ['weight', strings.chefe.sections.weight, <ScaleIcon key="w" />],
-              ['care', strings.chefe.sections.care, <ShieldIcon key="c" />],
-              ['health', strings.chefe.sections.health, <StethoscopeIcon key="s" />],
-              ['routine', strings.chefe.sections.routine, <BowlIcon key="r" />],
-              ['medication', strings.chefe.sections.medication, <PillIcon key="m" />],
-              ['profile', strings.chefe.sections.profile, pet.species === 'cat' ? <CatIcon key="p" /> : <DogIcon key="p" />],
-            ] as const
-          ).map(([key, label, icon]) => (
+          {PET_TABS.map((key) => (
             <button
               key={key}
               type="button"
               role="tab"
               className={`tab${tab === key ? ' on' : ''}`}
               aria-selected={tab === key}
-              aria-label={label}
-              title={label}
               onClick={() => setTab(tab === key ? null : key)}
             >
-              {icon}
+              <span className="tab-icon">{icons[key]}</span>
+              {tabsT[key]}
             </button>
           ))}
         </div>
         {tab && (
-          <div className="tab-panel" role="tabpanel">
-            {tab === 'history' && <HistoryPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
-            {tab === 'weight' && <WeightPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
-            {tab === 'care' && <CarePanel chefe={chefe} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
-            {tab === 'health' && <HealthPanel pet={pet} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
-            {tab === 'routine' && <RoutinePanel pet={pet} removable={editingHistory} action={<EditToggle editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />} />}
-            {tab === 'medication' && <MedicationPanel pet={pet} editing={editingHistory} onToggle={() => setEditingHistory((v) => !v)} />}
-            {tab === 'profile' && <ProfilePanel pet={pet} myId={me.id} />}
+          <div id={tab} className="tab-panel" role="tabpanel" aria-label={tabsT[tab]}>
+            <div className="spread">
+              <h2>{tabsT[tab]}</h2>
+              <EditToggle label={tabsT[tab]} editing={editing[tab]} onToggle={() => setTabEditing(tab, !editing[tab])} />
+            </div>
+            {tab === 'prazos' && <PrazosPanel chefe={chefe} editing={editing.prazos} />}
+            {tab === 'saude' && <HealthPanel pet={pet} editing={editing.saude} />}
+            {tab === 'peso' && <Weight pet={pet} removable={editing.peso} />}
+            {tab === 'perfil' && <ProfilePanel pet={pet} myId={me.id} editing={editing.perfil} onDone={() => setTabEditing('perfil', false)} />}
           </div>
         )}
         <Summary chefe={chefe} />
@@ -162,25 +146,39 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
   );
 }
 
-/** Under the name: what the chefe demands (Exige) and what is next (A seguir). */
+/** The section a deadline lives in, as a hash of the chefe's page. */
+const HASH_OF_DEADLINE: Record<Deadline['kind'], string> = {
+  vaccine: 'vacinas',
+  parasite: 'antiparasitarios',
+  hygiene: 'higiene',
+  return: 'consultas',
+  treatmentEnd: 'tratamentos',
+};
+
+function deadlineLabel(d: Deadline): string {
+  if (d.kind === 'return') return strings.chefe.deadline.return(d.name);
+  if (d.kind === 'treatmentEnd') return strings.chefe.deadline.treatmentEnd(d.name);
+  return d.name;
+}
+
+/** Under the name: what the chefe demands (Exige) and what is next (A seguir), from every deadline (docs/spec/navegacao.md). */
 function Summary({ chefe }: { chefe: Chefe }) {
   const { pet, status, doses, care } = chefe;
   const today = todayLocal();
-  // Vaccines and parasite care share "Exige" and "A seguir"; hygiene only shows in its tab.
-  const current = [
-    ...currentDoses(doses).map((dose) => ({ id: dose.id, label: dose.vaccine, hash: 'vacinas', state: vaccineStatus(dose, today), due: boosterDate(dose) })),
-    ...currentCare(care.filter((c) => c.category === 'parasite')).map((c) => ({
-      id: c.id,
-      label: c.item,
-      hash: 'cuidados',
-      state: careStatus(c, today),
-      due: careDueDate(c),
-    })),
-  ];
-  const demanded = current.filter((c) => c.state !== 'ok').sort((a, b) => a.due.localeCompare(b.due));
-  const next = current.filter((c) => c.state === 'ok').sort((a, b) => a.due.localeCompare(b.due)).slice(0, 2);
+  const visits = useQuery('visits', {}, ['visits', 'pets']);
+  const medications = useQuery('medications', {}, ['medications', 'pets']);
+  const { demanded, next } = pageDeadlines(
+    {
+      doses,
+      care,
+      visits: (visits.data ?? []).filter((v) => v.petId === pet.id),
+      treatments: (medications.data ?? []).filter((m) => m.petId === pet.id),
+    },
+    today,
+  );
   const alert = weightAlert(pet.weights, pet.weightAlertPercent);
   const nothingDemanded = demanded.length === 0 && !alert && !status.allergiesMissing;
+  const days = (d: Deadline) => Math.abs(daysBetween(today, d.due));
 
   return (
     <>
@@ -196,13 +194,13 @@ function Summary({ chefe }: { chefe: Chefe }) {
               <span className="when late">{strings.chefe.weightAlert}</span>
             </Link>
           )}
-          {demanded.map(({ id, label, hash, state, due }) => (
-            <Link key={id} to={`/chefes/${pet.id}#${hash}`} className="item">
+          {demanded.map((d) => (
+            <Link key={`${d.kind}:${d.id}`} to={`/chefes/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
               <span>
-                <p>{label}</p>
-                <span className="meta">{formatDate(due)}</span>
+                <p>{deadlineLabel(d)}</p>
+                <span className="meta">{formatDate(d.due)}</span>
               </span>
-              <span className={`when${state === 'overdue' ? ' late' : ''}`}>{dueLabel(state === 'overdue', Math.abs(daysBetween(today, due)))}</span>
+              <span className={`when${d.state === 'overdue' ? ' late' : ''}`}>{dueLabel(d.state === 'overdue', days(d))}</span>
             </Link>
           ))}
           {status.allergiesMissing && (
@@ -216,13 +214,13 @@ function Summary({ chefe }: { chefe: Chefe }) {
       {next.length > 0 && (
         <div>
           <p className="lbl">{strings.chefe.next}</p>
-          {next.map(({ id, label, hash, due }) => (
-            <Link key={id} to={`/chefes/${pet.id}#${hash}`} className="item">
+          {next.map((d) => (
+            <Link key={`${d.kind}:${d.id}`} to={`/chefes/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
               <span>
-                <p>{label}</p>
-                <span className="meta">{strings.chefe.dueOn(formatDate(due))}</span>
+                <p>{deadlineLabel(d)}</p>
+                <span className="meta">{d.kind === 'treatmentEnd' ? strings.chefe.endsOn(formatDate(d.due)) : strings.chefe.dueOn(formatDate(d.due))}</span>
               </span>
-              <span className="when ok">{vaccinesT.status.ok}</span>
+              <span className="when ok">{d.kind === 'return' || d.kind === 'treatmentEnd' ? dueLabel(false, days(d)) : strings.care.status.ok}</span>
             </Link>
           ))}
         </div>
@@ -237,64 +235,23 @@ function birthText(birthDate: string, estimated: boolean): string {
   return estimated ? t.profile.ageEstimated(age) : `${formatDate(birthDate)} · ${t.profile.age(age)}`;
 }
 
-type Tab = 'history' | 'weight' | 'care' | 'health' | 'routine' | 'medication' | 'profile';
-const TAB_OF_HASH: Record<string, Tab | undefined> = {
-  historico: 'history',
-  vacinas: 'history',
-  peso: 'weight',
-  cuidados: 'care',
-  saude: 'health',
-  rotina: 'routine',
-  diario: 'routine',
-  medicacoes: 'medication',
-  perfil: 'profile',
-  tutoria: 'profile',
-};
-
-/** A pencil beside the section title; while editing it turns into a check. */
-function EditToggle({ editing, onToggle }: { editing: boolean; onToggle: () => void }) {
-  const label = editing ? strings.chefe.doneEditing : strings.chefe.editHistory;
+/** The pencil beside a tab's title: it turns on editing for the whole tab; while editing it turns into a check. */
+function EditToggle({ label, editing, onToggle }: { label: string; editing: boolean; onToggle: () => void }) {
+  const text = editing ? strings.chefe.doneEditing : strings.chefe.editTab(label);
   return (
-    <button type="button" className="icon-btn" aria-label={label} title={label} aria-pressed={editing} onClick={onToggle}>
+    <button type="button" className="icon-btn" aria-label={text} title={text} aria-pressed={editing} onClick={onToggle}>
       {editing ? <CheckIcon /> : <PencilIcon />}
     </button>
   );
 }
 
-/** The vaccines (and what else gets logged over time); remove buttons show only while editing. */
-function HistoryPanel({ pet, editing, onToggle }: { pet: PetView; editing: boolean; onToggle: () => void }) {
-  return (
-    <div id="vacinas">
-      <Vaccines pet={pet} removable={editing} action={<EditToggle editing={editing} onToggle={onToggle} />} />
-    </div>
-  );
-}
-
-function MedicationPanel({ pet, editing, onToggle }: { pet: PetView; editing: boolean; onToggle: () => void }) {
-  return (
-    <div id="medicacoes">
-      <Medications pet={pet} removable={editing} action={<EditToggle editing={editing} onToggle={onToggle} />} />
-    </div>
-  );
-}
-
-function WeightPanel({ pet, editing, onToggle }: { pet: PetView; editing: boolean; onToggle: () => void }) {
-  return (
-    <div id="peso">
-      <Weight pet={pet} removable={editing} action={<EditToggle editing={editing} onToggle={onToggle} />} />
-    </div>
-  );
-}
-
-/** The profile and the tutoria, together. */
-function ProfilePanel({ pet, myId }: { pet: PetView; myId: string }) {
-  const [editing, setEditing] = useState(false);
+/** Data, allergies, Alimentação and Tutoria. The tab's pencil opens the profile form, the photo, the tags and the retirement. */
+function ProfilePanel({ pet, myId, editing, onDone }: { pet: PetView; myId: string; editing: boolean; onDone: () => void }) {
   const missing = missingFields(pet.profile, pet.allergiesAnswered);
-  const s = strings.chefe.sections;
 
   return (
     <>
-      <div id="perfil" className="stack">
+      <div className="stack">
         {missing.length > 0 && (
           <p className="notice">
             {t.missingTitle} {missing.map((m) => t.missing[m]).join(', ')}.
@@ -304,17 +261,18 @@ function ProfilePanel({ pet, myId }: { pet: PetView; myId: string }) {
           <>
             <PhotoControls pet={pet} />
             <Tags pet={pet} />
-            <ProfileForm pet={pet} onDone={() => setEditing(false)} />
+            <ProfileForm pet={pet} onDone={onDone} />
             <Retire pet={pet} />
           </>
         ) : (
-          <ProfileSummary pet={pet} onEdit={() => setEditing(true)} />
+          <ProfileSummary pet={pet} />
         )}
       </div>
-      <div id="tutoria" className="stack">
-        <h2>{s.tutoria}</h2>
+      <Food pet={pet} removable={editing} />
+      <section id="tutoria" className="stack">
+        <h3>{strings.chefe.sections.tutoria}</h3>
         <Tutoria pet={pet} myId={myId} />
-      </div>
+      </section>
     </>
   );
 }
@@ -436,18 +394,20 @@ function Tags({ pet }: { pet: PetView }) {
   );
 }
 
-function ProfileSummary({ pet, onEdit }: { pet: PetView; onEdit: () => void }) {
+function ProfileSummary({ pet }: { pet: PetView }) {
   const { profile } = pet;
+  const allergies = !pet.allergiesAnswered
+    ? null
+    : profile.allergies.length === 0
+      ? t.noAllergies
+      : profile.allergies.map((a) => strings.sos.allergy(t.allergyKind[a.kind], a.description)).join('; ');
   const rows: [string, string | null][] = [
     [t.profile.breed, profile.breed],
     [t.profile.birthDate, profile.birthDate ? birthText(profile.birthDate, profile.birthEstimated) : null],
     [t.profile.sex, profile.sex ? t.profile.sexOptions[profile.sex] : null],
     [t.profile.neutered, profile.neutered === null ? null : profile.neutered ? t.profile.neuteredOptions.yes : t.profile.neuteredOptions.no],
     [t.profile.microchip, profile.microchip],
-    [
-      t.profile.foodKind,
-      profile.foodKind ? [t.profile.foodKindOptions[profile.foodKind], profile.foodBrand, profile.foodDaily].filter(Boolean).join(' · ') : null,
-    ],
+    [strings.chefe.sections.allergies, allergies],
   ];
   return (
     <>
@@ -460,9 +420,6 @@ function ProfileSummary({ pet, onEdit }: { pet: PetView; onEdit: () => void }) {
           </div>
         ))}
       </dl>
-      <button type="button" className="secondary" onClick={onEdit}>
-        {t.profile.edit}
-      </button>
     </>
   );
 }
@@ -774,7 +731,8 @@ function Retire({ pet }: { pet: PetView }) {
   );
 }
 
-function Weight({ pet, removable, action }: { pet: PetView; removable: boolean; action?: ReactNode }) {
+/** The Peso tab: the current weight, the alert and the chart; every weighing folded below. */
+function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const [error, setError] = useState<string | null>(null);
@@ -789,10 +747,6 @@ function Weight({ pet, removable, action }: { pet: PetView; removable: boolean; 
 
   return (
     <>
-      <div className="spread">
-        <h2>{t.weight.title}</h2>
-        {action}
-      </div>
       <p>{latest ? t.currentWeight(formatKilos(latest.grams)) : t.noWeight}</p>
       {alert && (
         <p className="notice" role="status">
@@ -805,20 +759,25 @@ function Weight({ pet, removable, action }: { pet: PetView; removable: boolean; 
           {error}
         </p>
       )}
-      <ul className="list">
-        {[...pet.weights].reverse().map((w) => (
-          <li key={w.id} className="card row">
-            <span className="grow">
-              {formatKilos(w.grams)} · {formatDate(w.onDate)} <span className="muted">{t.weight.by(w.byName)}</span>
-            </span>
-            {removable && (
-              <button type="button" className="secondary danger" onClick={() => void remove(w.id)}>
-                {t.weight.remove}
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
+      {pet.weights.length > 0 && (
+        <details className="fold" open={removable || undefined}>
+          <summary>{strings.chefe.history}</summary>
+          <ul className="list">
+            {[...pet.weights].reverse().map((w) => (
+              <li key={w.id} className="card row">
+                <span className="grow">
+                  {formatKilos(w.grams)} · {formatDate(w.onDate)} <span className="muted">{t.weight.by(w.byName)}</span>
+                </span>
+                {removable && (
+                  <button type="button" className="secondary danger" onClick={() => void remove(w.id)}>
+                    {t.weight.remove}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
       <p className="muted">{t.weight.limit(pet.weightAlertPercent, ALERT_WINDOW_DAYS)}</p>
     </>
   );

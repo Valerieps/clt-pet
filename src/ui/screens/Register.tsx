@@ -4,30 +4,22 @@ import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useChefia } from '../chefia';
 import { ChevronLeftIcon, CloseIcon, Layer, useEscape } from '../parts';
+import { REGISTER_OPTIONS, stepOfHash, type RegisterStep } from '../register-options';
 import { goBack } from '../router';
 import { CareForm } from './Care';
 import { VisitForm } from './Health';
-import { MedicationForm, VaccineForm, WeightForm } from './RegisterForms';
+import { VaccineForm, WeightForm } from './RegisterForms';
 import { DiaryForm } from './Routine';
 
 const t = strings.register;
 
-type Step = 'menu' | 'weight' | 'vaccine' | 'medication' | 'care' | 'diary' | 'visit';
-
-/** The hash the speed dial opens the drawer with, per form. */
-const STEP_OF_HASH: Record<string, Step | undefined> = {
-  vacina: 'vaccine',
-  peso: 'weight',
-  medicacao: 'medication',
-  cuidado: 'care',
-  diario: 'diary',
-  consulta: 'visit',
-};
-
-/** What can be registered for a chefe (docs/spec/navegacao.md). Every form opens right here. */
+/**
+ * The Registrar drawer (docs/spec/navegacao.md): the + opens it straight on a form. The menu is only
+ * the fallback for a link without a form, and lists the same options as the +.
+ */
 export function RegisterDrawer({ petId }: { petId: string }) {
   const { chefes } = useChefia();
-  const [step, setStep] = useState<Step>(() => STEP_OF_HASH[window.location.hash.slice(1)] ?? 'menu');
+  const [step, setStep] = useState<RegisterStep | null>(() => stepOfHash(window.location.hash));
   const chefe = chefes.find((c) => c.pet.id === petId);
   const close = () => goBack(`/chefes/${petId}`);
   useEscape(close);
@@ -36,51 +28,33 @@ export function RegisterDrawer({ petId }: { petId: string }) {
   const { pet, status } = chefe;
   const latest = latestWeight(pet.weights);
   const allPets = chefes.map((c) => c.pet);
-  const titles: Record<Step, string> = {
-    menu: t.title(pet.profile.name),
-    weight: t.weight,
-    vaccine: t.vaccine,
-    medication: t.newMedication,
-    care: t.care,
-    diary: t.diary,
-    visit: t.visit,
+  const option = REGISTER_OPTIONS.find((o) => o.step === step);
+  const meta: Partial<Record<RegisterStep, string>> = {
+    vaccine: status.vaccine ? `${status.vaccine.item} · ${dueLabel(status.vaccine.overdue, status.vaccine.days)}` : '',
+    weight: latest ? t.lastWeight(formatKilos(latest.grams)) : t.noWeight,
   };
-  const simple: [Step, string][] = [
-    ['medication', t.newMedication],
-    ['care', t.care],
-    ['diary', t.diary],
-    ['visit', t.visit],
-  ];
   return (
     <Layer>
       <button type="button" className="scrim" aria-label={strings.nav.close} onClick={close} />
       <div className="drawer floating" role="dialog" aria-modal="true" aria-label={t.button}>
         <span className="grip" />
         <div className="drawer-head">
-          {step !== 'menu' && (
-            <button type="button" className="close" aria-label={strings.nav.back} onClick={() => setStep('menu')}>
+          {step && (
+            <button type="button" className="close" aria-label={strings.nav.back} onClick={() => setStep(null)}>
               <ChevronLeftIcon />
             </button>
           )}
-          <h2>{titles[step]}</h2>
+          <h2>{option ? option.label : t.title(pet.profile.name)}</h2>
           <button type="button" className="close" aria-label={strings.nav.close} onClick={close}>
             <CloseIcon />
           </button>
         </div>
-        {step === 'menu' && (
+        {!step && (
           <div>
-            <button type="button" className="item" onClick={() => setStep('vaccine')}>
-              <p>{t.vaccine}</p>
-              <span className="meta">{status.vaccine ? `${status.vaccine.item} · ${dueLabel(status.vaccine.overdue, status.vaccine.days)}` : ''}</span>
-            </button>
-            <button type="button" className="item" onClick={() => setStep('weight')}>
-              <p>{t.weight}</p>
-              <span className="meta">{latest ? t.lastWeight(formatKilos(latest.grams)) : t.noWeight}</span>
-            </button>
-            {simple.map(([key, label]) => (
-              <button key={key} type="button" className="item" onClick={() => setStep(key)}>
-                <p>{label}</p>
-                <span />
+            {REGISTER_OPTIONS.map((o) => (
+              <button key={o.step} type="button" className="item" onClick={() => setStep(o.step)}>
+                <p>{o.label}</p>
+                <span className="meta">{meta[o.step] ?? ''}</span>
               </button>
             ))}
             {t.soon.map((item) => (
@@ -96,8 +70,8 @@ export function RegisterDrawer({ petId }: { petId: string }) {
         )}
         {step === 'weight' && <WeightForm pet={pet} onSaved={close} />}
         {step === 'vaccine' && <VaccineForm pet={pet} allPets={allPets} onSaved={close} />}
-        {step === 'medication' && <MedicationForm pet={pet} onSaved={close} />}
-        {step === 'care' && <CareForm pet={pet} allPets={allPets} onSaved={close} />}
+        {step === 'parasite' && <CareForm key="parasite" category="parasite" pet={pet} allPets={allPets} onSaved={close} />}
+        {step === 'hygiene' && <CareForm key="hygiene" category="hygiene" pet={pet} allPets={allPets} onSaved={close} />}
         {step === 'diary' && <DiaryForm pet={pet} onSaved={close} />}
         {step === 'visit' && <VisitForm pet={pet} onSaved={close} />}
       </div>

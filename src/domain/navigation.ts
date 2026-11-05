@@ -45,3 +45,32 @@ export function swipeTarget(order: readonly string[], current: string, dx: numbe
   if (index < 0 || Math.abs(dx) < SWIPE_MIN_DISTANCE || Math.abs(dy) > SWIPE_MAX_DRIFT) return null;
   return order[dx < 0 ? index + 1 : index - 1] ?? null;
 }
+
+/** The four tabs of a chefe's page (docs/spec/navegacao.md). */
+export type PetTab = 'prazos' | 'saude' | 'peso' | 'perfil';
+export const PET_TABS: readonly PetTab[] = ['prazos', 'saude', 'peso', 'perfil'];
+
+/**
+ * The tab a link's hash opens. The old hashes (before the four tabs) keep working, because push
+ * notifications and the Mural already sent them; a section's hash opens the tab that holds it.
+ */
+const TAB_OF_HASH: Readonly<Record<string, PetTab>> = {
+  prazos: 'prazos',
+  historico: 'prazos',
+  vacinas: 'prazos',
+  cuidados: 'prazos',
+  antiparasitarios: 'prazos',
+  higiene: 'prazos',
+  saude: 'saude',
+  condicoes: 'saude',
+  tratamentos: 'saude',
+  medicacoes: 'saude',
+  consultas: 'saude',
+  diario: 'saude',
+  peso: 'peso',
+  perfil: 'perfil',
+  alimentacao: 'perfil',
+  rotina: 'perfil',
+  tutoria: 'perfil',
+};
+export const tabOfHash = (hash: string): PetTab | null => TAB_OF_HASH[hash.replace(/^#/, '')] ?? null;

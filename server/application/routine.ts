@@ -1,4 +1,4 @@
-// The diary and the meals (docs/spec/rotina.md). Any member writes and removes.
+// The diary and the meals (docs/spec/saude.md, docs/spec/chefes.md "Alimentação"). Any member writes and removes.
 import type { DiaryEntryView, MealView } from '../../src/application/api-contract';
 import { normalizeDiary, normalizeMeal } from '../../src/domain/routine/routine';
 import { failure, nowIso, type CommandResult, type Context } from './context';

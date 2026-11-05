@@ -159,7 +159,7 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     `CREATE INDEX medications_pet ON medications(pet_id, start_on)`,
   ],
   // 9: phase 2 — parasite and hygiene care, conditions, consultas/exames/laudos, the diary, the
-  // meals and the pet sitter's links (docs/spec/cuidados.md, saude.md, rotina.md, manual-temporario.md).
+  // meals and the pet sitter's links (docs/spec/cuidados.md, saude.md, chefes.md, manual-temporario.md).
   // The due date of a care record is computed from `done_on` + `interval_days`, never stored.
   [
     `CREATE TABLE care_records (
