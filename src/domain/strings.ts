@@ -189,8 +189,17 @@ export const strings = {
     removeConfirm: 'Apagar esse registro de vacina?',
   },
 
-  home: {
+  mural: {
     greeting: (greeting: string, name: string) => `${greeting}, ${name}!`,
+    title: 'Mural da Chefia',
+    mine: 'Meus chefes',
+    others: 'Outros chefes',
+    empty: 'Nenhum chefe cadastrado.',
+    allGood: 'Tudo em dia',
+    needsAttention: 'Exige atenção',
+    allergiesMissing: 'Falta informar as alergias.',
+    sos: 'Cartão SOS',
+    account: 'Minha conta',
     nameLabel: 'Meu nome',
     save: 'Salvar',
   },
