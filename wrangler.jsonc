@@ -21,7 +21,7 @@
   "triggers": { "crons": ["*/5 * * * *"] },
   "vars": {
     // Public: the OAuth client ID from Google Cloud (README.md). The secret is a secret.
-    "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com",
+    "GOOGLE_CLIENT_ID": "625557632408-au455jq56jsf95474qbeka52c4qsvnkh.apps.googleusercontent.com",
     // Public VAPID key and contact for push (ADR-008). Generate the pair with `npm run vapid`; the
     // private key is the secret VAPID_PRIVATE_KEY.
     "VAPID_PUBLIC_KEY": "REPLACE_ME",
@@ -32,7 +32,7 @@
   // Google sign-in does not work there (ADR-005), so the public client ID is enough.
   "previews": {
     "vars": {
-      "GOOGLE_CLIENT_ID": "REPLACE_ME.apps.googleusercontent.com",
+      "GOOGLE_CLIENT_ID": "625557632408-au455jq56jsf95474qbeka52c4qsvnkh.apps.googleusercontent.com",
       "VAPID_PUBLIC_KEY": "REPLACE_ME",
       "VAPID_SUBJECT": "mailto:souza.pereira.valeria@gmail.com"
     },
