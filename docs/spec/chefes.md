@@ -20,6 +20,10 @@ e o peso.
 - Cada chefe tem nome, foto, espécie (gato ou cachorro), raça, data de nascimento (ou idade
   estimada), sexo, se é castrado, número do microchip e a alimentação atual (ração ou sachê, marca e
   quantidade por dia). *(1)*
+- Se eu não sei a data de nascimento, informo a idade em anos e meses. O perfil mostra "cerca de
+  3 anos (estimado)", para não confundir com uma data de documento. *(1)*
+- Eu e o Cesar editamos as tags de personalidade do chefe: até 6, sem repetir. As frases de cada tag
+  estão em `voz-dos-chefes.md`; tag nova, com frases próprias, é da fase 2. *(1)*
 - Só o nome e a espécie são obrigatórios. O resto eu completo quando puder, e o perfil mostra o que
   ainda falta. *(1)*
   Por quê: os três chefes já vêm cadastrados com pouco, e completar o cadastro é uma tarefa do dia

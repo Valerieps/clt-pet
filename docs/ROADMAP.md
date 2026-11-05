@@ -11,7 +11,6 @@ O que ainda não está pronto.
 
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
-| Chefes: foto, idade estimada e a edição das tags | 1 | `spec/chefes.md` | O resto do perfil, a tutoria, as alergias e o peso já estão prontos; a foto precisa de um lugar para guardar (ADR); as tags entram com a voz |
 | Voz dos chefes: tags, frases base e modo sério | 1 | `spec/voz-dos-chefes.md` | Frases em `src/domain`, com testes |
 | Cartão SOS | 1 | `spec/cartao-sos.md` | A dois toques de qualquer tela |
 | Lembretes por push | 1 | `spec/lembretes.md` | ADR-008; chaves VAPID, service worker e cron |
@@ -48,3 +47,5 @@ Nada por enquanto.
   Brasília); o aviso de variação compara o peso mais recente com os dos 60 dias anteriores e o
   limite vai de 1% a 50% por chefe; as alergias contam como preenchidas depois do primeiro
   salvamento do perfil; qualquer funcionário pode apagar um registro de peso.
+- [ ] `spec/chefes.md`: a foto é encolhida pelo app (640 px) e guardada no próprio banco do grupo
+  (ADR-009); as tags têm no máximo 6 por chefe e 40 letras cada.

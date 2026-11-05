@@ -117,7 +117,8 @@ button,
   cursor: pointer;
 }
 
-button.secondary {
+button.secondary,
+.button.secondary {
   background: transparent;
   color: var(--color-brand);
 }
@@ -214,4 +215,24 @@ h2 {
 [data-status="soon"] {
   color: var(--color-brand);
   font-weight: 600;
+}
+
+.pet-photo {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-border);
+}
+
+.pet-photo.small {
+  width: 44px;
+  height: 44px;
+}
+
+.pet-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
 }

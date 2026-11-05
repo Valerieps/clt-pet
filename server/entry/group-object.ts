@@ -31,6 +31,10 @@ export class Group extends DurableObject<Env> {
     return this.service.query(sessionHash, name, input);
   }
 
+  photo(sessionHash: string, petId: string): string | null {
+    return this.service.photo(sessionHash, petId);
+  }
+
   command(sessionHash: string, name: string, input: unknown) {
     const result = this.service.command(sessionHash, name, input);
     if (result.ok && result.changed.length > 0) this.broadcast(result.changed);
