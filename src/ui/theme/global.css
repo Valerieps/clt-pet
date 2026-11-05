@@ -758,6 +758,10 @@ button:disabled {
   background: var(--color-surface);
 }
 
+.drawer:focus {
+  outline: none; /* focus lands on the dialog itself when it opens */
+}
+
 .drawer .grip {
   align-self: center;
 }
