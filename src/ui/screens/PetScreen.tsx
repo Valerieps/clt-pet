@@ -24,7 +24,7 @@ import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
-import { BackBar, CameraIcon, CatIcon, DogIcon, Faces, HistoryIcon, MeLink, ScaleIcon } from '../parts';
+import { BackBar, CameraIcon, CatIcon, DogIcon, Faces, MeLink, ScaleIcon, VaccineIcon } from '../parts';
 import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
 import { Link, usePath } from '../router';
@@ -101,7 +101,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
         <div id="abas" className="tabs" role="tablist">
           {(
             [
-              ['history', strings.chefe.sections.history, <HistoryIcon key="h" />],
+              ['history', strings.chefe.sections.history, <VaccineIcon key="h" />],
               ['weight', strings.chefe.sections.weight, <ScaleIcon key="w" />],
               ['profile', strings.chefe.sections.profile, pet.species === 'cat' ? <CatIcon key="p" /> : <DogIcon key="p" />],
             ] as const
@@ -127,11 +127,6 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
             {tab === 'profile' && <ProfilePanel pet={pet} myId={me.id} />}
           </div>
         )}
-        <div className="actions">
-          <Link to={`/chefes/${pet.id}/registrar`} className="btn">
-            {strings.register.button}
-          </Link>
-        </div>
         <Summary chefe={chefe} />
       </main>
     </>

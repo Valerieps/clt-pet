@@ -18,8 +18,8 @@ Nada por enquanto.
 - Meu rosto fica no canto de cima, à direita: leva às Configurações (chefes, membros, convites, aviso
   no celular, meu nome, sair). *(1)*
 - A página do chefe é enorme: o retrato em arco, de baixo para cima, sob a aura do chefe, e o nome em
-  letreiro. Abaixo vêm três ícones (Histórico, Peso e Perfil), o botão Registrar, as exigências e
-  "A seguir". Não há aviso de "Tudo em dia" na página do chefe.
+  letreiro, do mesmo tamanho para todos os chefes (o da Berenice é o máximo). Abaixo vêm três
+  ícones (Vacinas, Peso e Perfil), as exigências e "A seguir". Não há aviso de "Tudo em dia" na página do chefe.
   *Por quê:* os controles humanos ficam pequenos e na beirada; o animal ocupa a imagem. *(1)*
 - Os três ícones abrem, abaixo deles, o Histórico (vacinas), o Peso e o Perfil (que inclui a
   Tutoria); tocar de novo fecha. O ícone do Perfil é um gato ou um cachorro, conforme o chefe. Em
@@ -34,7 +34,8 @@ Nada por enquanto.
 - O Cartão de Saúde tem uma alça fixa na borda de baixo de todas as telas. Abre como uma
   gaveta sobre a tela em que eu estou, já no chefe dela (ou no primeiro, se eu estou no Mural), com
   um botão por chefe para trocar. Fechar volta para a tela de antes. *(1)*
-- Registrar abre uma gaveta com o que dá para registrar para aquele chefe. Vacina e peso abrem o
+- Registrar é um botão flutuante de + em todas as telas (some quando o Cartão de Saúde está aberto).
+  Abre uma gaveta com o que dá para registrar para aquele chefe. Vacina e peso abrem o
   formulário dentro da própria gaveta; ao salvar, a gaveta fecha e um aviso curto confirma. Do Mural
   a um peso salvo são três toques: Registrar, Peso, Salvar. A página do chefe só mostra o histórico
   (sem formulário). O que ainda não existe aparece apagado, com a fase em que entra. *(1)*

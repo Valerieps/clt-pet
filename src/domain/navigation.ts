@@ -8,8 +8,11 @@ export const auraClass = (index: number): (typeof AURAS)[number] => AURAS[((inde
 /** The letter inside a chefe's or member's round face. */
 export const initialOf = (name: string): string => ([...name.trim()][0] ?? '?').toLocaleUpperCase('pt-BR');
 
-/** The font size, in px, that makes a name fill the width of the page without overflowing. */
-export const NAME_SIZE_MAX = 150;
+/**
+ * The font size, in px, that makes a name fill the width of the page without overflowing. The maximum is
+ * Berenice's size (790 / 8 letters), so every chefe with a name that short or shorter looks the same.
+ */
+export const NAME_SIZE_MAX = 98;
 export const NAME_SIZE_MIN = 32; // a 20-letter name still fits 343px (375px phone minus gutters)
 export function nameSize(name: string): number {
   const length = Math.max([...name.trim()].length, 1);
