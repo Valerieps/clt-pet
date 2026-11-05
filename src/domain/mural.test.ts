@@ -36,6 +36,21 @@ describe('muralStatus', () => {
   });
 });
 
+describe('muralStatus: weight alert', () => {
+  it('needs attention when the weight alert fired, even with everything else in order', () => {
+    const status = muralStatus(pet, [], today, -12.5);
+    expect(status).toMatchObject({ needsAttention: true, weightChange: { percent: -12.5 }, vaccine: null });
+  });
+
+  it('has no weight change without an alert', () => {
+    expect(muralStatus(pet, [], today).weightChange).toBeNull();
+  });
+
+  it('has no phrase when only the weight alert fired', () => {
+    expect(dailyPhrase(pet, muralStatus(pet, [], today, 8), today)).toBeNull();
+  });
+});
+
 describe('dailyPhrase', () => {
   it('is the same all day and uses the chefe voice', () => {
     const status = muralStatus(pet, [], today);

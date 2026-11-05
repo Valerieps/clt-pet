@@ -10,7 +10,7 @@ const t = strings.mural;
 
 /** The home screen (docs/spec/mural.md): the chefes that need attention as cards, the rest as a calm line. */
 export function Mural({ me }: { me: MeView }) {
-  const { chefes, failed } = useChefia();
+  const { chefes, failed, loading } = useChefia();
   const today = todayLocal();
   // "Meus chefes" first; inside each group the original order (and so the auras) is kept.
   const mine = new Set(splitByTutor(chefes.map((c) => c.pet), me.id).mine.map((p) => p.id));
@@ -34,7 +34,17 @@ export function Mural({ me }: { me: MeView }) {
       </header>
       <main className="mural-list">
         {failed && <p className="notice">{strings.genericError}</p>}
-        {chefes.length === 0 && !failed && <p className="muted">{t.empty}</p>}
+        {loading && <MuralSkeleton />}
+        {chefes.length === 0 && !failed && !loading && (
+          <>
+            <p className="muted">{t.empty}</p>
+            <div className="actions">
+              <Link to="/chefes" className="btn">
+                {t.addFirst}
+              </Link>
+            </div>
+          </>
+        )}
         {attention.map((chefe) => (
           <AttentionCard key={chefe.pet.id} chefe={chefe} today={today} />
         ))}
@@ -54,7 +64,11 @@ function AttentionCard({ chefe, today }: { chefe: Chefe; today: string }) {
   const { pet, aura, status } = chefe;
   const name = pet.profile.name;
   const phrase = phraseOf(chefe, today);
-  const pill = status.vaccine ? `${status.vaccine.item} · ${dueLabel(status.vaccine.overdue, status.vaccine.days)}` : t.allergiesPill;
+  const pill = status.vaccine
+    ? `${status.vaccine.item} · ${dueLabel(status.vaccine.overdue, status.vaccine.days)}`
+    : status.weightChange
+      ? t.weightPill(status.weightChange.percent)
+      : t.allergiesPill;
   return (
     <article className={`mural-card sunbg ${aura}`}>
       <Link to={`/chefes/${pet.id}`}>
@@ -62,9 +76,10 @@ function AttentionCard({ chefe, today }: { chefe: Chefe; today: string }) {
         <span className="when on-dark">{pill}</span>
       </Link>
       {phrase && <p>{phrase}</p>}
+      {status.weightChange && !status.vaccine && <p>{t.weightWatch}</p>}
       {status.allergiesMissing && <p>{t.allergiesMissing}</p>}
       <div className="actions">
-        {status.vaccine ? (
+        {status.vaccine || status.weightChange ? (
           <Link to={`/chefes/${pet.id}/registrar`} className="btn light">
             {strings.register.button}
           </Link>
@@ -73,9 +88,6 @@ function AttentionCard({ chefe, today }: { chefe: Chefe; today: string }) {
             {t.fillAllergies}
           </Link>
         )}
-        <Link to={`/chefes/${pet.id}`} className="btn ghost">
-          {t.openPet(name)}
-        </Link>
       </div>
     </article>
   );
@@ -88,5 +100,15 @@ function CalmLine({ chefe, today }: { chefe: Chefe; today: string }) {
       <span className="dot">{initialOf(pet.profile.name)}</span>
       <span>{phraseOf(chefe, today) ?? t.allGood}</span>
     </Link>
+  );
+}
+
+/** What shows while the chefes load: the cards' shape, so the screen is never blank. */
+function MuralSkeleton() {
+  return (
+    <div role="status" aria-label={t.loading}>
+      <div className="skeleton" />
+      <div className="skeleton" />
+    </div>
   );
 }

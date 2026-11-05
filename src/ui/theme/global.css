@@ -271,6 +271,14 @@ a:hover {
   gap: 8px;
 }
 
+/* The Mural while it loads: grey blocks the size of the cards. */
+.skeleton {
+  height: 120px;
+  margin-top: var(--space-3);
+  border-radius: var(--radius-card);
+  background: var(--color-border);
+}
+
 .mural-list {
   display: flex;
   flex-direction: column;

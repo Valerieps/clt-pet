@@ -31,7 +31,18 @@ export function App() {
     return () => live.stop();
   }, [live, signedIn]);
 
-  if (me.loading && !me.data) return null;
+  if (me.loading && !me.data) {
+    return (
+      <header className="mural-header">
+        <p className="lbl">{strings.appName}</p>
+        <h1 className="monument" style={{ fontSize: 40, marginTop: 4 }}>
+          {strings.mural.title}
+        </h1>
+        <div className="skeleton" role="status" aria-label={strings.mural.loading} />
+        <div className="skeleton" />
+      </header>
+    );
+  }
   if (!me.data && me.error && me.error !== 'unauthenticated') {
     return (
       <main className="app">
