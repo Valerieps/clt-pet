@@ -143,3 +143,66 @@ button:disabled {
   border: 1px dashed var(--color-border);
   border-radius: var(--radius);
 }
+
+select {
+  font: inherit;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+h2 {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: 1.15rem;
+}
+
+.allergy {
+  padding: var(--space-3);
+  border: 2px solid var(--color-danger);
+  border-radius: var(--radius);
+  color: var(--color-danger);
+  margin-bottom: var(--space-4);
+}
+
+.allergy h2 {
+  margin: 0 0 var(--space-1);
+  font-size: 1rem;
+}
+
+.allergy ul {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+  color: var(--color-brand);
+}
+
+.chart text {
+  fill: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 0.85rem;
+}

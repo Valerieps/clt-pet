@@ -32,6 +32,60 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       revoked_at TEXT
     )`,
   ],
+  // 2: the chefes, their tags, allergies and weights, and the three that start registered
+  // (docs/spec/chefes.md). The tutor is tied by e-mail; sign-in fills `tutor_member_id`.
+  [
+    `CREATE TABLE pets (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      species TEXT NOT NULL,
+      breed TEXT,
+      birth_date TEXT,
+      sex TEXT,
+      neutered INTEGER,
+      microchip TEXT,
+      food_kind TEXT,
+      food_brand TEXT,
+      food_daily TEXT,
+      allergies_answered INTEGER NOT NULL DEFAULT 0,
+      weight_alert_percent INTEGER NOT NULL DEFAULT 10,
+      tutor_member_id TEXT REFERENCES members(id),
+      tutor_email TEXT NOT NULL,
+      serious_mode INTEGER NOT NULL DEFAULT 0,
+      retired_at TEXT,
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE TABLE pet_tags (
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      tag TEXT NOT NULL,
+      PRIMARY KEY (pet_id, tag)
+    )`,
+    `CREATE TABLE pet_allergies (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      kind TEXT NOT NULL,
+      description TEXT NOT NULL
+    )`,
+    `CREATE TABLE weights (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      grams INTEGER NOT NULL,
+      on_date TEXT NOT NULL,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX weights_pet ON weights(pet_id, on_date)`,
+    `INSERT INTO pets (id, name, species, tutor_email, created_at) VALUES
+      ('pet-berenice', 'Berenice', 'cat', 'souza.pereira.valeria@gmail.com', '2026-11-04T00:00:00.000Z'),
+      ('pet-panda', 'Panda', 'cat', 'souza.pereira.valeria@gmail.com', '2026-11-04T00:00:00.000Z'),
+      ('pet-pacoca', 'Paçoca', 'dog', 'csrgamboa@gmail.com', '2026-11-04T00:00:00.000Z')`,
+    `INSERT INTO pet_tags (pet_id, tag) VALUES
+      ('pet-berenice', 'Exigente'), ('pet-berenice', 'Juíza Suprema'), ('pet-berenice', 'Olhar de Julgamento'),
+      ('pet-panda', 'Especialista em Sonecas'), ('pet-panda', 'Crítico de Sachê'), ('pet-panda', 'Zero Estressado'),
+      ('pet-pacoca', 'Diretora de Festas'), ('pet-pacoca', 'Auditora de Petiscos'), ('pet-pacoca', 'Carisma em Grau de Urgência')`,
+    // Members who already joined take their chefes right away.
+    `UPDATE pets SET tutor_member_id = (SELECT id FROM members WHERE members.email = pets.tutor_email AND members.active = 1)`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

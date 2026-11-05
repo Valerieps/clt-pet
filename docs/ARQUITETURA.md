@@ -56,10 +56,10 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 | `members` | `id`, `google_sub`, `email`, `name`, `photo_url`, `roles` (JSON), `active` | Removido fica com `active = 0`; um convite novo traz o mesmo membro de volta |
 | `sessions` | `token_hash`, `member_id`, `expires_at` | Só o SHA-256 do token; o cron apaga as vencidas |
 | `invites` | `email`, `invited_by`, `state` (`pending`, `accepted`, `revoked`) | Um por e-mail |
-| `pets` | `id`, `name`, `species`, `breed`, `birth_date`, `sex`, `neutered`, `microchip`, `photo_key`, `tutor_member_id`, `tutor_email`, `serious_mode`, `retired_at` | Os três chefes nascem numa migração; `tutor_email` liga o chefe ao membro quando ele entra (spec/chefes.md) |
+| `pets` | `id`, `name`, `species`, `breed`, `birth_date`, `sex`, `neutered`, `microchip`, `food_kind`, `food_brand`, `food_daily`, `allergies_answered`, `weight_alert_percent`, `tutor_member_id`, `tutor_email`, `serious_mode`, `retired_at` (`photo_key` entra com a foto) | Os três chefes nascem numa migração; `tutor_email` liga o chefe ao membro: o login preenche `tutor_member_id`, e trocar o responsável grava os dois |
 | `pet_tags` | `pet_id`, `tag` | Tags de personalidade |
 | `pet_allergies` | `pet_id`, `kind` (`drug`, `food`), `description` | Em vermelho no perfil e no Cartão SOS |
-| `weights` | `pet_id`, `grams`, `on_date`, `member_id` | Quem pesou fica no registro |
+| `weights` | `id`, `pet_id`, `grams`, `on_date`, `member_id`, `created_at` | Quem pesou fica no registro |
 | `vaccinations` | `pet_id`, `vaccine`, `applied_on`, `next_due_on`, `batch`, `maker`, `vet`, `member_id` | `next_due_on` vem do protocolo e é editável |
 | `push_subscriptions` | `member_id`, `endpoint`, `keys` | Um por aparelho; o endpoint só pode ser de uma origem de ADR-008 |
 | `reminders_sent` | `pet_id`, `item`, `due_on`, `stage` (`30d`, `7d`, `due`, `escalated`), `sent_at` | Evita avisar duas vezes |
