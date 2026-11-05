@@ -39,6 +39,7 @@ As fases 2 a 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos
 | [spec/voz-dos-chefes.md](spec/voz-dos-chefes.md) | Tom de voz, tags de personalidade e a biblioteca de frases |
 | [spec/cartao-sos.md](spec/cartao-sos.md) | O Cartão de Saúde: dados de emergência a dois toques |
 | [spec/vacinas.md](spec/vacinas.md) | Carteirinha de vacinação, protocolos e status |
+| [spec/medicacoes.md](spec/medicacoes.md) | Cadastro de medicações: remédio, dose, frequência e período |
 | [spec/lembretes.md](spec/lembretes.md) | Push, prazos e escalonamento para o funcionário reserva |
 | [spec/mural.md](spec/mural.md) | O Mural da Chefia, a tela inicial |
 | [spec/navegacao.md](spec/navegacao.md) | Os dois níveis, a fileira de rostos, a aura de cada chefe e o Manual a um gesto |
