@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { dailyPhrase, doneToday, messageKind, muralStatus, splitByTutor, type MuralPet } from './mural';
+import { BASE_PHRASES } from './voice/phrases';
 
 describe('doneToday', () => {
   const day = '2026-11-04';
@@ -94,12 +95,12 @@ describe('dailyPhrase', () => {
   it('is the same all day and uses the chefe voice', () => {
     const status = muralStatus(pet, [], today);
     expect(dailyPhrase(pet, status, today)).toBe(dailyPhrase(pet, status, today));
-    expect(dailyPhrase(pet, status, today)).toContain('Panda');
+    expect(BASE_PHRASES['pet-panda'].allGood).toContain(dailyPhrase(pet, status, today));
   });
 
   it('uses the neutral wording in serious mode', () => {
     const status = muralStatus(pet, [], today);
-    expect(dailyPhrase({ ...pet, seriousMode: true }, status, today)).toBe('Tudo em dia com Panda.');
+    expect(dailyPhrase({ ...pet, seriousMode: true }, status, today)).toBe('Estou com tudo em dia.');
   });
 
   it('fills the item and the days for a late vaccine', () => {
