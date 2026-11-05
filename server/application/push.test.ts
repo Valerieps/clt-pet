@@ -136,7 +136,7 @@ describe('tick reminders', () => {
     // serious_mode has no command yet (see the roadmap), so set the column directly.
     const sql = (service as unknown as { ctx: { sql: { run(q: string, ...b: string[]): void } } }).ctx.sql;
     sql.run("UPDATE pets SET serious_mode = 1 WHERE id = 'pet-pacoca'");
-    expect(payloadOf(service.tick().pushes[0]).body).toBe('Vacina V10 de Paçoca vence em 7 dias.');
+    expect(payloadOf(service.tick().pushes[0]).body).toBe('Tenho Vacina V10 vencendo em 7 dias.');
   });
 
   it('keeps the stage open while the responsável has not signed in', () => {
