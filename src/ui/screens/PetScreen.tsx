@@ -18,7 +18,7 @@ import {
   type FoodKind,
   type Sex,
 } from '../../domain/pets/pet';
-import { ALERT_WINDOW_DAYS, formatKilos, latestWeight, parseKilos, weightAlert } from '../../domain/pets/weight';
+import { ALERT_WINDOW_DAYS, formatKilos, latestWeight, weightAlert } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
@@ -101,7 +101,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
         </div>
         <Summary chefe={chefe} />
         <div id="historico">
-          <PetDetails pet={pet} myId={me.id} allPets={chefes.map((c) => c.pet)} />
+          <PetDetails pet={pet} myId={me.id} />
         </div>
       </main>
     </>
@@ -188,7 +188,7 @@ function birthText(birthDate: string, estimated: boolean): string {
   return estimated ? t.profile.ageEstimated(age) : `${formatDate(birthDate)} · ${t.profile.age(age)}`;
 }
 
-function PetDetails({ pet, myId, allPets }: { pet: PetView; myId: string; allPets: readonly PetView[] }) {
+function PetDetails({ pet, myId }: { pet: PetView; myId: string }) {
   const [editing, setEditing] = useState(false);
   const { profile } = pet;
   const missing = missingFields(profile, pet.allergiesAnswered);
@@ -210,7 +210,7 @@ function PetDetails({ pet, myId, allPets }: { pet: PetView; myId: string; allPet
         <Weight pet={pet} />
       </div>
       <div id="vacinas">
-        <Vaccines pet={pet} allPets={allPets} />
+        <Vaccines pet={pet} />
       </div>
     </>
   );
@@ -580,28 +580,11 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
 }
 
 function Weight({ pet }: { pet: PetView }) {
-  const toast = useToast();
   const confirm = useConfirm();
   const { backend } = useServices();
-  const [kilos, setKilos] = useState('');
-  const [date, setDate] = useState(todayLocal());
   const [error, setError] = useState<string | null>(null);
   const latest = latestWeight(pet.weights);
   const alert = weightAlert(pet.weights, pet.weightAlertPercent);
-
-  async function add(event: FormEvent) {
-    event.preventDefault();
-    const grams = parseKilos(kilos);
-    if (grams === null) return setError(t.weight.invalid);
-    const result = await backend.command('weight.add', { petId: pet.id, grams, onDate: date });
-    if (result.ok) {
-      toast(strings.toast.weight(pet.profile.name));
-      setKilos('');
-      setError(null);
-    } else {
-      setError(result.error === 'invalid' ? t.weight.invalid : strings.genericError);
-    }
-  }
 
   async function remove(weightId: string) {
     if (!(await confirm(t.weight.removeConfirm))) return;
@@ -619,17 +602,6 @@ function Weight({ pet }: { pet: PetView }) {
         </p>
       )}
       <WeightChart points={pet.weights} label={t.weight.chart(pet.profile.name)} />
-      <form className="row wrap" onSubmit={add}>
-        <label>
-          {t.weight.kilos}
-          <input required inputMode="decimal" value={kilos} onChange={(e) => setKilos(e.target.value)} />
-        </label>
-        <label>
-          {t.weight.date}
-          <input required type="date" max={todayLocal()} value={date} onChange={(e) => setDate(e.target.value)} />
-        </label>
-        <button type="submit">{t.weight.add}</button>
-      </form>
       {error && (
         <p className="notice" role="alert">
           {error}
