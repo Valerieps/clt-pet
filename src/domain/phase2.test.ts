@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { careDueDate, careStatus, currentCare, normalizeCare, soonWindow } from './care/care';
 import { normalizeCondition, normalizeVisit } from './health/health';
-import { muralStatus } from './mural';
+import { isSnoozed, muralStatus } from './mural';
 import { normalizeDiary, normalizeMeal } from './routine/routine';
 import { isSitterTokenShape, normalizeSitterLink } from './sitter/sitter';
 
@@ -98,6 +98,14 @@ describe('sitter link', () => {
   it('knows the shape of a token', () => {
     expect(isSitterTokenShape('a'.repeat(64))).toBe(true);
     expect(isSitterTokenShape('a'.repeat(63))).toBe(false);
+  });
+});
+
+describe('lembrar amanhã', () => {
+  it('lasts only the day it was asked', () => {
+    expect(isSnoozed(TODAY, TODAY)).toBe(true);
+    expect(isSnoozed('2026-11-03', TODAY)).toBe(false);
+    expect(isSnoozed(null, TODAY)).toBe(false);
   });
 });
 

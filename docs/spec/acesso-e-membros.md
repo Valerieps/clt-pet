@@ -30,7 +30,7 @@ Nada por enquanto.
 - "Tutor responsável" e "funcionário reserva" não são papéis da pessoa: são por chefe (`chefes.md`).
   Os dois têm acesso total a todos os chefes. *(1)*
 - O funcionário temporário (pet sitter) entra por um link somente leitura, sem login, e não é um
-  membro. *(2)*
+  membro. Qualquer funcionário cria e desativa os links (`manual-temporario.md`). *(2)*
 
 ## Membros
 

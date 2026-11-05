@@ -12,8 +12,9 @@ O que ainda não está pronto.
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
 | Modo sério: o interruptor por chefe na tela do chefe | 1 | `spec/voz-dos-chefes.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase nos lembretes e no Mural quando eles forem feitos |
-| Navegação: "Lembrar amanhã", abrir a exigência pelo aviso, "Desfazer", incluir outros chefes no Registrar, Manual do Funcionário Temporário | 1 e 2 | `spec/navegacao.md` | O desenho (`CLT Pet — Navegação`) já os mostra; a fase 1 entregou a estrutura, a fileira de rostos, as auras, a alça do Manual e a gaveta de Registrar |
-| Fases 2, 3 e 4 | 2 a 4 | `SPEC.md` | Cada uma ganha seus arquivos em `spec/` na vez dela |
+| Tags novas com frases próprias | 2 | `spec/voz-dos-chefes.md`, "Tags e frases" | As frases ainda são fixas por chefe (`src/domain/voice/phrases.ts`); falta guardar tags e frases criadas por nós no banco e sorteá-las |
+| "Desfazer" depois de resolver no card | 3 | `spec/navegacao.md`, "Fora da fase 2" | Depende de o card ganhar um "Feito" |
+| Fases 3 e 4 | 3 e 4 | `SPEC.md` | Cada uma ganha seus arquivos em `spec/` na vez dela |
 
 ## O código ainda não segue o spec
 
@@ -27,8 +28,27 @@ Nada por enquanto.
   veterinário; falta anexar a foto.
 - "Atrasada" como "Advertência" na voz do chefe (`spec/vacinas.md`, "Status"): entra com a voz nos
   lembretes e no Mural.
+- Anexar PDF ou foto a exames e laudos (`spec/saude.md`, "Em aberto"): hoje o resultado é texto;
+  junto com a leitura por foto (fase 4) ou antes, se a Valéria quiser.
 
 ## Revisar as lacunas que o agente decidiu
+
+- [ ] Fase 2, `spec/cuidados.md`: os modelos e intervalos de parasitas e higiene por espécie; "Vence
+  logo" a um quarto do intervalo (de 1 a 30 dias); só parasitas exigem atenção no Mural e geram
+  aviso, higiene não; a coleira repelente fica em Cuidados.
+- [ ] Fase 2, `spec/saude.md`: só o nome é obrigatório numa condição; as graves vão para o Cartão de
+  Saúde em vermelho e para o pet sitter; consulta pode ter data futura, exame e laudo não; o retorno
+  gera aviso como uma vacina; resultado de exame em texto, sem anexo por enquanto.
+- [ ] Fase 2, `spec/rotina.md`: refeições só com horário obrigatório e sem lembrete; diário até 500
+  letras, só na página do chefe (não no Mural).
+- [ ] Fase 2, `spec/manual-temporario.md`: qualquer funcionário cria o link; prazo de 1 a 90 dias
+  (7 por padrão); a página mostra só o nome dos tutores (sem telefone nem e-mail) e só lê; o token
+  fica guardado para copiar o link de novo (ADR-010).
+- [ ] Fase 2, `spec/chefes.md`: tutoria emprestada a partir de amanhã, volta sozinha no dia;
+  aposentar fica no editar perfil; o ano de chegada é o ano em que o chefe entrou no app; o Exame
+  Admissional pede só nome e espécie e quem cadastra vira o tutor.
+- [ ] Fase 2, `spec/navegacao.md`: "Lembrar amanhã" vale só no aparelho e até o fim do dia; o aviso
+  abre o ícone do item; os ícones novos (Cuidados, Saúde, Rotina) quebram em duas linhas.
 
 - [ ] `spec/vacinas.md`: todo reforço começa em 365 dias (editável em cada registro); o status de cada
   vacina vem da última aplicação dela; o nome da vacina é livre, com os protocolos da espécie como

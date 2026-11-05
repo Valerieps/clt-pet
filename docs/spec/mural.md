@@ -18,8 +18,11 @@ Nada por enquanto.
   A regra é a mesma para os dois funcionários. *(1)*
 - Exige atenção quando há vacina atrasada ou a vencer em até 30 dias, o cadastro tem alergia
   em branco, ou o alerta de peso disparou (`chefes.md`). No card, o motivo é "Peso mudou X%". *(1)*
+- Antiparasitário atrasado ou vencendo também exige atenção, com o nome dele no motivo
+  ("Vermífugo · 3 dias"); vale o que vence primeiro entre vacinas e parasitas (`cuidados.md`). *(2)*
 - O card tem um só caminho para a página do chefe (o nome) e o botão principal: Registrar, ou
   Informar alergias quando é o único motivo. *(1)*
+- O card tem também "Lembrar amanhã" (`navegacao.md`). *(2)*
 - Tocar no card abre a página do chefe, e o Cartão de Saúde fica na alça de baixo, em toda
   tela (`navegacao.md`). *(1)*
 - Quando o único motivo de atenção é a alergia em branco, o card diz "Falta informar as alergias" no

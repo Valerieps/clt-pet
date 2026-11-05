@@ -75,6 +75,9 @@ export function dailyPhrase(pet: MuralPet, status: MuralStatus, today: string): 
   });
 }
 
+/** "Lembrar amanhã": a card snoozed on `snoozedOn` stays a calm line for the rest of that day only. */
+export const isSnoozed = (snoozedOn: string | null, today: string): boolean => snoozedOn === today;
+
 /** "Meus chefes" first (the ones whose tutor is the member), then the rest, each in the original order. */
 export function splitByTutor<T extends { readonly tutorMemberId: string | null }>(pets: readonly T[], memberId: string): { mine: T[]; others: T[] } {
   return { mine: pets.filter((p) => p.tutorMemberId === memberId), others: pets.filter((p) => p.tutorMemberId !== memberId) };

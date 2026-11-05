@@ -64,13 +64,31 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 | `vaccinations` | `pet_id`, `vaccine`, `applied_on`, `next_due_on`, `batch`, `maker`, `vet`, `member_id` | `next_due_on` vem do protocolo e é editável |
 | `push_subscriptions` | `endpoint`, `member_id`, `p256dh`, `auth` | Um por aparelho; o endpoint só pode ser de uma origem de ADR-008 |
 | `reminders_sent` | `pet_id`, `item`, `due_on`, `stage` (`30d`, `7d`, `due`, `escalated`), `sent_at` | Evita avisar duas vezes |
+| `care_records` | `pet_id`, `category` (`parasite`, `hygiene`), `item`, `done_on`, `interval_days`, `note`, `member_id` | O próximo prazo é `done_on` + `interval_days`, calculado, nunca guardado |
+| `conditions` | `pet_id`, `name`, `grave`, `since`, `notes`, `resolved_on`, `member_id` | `resolved_on` nulo é condição ativa |
+| `visits` | `pet_id`, `kind` (`consulta`, `exame`, `laudo`), `on_date`, `title`, `vet`, `notes`, `return_on`, `member_id` | `return_on` vira lembrete |
+| `diary` | `pet_id`, `on_date`, `text`, `member_id` | |
+| `meals` | `pet_id`, `at` (HH:MM), `amount`, `note` | |
+| `sitter_links` | `token`, `label`, `pet_ids` (JSON), `note`, `expires_on`, `revoked_at`, `member_id` | O token é a credencial do pet sitter (ADR-010) |
+
+Em `pets`, a tutoria emprestada usa `tutor_until`, `tutor_return_member_id` e `tutor_return_email`;
+`retired_at` aposenta o chefe, e toda consulta das features filtra `retired_at IS NULL`.
 
 ## Fluxo de eventos
 
-Só os lembretes têm fluxo próprio: o cron de 5 minutos chama `GroupService.tick`, que olha as vacinas
-com `next_due_on` e, às 9h de Brasília, grava em `reminders_sent` o estágio devido (30 dias, 7 dias,
+O cron de 5 minutos chama `GroupService.tick`. Primeiro ele devolve as tutorias emprestadas cujo dia
+chegou (e avisa os apps abertos com o tópico `pets`). Depois vêm os lembretes: cada feature com prazo
+registra uma `ReminderSource` (vacinas, antiparasitários, retornos de consulta), que diz o item, o
+prazo e o ícone da página do chefe que o aviso abre. Às 9h de Brasília, o `tick` grava em `reminders_sent` o estágio devido (30 dias, 7 dias,
 no dia, 24 h depois para o reserva) e envia o push, tudo na mesma transação. Um estágio já gravado não
 é enviado de novo. A frase vem de `src/domain` (voz-dos-chefes.md), nunca do servidor.
+
+## A página do pet sitter
+
+A única leitura sem sessão. `GET /api/temporario/<token>` (e `.../foto/<petId>`) vai direto ao
+`Group`, que só responde se o link existe, não foi desativado e não venceu (no dia de Brasília), e
+devolve só os campos de `SitterManualView`. No app, `/temporario/<token>` é desenhado antes do login.
+Ver ADR-010.
 
 ## Migrações
 

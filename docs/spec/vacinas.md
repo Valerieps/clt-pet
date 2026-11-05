@@ -4,13 +4,13 @@ A carteirinha de vacinação de cada chefe, com protocolo, reforço e status.
 
 - **Entra aqui:** registro de vacina, protocolos por espécie, cálculo do reforço, status e registro
   em grupo.
-- **Não entra aqui:** os avisos (`lembretes.md`) e vermífugos e antipulgas (fase 2).
+- **Não entra aqui:** os avisos (`lembretes.md`) e vermífugos, antipulgas e a coleira repelente
+  (`cuidados.md`).
 
 ## Em aberto
 
 - [ ] A Berenice e o Panda já têm vacinas aplicadas? Se sim, quais e quando (para eu cadastrar a
   primeira data)?
-- [ ] A coleira repelente da Paçoca (leishmaniose) fica aqui ou só na fase 2, com os parasitas?
 
 ## Registro
 
@@ -29,8 +29,8 @@ A carteirinha de vacinação de cada chefe, com protocolo, reforço e status.
   | Gato | V4 ou V5, antirrábica, FeLV |
   | Cachorro | V8 ou V10, antirrábica, gripe (tosse dos canis), giárdia, leishmaniose |
 
-- Leishmaniose (Paçoca): Minas Gerais é área endêmica. Eu registro a vacina e a coleira repelente,
-  cada uma com a sua validade. *(1)*
+- Leishmaniose (Paçoca): Minas Gerais é área endêmica. Eu registro a vacina aqui e a coleira
+  repelente em `cuidados.md`, cada uma com a sua validade. *(1, coleira 2)*
 
 ## Status
 

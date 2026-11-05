@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import type { MeView } from '../../application/api-contract';
-import { dailyPhrase, splitByTutor } from '../../domain/mural';
+import { dailyPhrase, isSnoozed, splitByTutor } from '../../domain/mural';
 import { dateLabel, dueLabel, initialOf } from '../../domain/navigation';
 import { strings } from '../../domain/strings';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
@@ -15,8 +16,15 @@ export function Mural({ me }: { me: MeView }) {
   // "Meus chefes" first; inside each group the original order (and so the auras) is kept.
   const mine = new Set(splitByTutor(chefes.map((c) => c.pet), me.id).mine.map((p) => p.id));
   const ordered = [...chefes.filter((c) => mine.has(c.pet.id)), ...chefes.filter((c) => !mine.has(c.pet.id))];
-  const attention = ordered.filter((c) => c.status.needsAttention);
-  const calm = ordered.filter((c) => !c.status.needsAttention);
+  const [snoozes, setSnoozes] = useState<Record<string, string>>(readSnoozes);
+  const snoozed = (c: Chefe) => isSnoozed(snoozes[c.pet.id] ?? null, today);
+  const attention = ordered.filter((c) => c.status.needsAttention && !snoozed(c));
+  const calm = ordered.filter((c) => !c.status.needsAttention || snoozed(c));
+  const snooze = (petId: string) => {
+    const next = { ...snoozes, [petId]: today };
+    setSnoozes(next);
+    writeSnoozes(next);
+  };
 
   return (
     <>
@@ -46,7 +54,7 @@ export function Mural({ me }: { me: MeView }) {
           </>
         )}
         {attention.map((chefe) => (
-          <AttentionCard key={chefe.pet.id} chefe={chefe} today={today} />
+          <AttentionCard key={chefe.pet.id} chefe={chefe} today={today} onSnooze={() => snooze(chefe.pet.id)} />
         ))}
         {calm.map((chefe) => (
           <CalmLine key={chefe.pet.id} chefe={chefe} today={today} />
@@ -60,7 +68,27 @@ function phraseOf({ pet, status }: Chefe, today: string): string | null {
   return dailyPhrase({ id: pet.id, name: pet.profile.name, seriousMode: pet.seriousMode, allergiesAnswered: pet.allergiesAnswered }, status, today);
 }
 
-function AttentionCard({ chefe, today }: { chefe: Chefe; today: string }) {
+const SNOOZE_KEY = 'clt-pet:lembrar-amanha';
+
+/** Snoozes live on this device only (docs/spec/mural.md); a blocked storage just means no snooze. */
+function readSnoozes(): Record<string, string> {
+  try {
+    const parsed: unknown = JSON.parse(window.localStorage.getItem(SNOOZE_KEY) ?? '{}');
+    return parsed && typeof parsed === 'object' ? (parsed as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeSnoozes(value: Record<string, string>): void {
+  try {
+    window.localStorage.setItem(SNOOZE_KEY, JSON.stringify(value));
+  } catch {
+    // Private mode or blocked storage: the snooze lasts until the page reloads.
+  }
+}
+
+function AttentionCard({ chefe, today, onSnooze }: { chefe: Chefe; today: string; onSnooze: () => void }) {
   const { pet, aura, status } = chefe;
   const name = pet.profile.name;
   const phrase = phraseOf(chefe, today);
@@ -88,6 +116,9 @@ function AttentionCard({ chefe, today }: { chefe: Chefe; today: string }) {
             {t.fillAllergies}
           </Link>
         )}
+        <button type="button" className="btn ghost" onClick={onSnooze}>
+          {t.snooze}
+        </button>
       </div>
     </article>
   );
