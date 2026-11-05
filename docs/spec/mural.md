@@ -16,10 +16,14 @@ Nada por enquanto.
   aparece numa linha calma embaixo, com a frase do dia. *(1)*
 - Os chefes de quem está logado vêm primeiro, e eu posso ver todos: os outros aparecem logo depois.
   A regra é a mesma para os dois funcionários. *(1)*
-- Exige atenção quando há vacina atrasada ou a vencer em até 30 dias, ou o cadastro tem alergia
-  em branco. *(1)*
+- Exige atenção quando há vacina atrasada ou a vencer em até 30 dias, o cadastro tem alergia
+  em branco, ou o alerta de peso disparou (`chefes.md`). No card, o motivo é "Peso mudou X%". *(1)*
+- O card tem um só caminho para a página do chefe (o nome) e o botão principal: Registrar, ou
+  Informar alergias quando é o único motivo. *(1)*
 - Tocar no card abre a página do chefe, e o Manual de Sobrevivência fica na alça de baixo, em toda
   tela (`navegacao.md`). *(1)*
 - Quando o único motivo de atenção é a alergia em branco, o card diz "Falta informar as alergias" no
   lugar da frase. *(1)*
 - A frase do dia muda uma vez por dia e não repete a do dia anterior. *(1)*
+- Sem chefes cadastrados, o Mural mostra o botão "Cadastrar o primeiro chefe". Enquanto carrega,
+  mostra blocos cinza no formato dos cards, nunca uma tela em branco. *(1)*

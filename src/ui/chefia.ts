@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { PetView, VaccinationView } from '../application/api-contract';
 import { muralStatus, type MuralStatus } from '../domain/mural';
 import { auraClass } from '../domain/navigation';
+import { weightAlert } from '../domain/pets/weight';
 import { useQuery } from './use-query';
 
 export const todayLocal = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD in the device's time zone
@@ -23,7 +24,8 @@ export function useChefia(): { chefes: readonly Chefe[]; loading: boolean; faile
     return (pets.data ?? []).map((pet, index): Chefe => {
       const doses = (vaccinations.data ?? []).filter((d) => d.petId === pet.id);
       const forMural = { id: pet.id, name: pet.profile.name, seriousMode: pet.seriousMode, allergiesAnswered: pet.allergiesAnswered };
-      return { pet, aura: auraClass(index), status: muralStatus(forMural, doses, today), doses };
+      const alert = weightAlert(pet.weights, pet.weightAlertPercent);
+      return { pet, aura: auraClass(index), status: muralStatus(forMural, doses, today, alert?.percent ?? null), doses };
     });
   }, [pets.data, vaccinations.data]);
   return { chefes, loading: pets.loading && !pets.data, failed: Boolean(pets.error && !pets.data) };

@@ -12,14 +12,16 @@ export interface MuralPet {
 }
 
 export interface MuralStatus {
-  /** "Exige atenção" when a vaccine is late or due within 30 days, or the allergies are blank. */
+  /** "Exige atenção" when a vaccine is late or due within 30 days, the allergies are blank or the weight alert fired. */
   readonly needsAttention: boolean;
   readonly allergiesMissing: boolean;
+  /** The weight alert (docs/spec/pets/weight): the percent the newest weight moved, or null. */
+  readonly weightChange: { readonly percent: number } | null;
   /** The most urgent vaccine: the one whose booster date is earliest. */
   readonly vaccine: { readonly item: string; readonly overdue: boolean; readonly days: number } | null;
 }
 
-export function muralStatus(pet: MuralPet, doses: readonly Dose[], today: string): MuralStatus {
+export function muralStatus(pet: MuralPet, doses: readonly Dose[], today: string, weightAlertPercent: number | null = null): MuralStatus {
   let worst: { item: string; overdue: boolean; due: string } | null = null;
   for (const dose of currentDoses(doses)) {
     const status = vaccineStatus(dose, today);
@@ -29,8 +31,9 @@ export function muralStatus(pet: MuralPet, doses: readonly Dose[], today: string
   }
   const allergiesMissing = !pet.allergiesAnswered;
   return {
-    needsAttention: worst !== null || allergiesMissing,
+    needsAttention: worst !== null || allergiesMissing || weightAlertPercent !== null,
     allergiesMissing,
+    weightChange: weightAlertPercent === null ? null : { percent: weightAlertPercent },
     vaccine: worst && { item: worst.item, overdue: worst.overdue, days: Math.abs(daysBetween(today, worst.due)) },
   };
 }
@@ -46,10 +49,10 @@ const previousDay = (iso: string): string => new Date(Date.parse(`${iso}T00:00:0
 
 /**
  * The phrase of the day: it changes once a day (the draw depends on the date) and avoids the one
- * drawn the day before. Null when the chefe only lacks the allergies, which has no phrase.
+ * drawn the day before. Null when the chefe only lacks the allergies or only has a weight alert, which have no phrase.
  */
 export function dailyPhrase(pet: MuralPet, status: MuralStatus, today: string): string | null {
-  const event = status.vaccine ? (status.vaccine.overdue ? 'overdue' : 'dueSoon') : status.allergiesMissing ? null : 'allGood';
+  const event = status.vaccine ? (status.vaccine.overdue ? 'overdue' : 'dueSoon') : status.allergiesMissing || status.weightChange ? null : 'allGood';
   if (!event) return null;
   const tone = toneFor({ context: 'home', seriousMode: pet.seriousMode, graveCondition: false });
   const draw = (date: string, last: string | null) =>
