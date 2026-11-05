@@ -20,6 +20,11 @@ Nada por enquanto.
 - A página do chefe é enorme: o retrato em arco, de baixo para cima, sob a aura do chefe, e o nome em
   letreiro. Abaixo vêm as exigências, "A seguir" e os botões Registrar e "Tudo que já foi feito".
   *Por quê:* os controles humanos ficam pequenos e na beirada; o animal ocupa a imagem. *(1)*
+- Embaixo, a página do chefe tem três seções que dobram: Histórico (peso e vacinas), Perfil e
+  Tutoria. Só o Histórico começa aberto. No Histórico, o botão Remover de cada linha só aparece
+  depois de "Editar histórico". A foto e as etiquetas ficam dentro do editar perfil. *(1)*
+  *Por quê:* a página tinha oito seções seguidas e um botão vermelho em cada linha, fácil de tocar
+  sem querer.
 - Cada chefe tem uma aura (cor de fundo e luz de sol). São três, repetidas na ordem em que os chefes
   aparecem. O funcionário nunca ganha letreiro: o nome dele aparece em letra comum. *(1)*
 - A grandeza para onde a informação é de segurança: o Manual de Sobrevivência, as alergias e as
