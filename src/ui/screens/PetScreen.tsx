@@ -21,6 +21,7 @@ import {
 import { ALERT_WINDOW_DAYS, formatKilos, latestWeight, parseKilos, weightAlert } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
+import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
 import { BackBar, CameraIcon, Faces, MeLink } from '../parts';
@@ -217,6 +218,7 @@ function PetDetails({ pet, myId, allPets }: { pet: PetView; myId: string; allPet
 
 function PhotoControls({ pet }: { pet: PetView }) {
   const toast = useToast();
+  const confirm = useConfirm();
   const { backend } = useServices();
   const [error, setError] = useState<string | null>(null);
 
@@ -232,7 +234,7 @@ function PhotoControls({ pet }: { pet: PetView }) {
   }
 
   async function remove() {
-    if (!window.confirm(t.photo.removeConfirm)) return;
+    if (!(await confirm(t.photo.removeConfirm))) return;
     const result = await backend.command('pet.setPhoto', { petId: pet.id, image: null });
     if (result.ok) toast(strings.toast.photoRemoved(pet.profile.name));
     setError(result.ok ? null : strings.genericError);
@@ -579,6 +581,7 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
 
 function Weight({ pet }: { pet: PetView }) {
   const toast = useToast();
+  const confirm = useConfirm();
   const { backend } = useServices();
   const [kilos, setKilos] = useState('');
   const [date, setDate] = useState(todayLocal());
@@ -601,7 +604,7 @@ function Weight({ pet }: { pet: PetView }) {
   }
 
   async function remove(weightId: string) {
-    if (!window.confirm(t.weight.removeConfirm)) return;
+    if (!(await confirm(t.weight.removeConfirm))) return;
     const result = await backend.command('weight.remove', { weightId });
     setError(result.ok ? null : strings.genericError);
   }

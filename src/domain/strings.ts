@@ -198,6 +198,11 @@ export const strings = {
     },
   },
 
+  confirm: {
+    cancel: 'Cancelar',
+    remove: 'Remover',
+  },
+
   toast: {
     weight: (name: string) => `Peso de ${name} registrado.`,
     vaccine: (name: string) => `Vacina de ${name} registrada.`,

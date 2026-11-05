@@ -11,6 +11,7 @@ import {
   vaccineStatus,
 } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
+import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
 
@@ -19,6 +20,7 @@ const todayLocal = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD i
 
 export function Vaccines({ pet, allPets }: { pet: PetView; allPets: readonly PetView[] }) {
   const toast = useToast();
+  const confirm = useConfirm();
   const { backend } = useServices();
   const all = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
   const doses = (all.data ?? []).filter((v) => v.petId === pet.id);
@@ -59,7 +61,7 @@ export function Vaccines({ pet, allPets }: { pet: PetView; allPets: readonly Pet
   }
 
   async function remove(vaccinationId: string) {
-    if (!window.confirm(t.removeConfirm)) return;
+    if (!(await confirm(t.removeConfirm))) return;
     const result = await backend.command('vaccine.remove', { vaccinationId });
     setError(result.ok ? null : strings.genericError);
   }
