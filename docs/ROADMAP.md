@@ -13,7 +13,6 @@ O que ainda não está pronto.
 | --- | --- | --- | --- |
 | Modo sério: o interruptor por chefe na tela do chefe | 1 | `spec/voz-dos-chefes.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase nos lembretes e no Mural quando eles forem feitos |
 | Cartão SOS | 1 | `spec/cartao-sos.md` | A dois toques de qualquer tela |
-| Carteirinha de vacinação | 1 | `spec/vacinas.md` | Protocolos por espécie e registro em grupo |
 | Lembretes por push | 1 | `spec/lembretes.md` | ADR-008; chaves VAPID, service worker e cron |
 | Mural da Chefia | 1 | `spec/mural.md` | Troca a tela `Home` de exemplo |
 | Fases 2, 3 e 4 | 2 a 4 | `SPEC.md` | Cada uma ganha seus arquivos em `spec/` na vez dela |
@@ -26,7 +25,16 @@ Nada por enquanto.
 
 - Frases por funcionário (só o Cesar ou só eu vemos) — decidir se entram na fase 1 ou na 2.
 
+- Foto do selo da vacina (`spec/vacinas.md`, "Registro"): o registro já guarda lote, fabricante e
+  veterinário; falta anexar a foto.
+- "Atrasada" como "Advertência" na voz do chefe (`spec/vacinas.md`, "Status"): entra com a voz nos
+  lembretes e no Mural.
+
 ## Revisar as lacunas que o agente decidiu
+
+- [ ] `spec/vacinas.md`: todo reforço começa em 365 dias (editável em cada registro); o status de cada
+  vacina vem da última aplicação dela; o nome da vacina é livre, com os protocolos da espécie como
+  sugestão.
 
 - [ ] `spec/lembretes.md`: o aviso chega às 9h, no fuso de Brasília.
 - [ ] `spec/chefes.md`: só nome e espécie são obrigatórios no cadastro; os tutores são ligados pelos

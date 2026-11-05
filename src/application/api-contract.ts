@@ -54,6 +54,19 @@ export interface PetView {
   readonly weights: readonly WeightEntryView[];
 }
 
+export interface VaccinationView {
+  readonly id: string;
+  readonly petId: string;
+  readonly vaccine: string;
+  /** YYYY-MM-DD. */
+  readonly appliedOn: string;
+  readonly intervalDays: number;
+  readonly lot: string | null;
+  readonly maker: string | null;
+  readonly vet: string | null;
+  readonly byName: string;
+}
+
 /** Where a chefe's photo is served (GET, signed-in members only). */
 export const petPhotoPath = (petId: string, version: string) => `/api/pets/${petId}/photo?v=${encodeURIComponent(version)}`;
 
@@ -67,6 +80,8 @@ export type PetUpdate = { petId: string; weightAlertPercent: number } & PetProfi
 export interface Queries {
   /** The chefes that are not retired, with weights. */
   pets: { input: Record<string, never>; output: PetView[] };
+  /** Every dose registered for the chefes that are not retired, oldest application first. */
+  vaccinations: { input: Record<string, never>; output: VaccinationView[] };
   me: { input: Record<string, never>; output: MeView };
   members: { input: Record<string, never>; output: MemberListItem[] };
   /** Admins only. */
@@ -91,13 +106,27 @@ export interface Commands {
   'pet.setTags': { input: { petId: string; tags: string[] }; output: PetView };
   'weight.add': { input: { petId: string; grams: number; onDate: string }; output: PetView };
   'weight.remove': { input: { weightId: string }; output: PetView };
+  /** One dose for every chefe in `petIds`; only `vaccine` and `appliedOn` are required. */
+  'vaccine.add': {
+    input: {
+      petIds: string[];
+      vaccine: string;
+      appliedOn: string;
+      intervalDays?: number;
+      lot?: string | null;
+      maker?: string | null;
+      vet?: string | null;
+    };
+    output: VaccinationView[];
+  };
+  'vaccine.remove': { input: { vaccinationId: string }; output: null };
 }
 
 export type QueryName = keyof Queries;
 export type CommandName = keyof Commands;
 
 /** What a live message says changed; the screens that show it refetch. */
-export type Topic = 'me' | 'members' | 'invites' | 'pets';
+export type Topic = 'me' | 'members' | 'invites' | 'pets' | 'vaccinations';
 
 export interface LiveMessage {
   readonly type: 'changed';

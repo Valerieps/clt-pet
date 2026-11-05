@@ -19,6 +19,7 @@ import {
 import type { Clock, IdGenerator, Sql } from './ports';
 import { addWeight, linkTutor, listPets, photoOf, removeWeight, setPhoto, setTags, setTutor, updatePet } from './pets';
 import { migrate } from './schema';
+import { addVaccination, listVaccinations, removeVaccination } from './vaccines';
 
 type Input = Record<string, unknown>;
 
@@ -30,6 +31,7 @@ const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | n
   members: (ctx) => listMembers(ctx),
   invites: (ctx, actor) => listInvites(ctx, actor),
   pets: (ctx) => listPets(ctx),
+  vaccinations: (ctx) => listVaccinations(ctx),
 };
 
 /** Every command the API runs; each checks the actor's role itself. */
@@ -45,6 +47,8 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'pet.setTags': setTags,
   'weight.add': addWeight,
   'weight.remove': removeWeight,
+  'vaccine.add': addVaccination,
+  'vaccine.remove': removeVaccination,
 };
 
 export class GroupService {

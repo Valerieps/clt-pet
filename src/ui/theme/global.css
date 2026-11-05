@@ -208,6 +208,15 @@ h2 {
   font-size: 0.85rem;
 }
 
+[data-status="overdue"] {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+[data-status="soon"] {
+  color: var(--color-brand);
+  font-weight: 600;
+}
+
 .pet-photo {
   flex: none;
   width: 72px;

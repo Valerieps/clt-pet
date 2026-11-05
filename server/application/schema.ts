@@ -95,6 +95,23 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       updated_at TEXT NOT NULL
     )`,
   ],
+  // 4: the vaccination card (docs/spec/vacinas.md). The booster date is computed from
+  // `applied_on` + `interval_days`, never stored.
+  [
+    `CREATE TABLE vaccinations (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      vaccine TEXT NOT NULL,
+      applied_on TEXT NOT NULL,
+      interval_days INTEGER NOT NULL,
+      lot TEXT,
+      maker TEXT,
+      vet TEXT,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX vaccinations_pet ON vaccinations(pet_id, applied_on)`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {
