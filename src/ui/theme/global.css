@@ -560,6 +560,12 @@ button[aria-pressed='true'] {
   color: var(--color-on-text);
 }
 
+.btn.danger-fill {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: var(--color-bg);
+}
+
 button.danger {
   border-color: var(--color-danger);
   color: var(--color-danger);

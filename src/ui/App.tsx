@@ -16,6 +16,7 @@ import { RegisterDrawer } from './screens/Register';
 import { Settings } from './screens/Settings';
 import { SignIn } from './screens/SignIn';
 import { Manual } from './screens/Sos';
+import { ConfirmProvider } from './confirm';
 import { ToastProvider } from './toast';
 import { useQuery } from './use-query';
 
@@ -65,7 +66,9 @@ export function App() {
 
   return (
     <ToastProvider>
-      <Shell me={me.data} onSignOut={() => void signOut()} />
+      <ConfirmProvider>
+        <Shell me={me.data} onSignOut={() => void signOut()} />
+      </ConfirmProvider>
     </ToastProvider>
   );
 }

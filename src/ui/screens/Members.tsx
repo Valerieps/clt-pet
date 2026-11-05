@@ -3,6 +3,7 @@ import type { ApiError, MeView, MemberListItem } from '../../application/api-con
 import { canManageGroup, isAdmin } from '../../domain/group/roles';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
+import { useConfirm } from '../confirm';
 import { useQuery } from '../use-query';
 
 function errorText(error: ApiError): string {
@@ -12,6 +13,7 @@ function errorText(error: ApiError): string {
 }
 
 export function Members({ me }: { me: MeView }) {
+  const confirm = useConfirm();
   const { backend } = useServices();
   const members = useQuery('members', {}, ['members']);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export function Members({ me }: { me: MeView }) {
   }
 
   async function remove(member: MemberListItem) {
-    if (!window.confirm(strings.members.removeConfirm(member.name))) return;
+    if (!(await confirm(strings.members.removeConfirm(member.name)))) return;
     setBusy(member.id);
     const result = await backend.command('member.remove', { memberId: member.id });
     setBusy(null);
