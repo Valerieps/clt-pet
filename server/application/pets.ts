@@ -31,6 +31,7 @@ interface PetRow {
   vet_phone: string | null;
   clinic_name: string | null;
   clinic_phone: string | null;
+  clinic_address: string | null;
   plan_name: string | null;
   plan_number: string | null;
 }
@@ -78,6 +79,7 @@ function toView(ctx: Context, row: PetRow): PetView {
       vetPhone: row.vet_phone,
       clinicName: row.clinic_name,
       clinicPhone: row.clinic_phone,
+      clinicAddress: row.clinic_address,
       planName: row.plan_name,
       planNumber: row.plan_number,
     },
@@ -181,11 +183,12 @@ export function setEmergency(ctx: Context, _actor: Member, input: Record<string,
   const emergency = normalizeEmergency(input);
   if (!emergency) return failure('invalid');
   ctx.sql.run(
-    `UPDATE pets SET vet_name = ?, vet_phone = ?, clinic_name = ?, clinic_phone = ?, plan_name = ?, plan_number = ? WHERE id = ?`,
+    `UPDATE pets SET vet_name = ?, vet_phone = ?, clinic_name = ?, clinic_phone = ?, clinic_address = ?, plan_name = ?, plan_number = ? WHERE id = ?`,
     emergency.vetName,
     emergency.vetPhone,
     emergency.clinicName,
     emergency.clinicPhone,
+    emergency.clinicAddress,
     emergency.planName,
     emergency.planNumber,
     pet.id,

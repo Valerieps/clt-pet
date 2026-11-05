@@ -141,6 +141,8 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       PRIMARY KEY (pet_id, item, due_on, stage)
     )`,
   ],
+  // 7: the address of the 24 h clinic, for the Cartão SOS (docs/spec/cartao-sos.md).
+  [`ALTER TABLE pets ADD COLUMN clinic_address TEXT`],
 ];
 
 export function migrate(sql: Sql): void {

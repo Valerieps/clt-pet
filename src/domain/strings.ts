@@ -44,6 +44,8 @@ export const strings = {
     callClinic: (name: string | null) => `Ligar para a clínica 24 h${name ? ` (${name})` : ''}`,
     noVet: 'Veterinário principal: não informado',
     noClinic: 'Clínica 24 h: não informada',
+    clinicAddress: 'Endereço da clínica',
+    address: (address: string) => `Endereço: ${address}`,
     plan: 'Plano de saúde ou convênio',
     planLine: (name: string | null, number: string | null) => [name, number && `nº ${number}`].filter(Boolean).join(' · '),
     noPlan: 'Sem plano ou convênio informado',
