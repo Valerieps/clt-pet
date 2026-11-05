@@ -27,8 +27,12 @@ Nada por enquanto.
 - O Manual de Sobrevivência tem uma alça fixa na borda de baixo de todas as telas. Abre como uma
   gaveta sobre a tela em que eu estou, já no chefe dela (ou no primeiro, se eu estou no Mural), com
   um botão por chefe para trocar. Fechar volta para a tela de antes. *(1)*
-- Registrar abre uma gaveta com o que dá para registrar para aquele chefe: vacina e peso levam ao
-  formulário na página do chefe. O que ainda não existe aparece apagado, com a fase em que entra. *(1)*
+- Registrar abre uma gaveta com o que dá para registrar para aquele chefe. Vacina e peso abrem o
+  formulário dentro da própria gaveta; ao salvar, a gaveta fecha e um aviso curto confirma. Do Mural
+  a um peso salvo são três toques: Registrar, Peso, Salvar. A página do chefe só mostra o histórico
+  (sem formulário). O que ainda não existe aparece apagado, com a fase em que entra. *(1)*
+  *Por quê:* registrar é o laço que repetimos todo dia; não pode exigir rolar a página.
+
 
 ## Fora da fase 1
 

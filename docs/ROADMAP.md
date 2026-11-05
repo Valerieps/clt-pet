@@ -41,8 +41,8 @@ Nada por enquanto.
   branco; os dois funcionários veem os próprios chefes primeiro; o formulário do nome e o aviso no
   celular ficam nas Configurações.
 - [ ] `spec/navegacao.md`: as três auras (Berenice, Panda, Paçoca no desenho) são dadas na ordem em
-  que os chefes aparecem, não pelas tags; o modo escuro continua, com as auras iguais; o scroll da
-  gaveta de Registrar usa as seções de vacina e peso da página do chefe, sem formulário próprio.
+  que os chefes aparecem, não pelas tags; o modo escuro continua, com as auras iguais; os formulários
+  de vacina e peso ficam dentro da gaveta de Registrar (decidido pela Valéria).
 - [ ] `spec/vacinas.md`: só a vacina e a data são obrigatórias no registro.
 - [ ] `spec/acesso-e-membros.md`: eu e o Cesar somos os dois admins.
 - [ ] `spec/chefes.md`: o peso aceita de 100 g a 150 kg, nunca com data futura (no horário de

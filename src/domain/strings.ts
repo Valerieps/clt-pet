@@ -243,6 +243,7 @@ export const strings = {
       maker: 'Fabricante',
       vet: 'Veterinário ou clínica',
       together: 'Registrar também para',
+      moreDetails: 'Mais detalhes (lote, fabricante, veterinário)',
       add: 'Registrar vacina',
       invalid: 'Essa vacina, essa data ou esse intervalo não parecem certos.',
     },

@@ -449,6 +449,17 @@ a:hover {
   text-decoration: none;
 }
 
+button.item {
+  width: 100%;
+  border-radius: 0;
+  border-width: 0 0 1px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
 .item:hover {
   color: inherit;
 }
