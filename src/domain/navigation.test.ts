@@ -23,6 +23,10 @@ describe('nameSize', () => {
     expect(nameSize('Berenice')).toBeLessThan(nameSize('Paçoca'));
     expect(nameSize('Paçoca')).toBeLessThan(NAME_SIZE_MAX);
   });
+  it('keeps a 20-letter name narrower than a small phone', () => {
+    // Anton capitals are about 0.42em wide; 343px is a 375px screen minus the hero gutters.
+    expect(nameSize('A'.repeat(20)) * 0.42 * 20).toBeLessThanOrEqual(343);
+  });
   it('never goes below the minimum', () => {
     expect(nameSize('Sebastiana da Silva Pereira Souza')).toBe(NAME_SIZE_MIN);
   });
