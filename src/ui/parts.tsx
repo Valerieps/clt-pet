@@ -66,7 +66,7 @@ export function BackBar({ to, label = strings.nav.back }: { to: string; label?: 
 export function ManualHandle({ to }: { to: string }) {
   return (
     <Link to={to} className="handle">
-      <span className="grip" />
+      <Icon path="M6 15l6-6 6 6" className="chevron" />
       <span className="handle-row">
         <HeartbeatIcon />
         {strings.nav.manual}
