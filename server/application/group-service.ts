@@ -17,6 +17,7 @@ import {
   type SignInResult,
 } from './members';
 import type { Clock, IdGenerator, Sql } from './ports';
+import { addWeight, linkTutor, listPets, removeWeight, setTutor, updatePet } from './pets';
 import { migrate } from './schema';
 
 type Input = Record<string, unknown>;
@@ -28,6 +29,7 @@ const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | n
   me: (_ctx, actor) => me(actor),
   members: (ctx) => listMembers(ctx),
   invites: (ctx, actor) => listInvites(ctx, actor),
+  pets: (ctx) => listPets(ctx),
 };
 
 /** Every command the API runs; each checks the actor's role itself. */
@@ -37,6 +39,10 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'member.setRoles': setRoles,
   'member.remove': removeMember,
   'member.rename': rename,
+  'pet.update': updatePet,
+  'pet.setTutor': setTutor,
+  'weight.add': addWeight,
+  'weight.remove': removeWeight,
 };
 
 export class GroupService {
@@ -51,7 +57,9 @@ export class GroupService {
   }
 
   signIn(profile: GoogleProfile, sessionHash: string, bootstrapAdminEmails: readonly string[]): SignInResult {
-    return signIn(this.ctx, profile, sessionHash, bootstrapAdminEmails);
+    const result = signIn(this.ctx, profile, sessionHash, bootstrapAdminEmails);
+    if (result.ok) this.ctx.sql.transaction(() => linkTutor(this.ctx, result.memberId, profile.email));
+    return result;
   }
 
   signOut(sessionHash: string): void {

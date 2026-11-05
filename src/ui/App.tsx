@@ -7,6 +7,8 @@ import { Link, navigate, usePath } from './router';
 import { Home } from './screens/Home';
 import { Invites } from './screens/Invites';
 import { Members } from './screens/Members';
+import { PetScreen } from './screens/PetScreen';
+import { Pets } from './screens/Pets';
 import { SignIn } from './screens/SignIn';
 import { useQuery } from './use-query';
 
@@ -56,13 +58,14 @@ function Navigation({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
   const path = usePath();
   const tabs = [
     { path: '/', label: strings.nav.home },
+    { path: '/chefes', label: strings.nav.pets },
     { path: '/membros', label: strings.nav.members },
     ...(canManageGroup(me) ? [{ path: '/convites', label: strings.nav.invites }] : []),
   ];
   return (
     <nav className="row tabs" aria-label={strings.nav.main}>
       {tabs.map((tab) => (
-        <Link key={tab.path} to={tab.path} aria-current={path === tab.path ? 'page' : undefined}>
+        <Link key={tab.path} to={tab.path} aria-current={path === tab.path || (tab.path === '/chefes' && path.startsWith('/chefes/')) ? 'page' : undefined}>
           {tab.label}
         </Link>
       ))}
@@ -87,6 +90,8 @@ function OfflineNotice() {
 function Screen({ me }: { me: MeView }) {
   const path = usePath();
   if (path === '/membros') return <Members me={me} />;
+  if (path === '/chefes') return <Pets />;
+  if (path.startsWith('/chefes/')) return <PetScreen petId={decodeURIComponent(path.slice('/chefes/'.length))} myId={me.id} />;
   if (path === '/convites' && canManageGroup(me)) return <Invites />;
   return <Home me={me} />;
 }

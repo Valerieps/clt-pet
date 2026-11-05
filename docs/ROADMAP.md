@@ -11,8 +11,7 @@ O que ainda não está pronto.
 
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
-| Chefes: perfil, tutoria, alergias e dados iniciais dos três | 1 | `spec/chefes.md` | Migração com a tabela de chefes e os três chefes de partida |
-| Peso: registro, gráfico e alerta de variação | 1 | `spec/chefes.md` | |
+| Chefes: foto, idade estimada e a edição das tags | 1 | `spec/chefes.md` | O resto do perfil, a tutoria, as alergias e o peso já estão prontos; a foto precisa de um lugar para guardar (ADR); as tags entram com a voz |
 | Voz dos chefes: tags, frases base e modo sério | 1 | `spec/voz-dos-chefes.md` | Frases em `src/domain`, com testes |
 | Cartão SOS | 1 | `spec/cartao-sos.md` | A dois toques de qualquer tela |
 | Carteirinha de vacinação | 1 | `spec/vacinas.md` | Protocolos por espécie e registro em grupo |
@@ -37,3 +36,7 @@ Nada por enquanto.
   branco.
 - [ ] `spec/vacinas.md`: só a vacina e a data são obrigatórias no registro.
 - [ ] `spec/acesso-e-membros.md`: eu e o Cesar somos os dois admins.
+- [ ] `spec/chefes.md`: o peso aceita de 100 g a 150 kg, nunca com data futura (no horário de
+  Brasília); o aviso de variação compara o peso mais recente com os dos 60 dias anteriores e o
+  limite vai de 1% a 50% por chefe; as alergias contam como preenchidas depois do primeiro
+  salvamento do perfil; qualquer funcionário pode apagar um registro de peso.
