@@ -95,7 +95,33 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       updated_at TEXT NOT NULL
     )`,
   ],
-  // 4: the push subscriptions (one per device) and which reminder stages already went out
+  // 4: the vaccination card (docs/spec/vacinas.md). The booster date is computed from
+  // `applied_on` + `interval_days`, never stored.
+  [
+    `CREATE TABLE vaccinations (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      vaccine TEXT NOT NULL,
+      applied_on TEXT NOT NULL,
+      interval_days INTEGER NOT NULL,
+      lot TEXT,
+      maker TEXT,
+      vet TEXT,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX vaccinations_pet ON vaccinations(pet_id, applied_on)`,
+  ],
+  // 5: each chefe's vet, 24 h clinic and health plan, for the Cartão SOS (docs/spec/cartao-sos.md).
+  [
+    `ALTER TABLE pets ADD COLUMN vet_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN vet_phone TEXT`,
+    `ALTER TABLE pets ADD COLUMN clinic_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN clinic_phone TEXT`,
+    `ALTER TABLE pets ADD COLUMN plan_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN plan_number TEXT`,
+  ],
+  // 6: the push subscriptions (one per device) and which reminder stages already went out
   // (docs/spec/lembretes.md).
   [
     `CREATE TABLE push_subscriptions (

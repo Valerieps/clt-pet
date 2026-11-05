@@ -22,6 +22,7 @@ import { PetPhoto } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
 import { Link } from '../router';
 import { useQuery } from '../use-query';
+import { Vaccines } from './Vaccines';
 import { WeightChart } from './WeightChart';
 
 const t = strings.pets;
@@ -38,7 +39,7 @@ export function PetScreen({ petId, myId }: { petId: string; myId: string }) {
       </p>
       {pets.error && !pets.data && <p className="notice">{strings.genericError}</p>}
       {pets.data && !pet && <p className="notice">{t.notFound}</p>}
-      {pet && <PetDetails pet={pet} myId={myId} />}
+      {pet && <PetDetails pet={pet} myId={myId} allPets={pets.data ?? []} />}
     </section>
   );
 }
@@ -49,7 +50,7 @@ function birthText(birthDate: string, estimated: boolean): string {
   return estimated ? t.profile.ageEstimated(age) : `${formatDate(birthDate)} · ${t.profile.age(age)}`;
 }
 
-function PetDetails({ pet, myId }: { pet: PetView; myId: string }) {
+function PetDetails({ pet, myId, allPets }: { pet: PetView; myId: string; allPets: readonly PetView[] }) {
   const [editing, setEditing] = useState(false);
   const { profile } = pet;
   const missing = missingFields(profile, pet.allergiesAnswered);
@@ -87,6 +88,7 @@ function PetDetails({ pet, myId }: { pet: PetView; myId: string }) {
       {editing ? <ProfileForm pet={pet} onDone={() => setEditing(false)} /> : <ProfileSummary pet={pet} onEdit={() => setEditing(true)} />}
       <Tutoria pet={pet} myId={myId} />
       <Weight pet={pet} />
+      <Vaccines pet={pet} allPets={allPets} />
     </>
   );
 }

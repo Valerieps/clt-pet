@@ -63,6 +63,11 @@ a {
   text-decoration: none;
 }
 
+.tabs a.sos-link {
+  font-weight: 700;
+  color: var(--color-danger);
+}
+
 .tabs a[aria-current='page'] {
   font-weight: 600;
   border-bottom: 2px solid var(--color-brand);
@@ -206,6 +211,15 @@ h2 {
   border: 1px solid var(--color-border);
   border-radius: 999px;
   font-size: 0.85rem;
+}
+
+[data-status="overdue"] {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+[data-status="soon"] {
+  color: var(--color-brand);
+  font-weight: 600;
 }
 
 .pet-photo {

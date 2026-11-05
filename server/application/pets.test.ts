@@ -94,6 +94,40 @@ describe('pet.update', () => {
   });
 });
 
+describe('pet.setEmergency', () => {
+  const contacts = (petId: string) => ({
+    petId,
+    vetName: 'Dra. Ana',
+    vetPhone: '(11) 91234-5678',
+    clinicName: 'Clínica 24 h',
+    clinicPhone: '11 3000-1234',
+    planName: 'Petlove',
+    planNumber: '99887',
+  });
+
+  it('is per chefe and starts blank', () => {
+    expect(pet('Panda').emergency).toEqual({ vetName: null, vetPhone: null, clinicName: null, clinicPhone: null, planName: null, planNumber: null });
+    const result = service.command('h-c', 'pet.setEmergency', contacts(pet('Panda').id));
+    expect(result).toMatchObject({ ok: true, changed: ['pets'], value: { emergency: { vetName: 'Dra. Ana', planNumber: '99887' } } });
+    expect(pet('Panda').emergency.clinicPhone).toBe('11 3000-1234');
+    expect(pet('Berenice').emergency.vetName).toBeNull();
+  });
+
+  it('clears what is left blank', () => {
+    const { id } = pet('Panda');
+    service.command('h-v', 'pet.setEmergency', contacts(id));
+    service.command('h-v', 'pet.setEmergency', { petId: id, vetName: 'Dra. Ana', vetPhone: '' });
+    expect(pet('Panda').emergency).toMatchObject({ vetName: 'Dra. Ana', vetPhone: null, clinicPhone: null, planName: null });
+  });
+
+  it('refuses bad phones, unknown chefes and strangers', () => {
+    const { id } = pet('Panda');
+    expect(service.command('h-v', 'pet.setEmergency', { ...contacts(id), vetPhone: 'abc' })).toEqual({ ok: false, error: 'invalid' });
+    expect(service.command('h-v', 'pet.setEmergency', contacts('nope'))).toEqual({ ok: false, error: 'not_found' });
+    expect(service.command('nobody', 'pet.setEmergency', contacts(id))).toEqual({ ok: false, error: 'unauthenticated' });
+  });
+});
+
 describe('pet.setTutor', () => {
   it('hands the chefe to another active member', () => {
     const cesar = (service.query('h-c', 'me', {}) as { value: { id: string } }).value;
