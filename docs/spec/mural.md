@@ -40,7 +40,7 @@ Nada por enquanto.
 - O balão de quem exige atenção tem também "Lembrar amanhã" (`navegacao.md`); adiado, ele vira
   balão branco (ou colorido com o selo) até o dia seguinte. *(2)*
 - O Cartão de Saúde fica na alça de baixo, em toda tela (`navegacao.md`). *(1)*
-- Quando o único motivo de atenção é a alergia em branco, o balão diz "Falta informar as alergias"
+- Quando o único motivo de atenção é a alergia em branco, o balão diz "Falta informar as minhas alergias"
   no lugar da frase. *(1)*
 - A frase do dia muda uma vez por dia e não repete a do dia anterior. *(1)*
 - Sem chefes cadastrados, o Mural mostra o botão "Cadastrar o primeiro chefe". Enquanto carrega,
