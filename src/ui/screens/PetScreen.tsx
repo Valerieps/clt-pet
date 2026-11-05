@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import type { MeView, PetUpdate, PetView } from '../../application/api-contract';
 import { nameSize, dueLabel } from '../../domain/navigation';
 import { daysBetween } from '../../domain/reminders/reminders';
@@ -100,9 +100,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
           </Link>
         </div>
         <Summary chefe={chefe} />
-        <div id="historico">
-          <PetDetails pet={pet} myId={me.id} />
-        </div>
+        <PetDetails pet={pet} myId={me.id} />
       </main>
     </>
   );
@@ -157,7 +155,7 @@ function Summary({ chefe }: { chefe: Chefe }) {
             </Link>
           ))}
           {status.allergiesMissing && (
-            <Link to={`/chefes/${pet.id}#historico`} className="item">
+            <Link to={`/chefes/${pet.id}#perfil`} className="item">
               <p>{t.allergiesTitle}</p>
               <span className="when">{mural.allergiesPill}</span>
             </Link>
@@ -190,29 +188,65 @@ function birthText(birthDate: string, estimated: boolean): string {
 
 function PetDetails({ pet, myId }: { pet: PetView; myId: string }) {
   const [editing, setEditing] = useState(false);
+  const [editingHistory, setEditingHistory] = useState(false);
   const { profile } = pet;
   const missing = missingFields(profile, pet.allergiesAnswered);
+  const s = strings.chefe.sections;
 
   return (
     <>
-      <PhotoControls pet={pet} />
-      <Tags pet={pet} />
+      <Fold id="historico" title={s.history} also={['peso', 'vacinas']} defaultOpen>
+        <div>
+          <button type="button" className="secondary" onClick={() => setEditingHistory((v) => !v)}>
+            {editingHistory ? strings.chefe.doneEditing : strings.chefe.editHistory}
+          </button>
+        </div>
+        <div id="peso">
+          <Weight pet={pet} removable={editingHistory} />
+        </div>
+        <div id="vacinas">
+          <Vaccines pet={pet} removable={editingHistory} />
+        </div>
+      </Fold>
 
-      {missing.length > 0 && (
-        <p className="notice">
-          {t.missingTitle} {missing.map((m) => t.missing[m]).join(', ')}.
-        </p>
-      )}
+      <Fold id="perfil" title={s.profile}>
+        {missing.length > 0 && (
+          <p className="notice">
+            {t.missingTitle} {missing.map((m) => t.missing[m]).join(', ')}.
+          </p>
+        )}
+        {editing ? (
+          <>
+            <PhotoControls pet={pet} />
+            <Tags pet={pet} />
+            <ProfileForm pet={pet} onDone={() => setEditing(false)} />
+          </>
+        ) : (
+          <ProfileSummary pet={pet} onEdit={() => setEditing(true)} />
+        )}
+      </Fold>
 
-      {editing ? <ProfileForm pet={pet} onDone={() => setEditing(false)} /> : <ProfileSummary pet={pet} onEdit={() => setEditing(true)} />}
-      <Tutoria pet={pet} myId={myId} />
-      <div id="peso">
-        <Weight pet={pet} />
-      </div>
-      <div id="vacinas">
-        <Vaccines pet={pet} />
-      </div>
+      <Fold id="tutoria" title={s.tutoria}>
+        <Tutoria pet={pet} myId={myId} />
+      </Fold>
     </>
+  );
+}
+
+/** A section of the chefe's page that folds. It opens when the page is reached through its link (#id or one of `also`). */
+function Fold({ id, title, also = [], defaultOpen = false, children }: { id: string; title: string; also?: string[]; defaultOpen?: boolean; children: ReactNode }) {
+  const path = usePath();
+  const [open, setOpen] = useState(defaultOpen);
+  const ids = also.join(',');
+  useEffect(() => {
+    const target = window.location.hash.slice(1);
+    if (target === id || (target && ids.split(',').includes(target))) setOpen(true);
+  }, [path, id, ids]);
+  return (
+    <details id={id} className="fold" open={open} onToggle={(event) => setOpen(event.currentTarget.open)}>
+      <summary>{title}</summary>
+      <div className="fold-body">{children}</div>
+    </details>
   );
 }
 
@@ -348,7 +382,6 @@ function ProfileSummary({ pet, onEdit }: { pet: PetView; onEdit: () => void }) {
   ];
   return (
     <>
-      <h2>{t.profile.title}</h2>
       <p className="muted">{t.species[pet.species]}</p>
       <dl>
         {rows.map(([label, value]) => (
@@ -551,7 +584,6 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
 
   return (
     <>
-      <h2>{t.tutoria.title}</h2>
       <p>{pet.tutorName ? t.tutor(pet.tutorName) : t.tutorPending(pet.tutorEmail)}</p>
       <p className="muted">{t.tutoria.reserve}</p>
       {others.length > 0 && (
@@ -579,7 +611,7 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
   );
 }
 
-function Weight({ pet }: { pet: PetView }) {
+function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const [error, setError] = useState<string | null>(null);
@@ -613,9 +645,11 @@ function Weight({ pet }: { pet: PetView }) {
             <span className="grow">
               {formatKilos(w.grams)} · {formatDate(w.onDate)} <span className="muted">{t.weight.by(w.byName)}</span>
             </span>
-            <button type="button" className="secondary danger" onClick={() => void remove(w.id)}>
-              {t.weight.remove}
-            </button>
+            {removable && (
+              <button type="button" className="secondary danger" onClick={() => void remove(w.id)}>
+                {t.weight.remove}
+              </button>
+            )}
           </li>
         ))}
       </ul>

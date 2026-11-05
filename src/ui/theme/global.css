@@ -427,6 +427,42 @@ a:hover {
   background: var(--color-surface);
 }
 
+/* Sections of the chefe's page that fold: the header reads like the list items above. */
+.fold {
+  border-top: 1px solid var(--color-border);
+}
+
+.fold > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.fold > summary::after {
+  content: '+';
+  font-size: 20px;
+  color: var(--color-text-muted);
+}
+
+.fold[open] > summary::after {
+  content: '\2212';
+}
+
+.fold-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: var(--space-4);
+}
+
 .calm-note {
   padding: 12px 14px;
   border-radius: 16px;

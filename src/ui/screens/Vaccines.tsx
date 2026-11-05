@@ -14,7 +14,7 @@ import { useQuery } from '../use-query';
 const t = strings.vaccines;
 const todayLocal = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD in the device's time zone
 
-export function Vaccines({ pet }: { pet: PetView }) {
+export function Vaccines({ pet, removable }: { pet: PetView; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const all = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
@@ -64,9 +64,11 @@ export function Vaccines({ pet }: { pet: PetView }) {
                 <span className="grow">
                   {d.vaccine} · {formatDate(d.appliedOn)} <span className="muted">{[describe(d), t.by(d.byName)].filter(Boolean).join(' · ')}</span>
                 </span>
-                <button type="button" className="secondary danger" onClick={() => void remove(d.id)}>
-                  {t.remove}
-                </button>
+                {removable && (
+                  <button type="button" className="secondary danger" onClick={() => void remove(d.id)}>
+                    {t.remove}
+                  </button>
+                )}
               </li>
             ))}
           </ul>
