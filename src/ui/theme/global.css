@@ -725,6 +725,19 @@ button:disabled {
   background: var(--color-border-strong);
 }
 
+/* A tap opens the Manual; the chevron says "up", not "drag". */
+.handle .chevron {
+  width: 18px;
+  height: 18px;
+  margin-bottom: -6px;
+  stroke: var(--color-text-muted);
+}
+
+/* With the keyboard open the handle would sit on top of the field being filled. */
+.shell:has(input:focus, select:focus, textarea:focus) .handle {
+  display: none;
+}
+
 .handle-row {
   display: flex;
   align-items: center;
