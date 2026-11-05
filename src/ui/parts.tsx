@@ -1,9 +1,10 @@
 // Small pieces shared by the screens: icons, the row of faces, the Manual handle.
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import type { MeView } from '../application/api-contract';
 import { initialOf } from '../domain/navigation';
 import { strings } from '../domain/strings';
 import type { Chefe } from './chefia';
+import { focusableIn, nextFocusIndex } from './focus-trap';
 import { Link } from './router';
 
 function Icon({ path, ...rest }: { path: string; className?: string }) {
@@ -83,8 +84,49 @@ export function Toast({ message }: { message: string | null }) {
   );
 }
 
+/**
+ * A modal layer (drawer): focus moves into its dialog, Tab stays inside, the rest of the screen is inert
+ * meanwhile, and focus returns to what opened it when the layer closes.
+ */
 export function Layer({ children }: { children: ReactNode }) {
-  return <div className="layer">{children}</div>;
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const layer = ref.current;
+    if (!layer) return;
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    // Everything beside the layer (the page, the Manual handle) is out of reach; the toast keeps announcing.
+    const inerted = Array.from(layer.parentElement?.children ?? []).filter(
+      (el): el is HTMLElement => el instanceof HTMLElement && el !== layer && !el.classList.contains('toast-region') && !el.hasAttribute('inert'),
+    );
+    inerted.forEach((el) => el.setAttribute('inert', ''));
+
+    const dialog = layer.querySelector<HTMLElement>('[role="dialog"]') ?? layer;
+    dialog.tabIndex = -1;
+    dialog.focus();
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') return;
+      const items = focusableIn(layer);
+      const next = nextFocusIndex(items.length, items.indexOf(document.activeElement as HTMLElement), event.shiftKey);
+      event.preventDefault();
+      items[next]?.focus();
+    };
+    layer.addEventListener('keydown', onKey);
+
+    return () => {
+      layer.removeEventListener('keydown', onKey);
+      inerted.forEach((el) => el.removeAttribute('inert'));
+      if (opener?.isConnected) opener.focus();
+    };
+  }, []);
+
+  return (
+    <div className="layer" ref={ref}>
+      {children}
+    </div>
+  );
 }
 
 /** Closes a layer (drawer) on Escape. */

@@ -20,7 +20,7 @@ export function RegisterDrawer({ petId }: { petId: string }) {
   return (
     <Layer>
       <button type="button" className="scrim" aria-label={strings.nav.close} onClick={close} />
-      <div className="drawer floating" role="dialog" aria-label={t.button}>
+      <div className="drawer floating" role="dialog" aria-modal="true" aria-label={t.button}>
         <span className="grip" />
         <div className="spread">
           <h2>{t.title(pet.profile.name)}</h2>

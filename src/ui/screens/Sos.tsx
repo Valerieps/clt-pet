@@ -23,7 +23,7 @@ export function Manual({ petId }: { petId: string | null }) {
   return (
     <Layer>
       <button type="button" className="scrim" aria-label={strings.nav.close} onClick={close} />
-      <div className="drawer" role="dialog" aria-label={strings.nav.manual}>
+      <div className="drawer" role="dialog" aria-modal="true" aria-label={strings.nav.manual}>
         <span className="grip" />
         <h2>{strings.nav.manual}</h2>
         {failed && <p className="notice">{strings.genericError}</p>}
