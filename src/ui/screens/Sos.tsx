@@ -2,7 +2,7 @@
 // opens the chefe's card. Neutral tone, no jokes.
 import { useState, type FormEvent } from 'react';
 import type { PetView } from '../../application/api-contract';
-import { EMERGENCY_ADDRESS_MAX, EMERGENCY_TEXT_MAX, formatPhone, telHref } from '../../domain/pets/emergency';
+import { EMERGENCY_ADDRESS_MAX, EMERGENCY_TEXT_MAX, formatPhone, mapsDirectionsHref, telHref } from '../../domain/pets/emergency';
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
@@ -91,7 +91,13 @@ function Card({ pet }: { pet: PetView }) {
         ) : (
           <p className="muted">{t.noClinic}</p>
         )}
-        {emergency.clinicAddress && <p>{t.address(emergency.clinicAddress)}</p>}
+        {emergency.clinicAddress && (
+          <p>
+            <a href={mapsDirectionsHref(emergency.clinicAddress)} target="_blank" rel="noopener noreferrer">
+              {t.address(emergency.clinicAddress)}
+            </a>
+          </p>
+        )}
       </div>
 
       <h2>{t.plan}</h2>

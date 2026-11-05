@@ -79,6 +79,11 @@ export function normalizeEmergency(raw: Record<string, unknown>): Emergency | nu
   return result as Emergency;
 }
 
+/** Google Maps directions to the address; with no origin, Maps starts from the current location. */
+export function mapsDirectionsHref(address: string): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}&travelmode=driving`;
+}
+
 /** The `tel:` link for a typed phone: digits and a leading +. */
 export function telHref(phoneText: string): string {
   const plus = phoneText.trim().startsWith('+') ? '+' : '';
