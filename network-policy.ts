@@ -11,13 +11,17 @@ export const ALLOWED_ORIGINS: readonly string[] = [];
 export const IMAGE_ORIGINS: readonly string[] = ['https://lh3.googleusercontent.com'];
 
 /**
- * The only servers the Worker (server/) calls: Google sign-in and the browsers' Web Push services
- * (ADR-008). Add an API here with an ADR.
+ * The browsers' Web Push services (ADR-008): the only places a push subscription's endpoint may
+ * point to, and where the Worker sends notifications.
  */
-export const SERVER_ORIGINS: readonly string[] = [
-  'https://accounts.google.com',
-  'https://oauth2.googleapis.com',
+export const PUSH_ORIGINS: readonly string[] = [
   'https://fcm.googleapis.com',
   'https://updates.push.services.mozilla.com',
   'https://web.push.apple.com',
 ];
+
+/**
+ * The only servers the Worker (server/) calls: Google sign-in and the push services (ADR-008).
+ * Add an API here with an ADR.
+ */
+export const SERVER_ORIGINS: readonly string[] = ['https://accounts.google.com', 'https://oauth2.googleapis.com', ...PUSH_ORIGINS];

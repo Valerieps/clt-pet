@@ -121,6 +121,26 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     `ALTER TABLE pets ADD COLUMN plan_name TEXT`,
     `ALTER TABLE pets ADD COLUMN plan_number TEXT`,
   ],
+  // 6: the push subscriptions (one per device) and which reminder stages already went out
+  // (docs/spec/lembretes.md).
+  [
+    `CREATE TABLE push_subscriptions (
+      endpoint TEXT PRIMARY KEY,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      p256dh TEXT NOT NULL,
+      auth TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX push_subscriptions_member ON push_subscriptions(member_id)`,
+    `CREATE TABLE reminders_sent (
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      item TEXT NOT NULL,
+      due_on TEXT NOT NULL,
+      stage TEXT NOT NULL,
+      sent_at TEXT NOT NULL,
+      PRIMARY KEY (pet_id, item, due_on, stage)
+    )`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

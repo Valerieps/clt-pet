@@ -56,6 +56,12 @@ export interface PetView {
   readonly weights: readonly WeightEntryView[];
 }
 
+/** What the app needs to subscribe this device to push. */
+export interface PushInfo {
+  /** The VAPID public key (base64url); null where the server has no push set up. */
+  readonly publicKey: string | null;
+}
+
 export interface VaccinationView {
   readonly id: string;
   readonly petId: string;
@@ -85,6 +91,7 @@ export interface Queries {
   /** Every dose registered for the chefes that are not retired, oldest application first. */
   vaccinations: { input: Record<string, never>; output: VaccinationView[] };
   me: { input: Record<string, never>; output: MeView };
+  push: { input: Record<string, never>; output: PushInfo };
   members: { input: Record<string, never>; output: MemberListItem[] };
   /** Admins only. */
   invites: { input: Record<string, never>; output: InviteView[] };
@@ -108,6 +115,9 @@ export interface Commands {
   'pet.setPhoto': { input: { petId: string; image: string | null }; output: PetView };
   /** Replaces the personality tags (docs/spec/voz-dos-chefes.md). */
   'pet.setTags': { input: { petId: string; tags: string[] }; output: PetView };
+  /** Saves this device's push subscription (the endpoint must be a push service of ADR-008). */
+  'push.subscribe': { input: { endpoint: string; p256dh: string; auth: string }; output: null };
+  'push.unsubscribe': { input: { endpoint: string }; output: null };
   'weight.add': { input: { petId: string; grams: number; onDate: string }; output: PetView };
   'weight.remove': { input: { weightId: string }; output: PetView };
   /** One dose for every chefe in `petIds`; only `vaccine` and `appliedOn` are required. */

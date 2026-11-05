@@ -1,6 +1,9 @@
 # Copy to .dev.vars (ignored by git) for `npm run dev:api`.
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+# Push (ADR-008): `npm run vapid` prints the pair. The public key goes in wrangler.jsonc; the private
+# key here, and with `wrangler secret put VAPID_PRIVATE_KEY` in production. Empty turns push off.
+VAPID_PRIVATE_KEY=
 # Comma-separated e-mails that may enter as admin while the group has no admin.
 BOOTSTRAP_ADMIN_EMAILS=
 # 1 turns on the test sign-in (any invited e-mail, no Google) on localhost only (ADR-007).

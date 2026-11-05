@@ -12,7 +12,6 @@ O que ainda não está pronto.
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
 | Modo sério: o interruptor por chefe na tela do chefe | 1 | `spec/voz-dos-chefes.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase nos lembretes e no Mural quando eles forem feitos |
-| Lembretes por push | 1 | `spec/lembretes.md` | ADR-008; chaves VAPID, service worker e cron |
 | Mural da Chefia | 1 | `spec/mural.md` | Troca a tela `Home` de exemplo |
 | Fases 2, 3 e 4 | 2 a 4 | `SPEC.md` | Cada uma ganha seus arquivos em `spec/` na vez dela |
 

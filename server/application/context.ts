@@ -6,6 +6,8 @@ export interface Context {
   readonly sql: Sql;
   readonly clock: Clock;
   readonly ids: IdGenerator;
+  /** The VAPID public key the apps subscribe with; null where push is not set up. */
+  readonly vapidPublicKey?: string | null;
 }
 
 /**

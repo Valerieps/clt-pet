@@ -1,9 +1,10 @@
 // The vaccination card (docs/spec/vacinas.md). Any member registers and removes doses.
 import type { VaccinationView } from '../../src/application/api-contract';
-import { normalizeDose } from '../../src/domain/vaccines/vaccine';
+import { boosterDate, currentDoses, normalizeDose } from '../../src/domain/vaccines/vaccine';
 import { failure, nowIso, type CommandResult, type Context } from './context';
 import type { Member } from './members';
 import { todayInBrasilia } from './pets';
+import type { ReminderSource } from './reminders';
 
 interface VaccinationRow {
   id: string;
@@ -38,6 +39,14 @@ const toView = (r: VaccinationRow): VaccinationView => ({
 export function listVaccinations(ctx: Context): VaccinationView[] {
   return ctx.sql.all<VaccinationRow>(`${SELECT} ${ORDER}`).map(toView);
 }
+
+/** The booster date of each chefe's current doses, for the push reminders (docs/spec/lembretes.md). */
+export const vaccineReminders: ReminderSource = (ctx) => {
+  const all = listVaccinations(ctx);
+  return [...new Set(all.map((v) => v.petId))].flatMap((petId) =>
+    currentDoses(all.filter((v) => v.petId === petId)).map((v) => ({ petId, item: `Vacina ${v.vaccine}`, dueOn: boosterDate(v) })),
+  );
+};
 
 /** Registers the same dose for several chefes at once; all of them must exist, or nothing is saved. */
 export function addVaccination(ctx: Context, actor: Member, input: Record<string, unknown>): CommandResult<VaccinationView[]> {
