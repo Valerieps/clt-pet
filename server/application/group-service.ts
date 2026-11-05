@@ -21,6 +21,7 @@ import { addWeight, linkTutor, listPets, photoOf, removeWeight, setEmergency, se
 import { dropDevices, pushInfo, subscribe, unsubscribe } from './push';
 import { planReminders, type PushMessage, type ReminderSource } from './reminders';
 import { migrate } from './schema';
+import { addMedication, listMedications, removeMedication } from './medications';
 import { addVaccination, listVaccinations, removeVaccination, vaccineReminders } from './vaccines';
 
 /** The features with due dates register here. */
@@ -38,6 +39,7 @@ const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | n
   pets: (ctx) => listPets(ctx),
   push: (ctx) => pushInfo(ctx),
   vaccinations: (ctx) => listVaccinations(ctx),
+  medications: (ctx) => listMedications(ctx),
 };
 
 /** Every command the API runs; each checks the actor's role itself. */
@@ -58,6 +60,8 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'weight.remove': removeWeight,
   'vaccine.add': addVaccination,
   'vaccine.remove': removeVaccination,
+  'medication.add': addMedication,
+  'medication.remove': removeMedication,
 };
 
 export class GroupService {

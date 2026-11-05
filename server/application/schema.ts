@@ -143,6 +143,21 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
   ],
   // 7: the address of the 24 h clinic, for the Cartão SOS (docs/spec/cartao-sos.md).
   [`ALTER TABLE pets ADD COLUMN clinic_address TEXT`],
+  // 8: the medications of each chefe (docs/spec/medicacoes.md). A null `end_on` is continuous use.
+  [
+    `CREATE TABLE medications (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      name TEXT NOT NULL,
+      dose TEXT NOT NULL,
+      frequency TEXT NOT NULL,
+      start_on TEXT NOT NULL,
+      end_on TEXT,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX medications_pet ON medications(pet_id, start_on)`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

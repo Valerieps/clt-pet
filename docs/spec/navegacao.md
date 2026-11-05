@@ -21,9 +21,8 @@ Nada por enquanto.
   letreiro, do mesmo tamanho para todos os chefes (o da Berenice é o máximo). Abaixo vêm quatro
   ícones (Vacinas, Peso, Medicações e Perfil), as exigências e "A seguir". Não há aviso de "Tudo em dia" na página do chefe.
   *Por quê:* os controles humanos ficam pequenos e na beirada; o animal ocupa a imagem. *(1)*
-- Os ícones abrem, abaixo deles, o Histórico (vacinas), o Peso, as Medicações (por enquanto só um
-  aviso de que chegam na fase 3) e o Perfil (que inclui a Tutoria); tocar de novo fecha. O ícone do Perfil é um gato ou um cachorro, conforme o chefe. Em
-  Histórico e Peso, o botão Remover de cada linha só aparece depois de tocar no lápis ao lado do título. A foto e
+- Os ícones abrem, abaixo deles, o Histórico (vacinas), o Peso, as Medicações (cadastradas, em uso e encerradas) e o Perfil (que inclui a Tutoria); tocar de novo fecha. O ícone do Perfil é um gato ou um cachorro, conforme o chefe. Em
+  Histórico, Peso e Medicações, o botão Remover de cada linha só aparece depois de tocar no lápis ao lado do título. A foto e
   as etiquetas ficam dentro do editar perfil. *(1)*
   *Por quê:* a página tinha oito seções seguidas e um botão vermelho em cada linha, fácil de tocar
   sem querer.
@@ -35,8 +34,8 @@ Nada por enquanto.
   gaveta sobre a tela em que eu estou, já no chefe dela (ou no primeiro, se eu estou no Mural), com
   um botão por chefe para trocar. Fechar volta para a tela de antes. *(1)*
 - Registrar é um botão flutuante de + em todas as telas (some quando o Cartão de Saúde está aberto).
-  Ao tocar, abre um leque (speed dial) com Vacina, Peso e Medicações. Vacina e peso abrem a gaveta
-  já no formulário; Medicações leva ao ícone de Medicações da página do chefe. Ao salvar, a gaveta fecha e um aviso curto confirma. Do Mural
+  Ao tocar, abre um leque (speed dial) com Vacina, Peso e Medicações. Vacina, peso e medicação abrem a gaveta
+  já no formulário. Ao salvar, a gaveta fecha e um aviso curto confirma. Do Mural
   a um peso salvo são três toques: Registrar, Peso, Salvar. A página do chefe só mostra o histórico
   (sem formulário). O que ainda não existe aparece apagado, com a fase em que entra. *(1)*
   *Por quê:* registrar é o laço que repetimos todo dia; não pode exigir rolar a página.

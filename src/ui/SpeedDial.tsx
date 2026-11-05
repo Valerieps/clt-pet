@@ -16,7 +16,7 @@ export function SpeedDial({ petId }: { petId: string }) {
   const actions = [
     { to: `/chefes/${petId}/registrar#vacina`, label: t.vaccine, icon: <VaccineIcon /> },
     { to: `/chefes/${petId}/registrar#peso`, label: t.weight, icon: <ScaleIcon /> },
-    { to: `/chefes/${petId}#medicacoes`, label: t.medication, icon: <PillIcon /> },
+    { to: `/chefes/${petId}/registrar#medicacao`, label: t.medication, icon: <PillIcon /> },
   ];
   return (
     <>

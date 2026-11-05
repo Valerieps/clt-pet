@@ -2,6 +2,7 @@
 // Types only. The server imports it with `import type`, so nothing here runs on either side.
 import type { Role } from '../domain/group/roles';
 import type { Emergency } from '../domain/pets/emergency';
+import type { Frequency } from '../domain/medications/medication';
 import type { PetProfile, Species } from '../domain/pets/pet';
 
 export interface MemberView {
@@ -77,6 +78,19 @@ export interface VaccinationView {
   readonly byName: string;
 }
 
+export interface MedicationView {
+  readonly id: string;
+  readonly petId: string;
+  readonly name: string;
+  readonly dose: string;
+  readonly frequency: Frequency;
+  /** YYYY-MM-DD. */
+  readonly startOn: string;
+  /** YYYY-MM-DD; null is continuous use. */
+  readonly endOn: string | null;
+  readonly byName: string;
+}
+
 /** Where a chefe's photo is served (GET, signed-in members only). */
 export const petPhotoPath = (petId: string, version: string) => `/api/pets/${petId}/photo?v=${encodeURIComponent(version)}`;
 
@@ -92,6 +106,8 @@ export interface Queries {
   pets: { input: Record<string, never>; output: PetView[] };
   /** Every dose registered for the chefes that are not retired, oldest application first. */
   vaccinations: { input: Record<string, never>; output: VaccinationView[] };
+  /** Every medication registered for the chefes that are not retired, oldest start first. */
+  medications: { input: Record<string, never>; output: MedicationView[] };
   me: { input: Record<string, never>; output: MeView };
   push: { input: Record<string, never>; output: PushInfo };
   members: { input: Record<string, never>; output: MemberListItem[] };
@@ -136,13 +152,19 @@ export interface Commands {
     output: VaccinationView[];
   };
   'vaccine.remove': { input: { vaccinationId: string }; output: null };
+  /** One medication for one chefe; `endOn` empty or missing is continuous use. */
+  'medication.add': {
+    input: { petId: string; name: string; dose: string; frequency: Frequency; startOn: string; endOn?: string | null };
+    output: MedicationView;
+  };
+  'medication.remove': { input: { medicationId: string }; output: null };
 }
 
 export type QueryName = keyof Queries;
 export type CommandName = keyof Commands;
 
 /** What a live message says changed; the screens that show it refetch. */
-export type Topic = 'me' | 'members' | 'invites' | 'pets' | 'vaccinations';
+export type Topic = 'me' | 'members' | 'invites' | 'pets' | 'vaccinations' | 'medications';
 
 export interface LiveMessage {
   readonly type: 'changed';
