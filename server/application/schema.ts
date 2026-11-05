@@ -86,6 +86,15 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     // Members who already joined take their chefes right away.
     `UPDATE pets SET tutor_member_id = (SELECT id FROM members WHERE members.email = pets.tutor_email AND members.active = 1)`,
   ],
+  // 3: each chefe's vet, 24 h clinic and health plan, for the Cartão SOS (docs/spec/cartao-sos.md).
+  [
+    `ALTER TABLE pets ADD COLUMN vet_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN vet_phone TEXT`,
+    `ALTER TABLE pets ADD COLUMN clinic_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN clinic_phone TEXT`,
+    `ALTER TABLE pets ADD COLUMN plan_name TEXT`,
+    `ALTER TABLE pets ADD COLUMN plan_number TEXT`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

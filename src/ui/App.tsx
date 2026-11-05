@@ -10,6 +10,7 @@ import { Members } from './screens/Members';
 import { PetScreen } from './screens/PetScreen';
 import { Pets } from './screens/Pets';
 import { SignIn } from './screens/SignIn';
+import { SosCard, SosList } from './screens/Sos';
 import { useQuery } from './use-query';
 
 /** The app's screens. Replace Home with the Mural da Chefia (docs/spec/mural.md). */
@@ -70,6 +71,9 @@ function Navigation({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
         </Link>
       ))}
       <span className="grow" />
+      <Link to="/sos" className="sos-link" aria-current={path.startsWith('/sos') ? 'page' : undefined}>
+        {strings.nav.sos}
+      </Link>
       <button type="button" className="secondary" onClick={onSignOut}>
         {strings.nav.signOut}
       </button>
@@ -92,6 +96,8 @@ function Screen({ me }: { me: MeView }) {
   if (path === '/membros') return <Members me={me} />;
   if (path === '/chefes') return <Pets />;
   if (path.startsWith('/chefes/')) return <PetScreen petId={decodeURIComponent(path.slice('/chefes/'.length))} myId={me.id} />;
+  if (path === '/sos') return <SosList />;
+  if (path.startsWith('/sos/')) return <SosCard petId={decodeURIComponent(path.slice('/sos/'.length))} />;
   if (path === '/convites' && canManageGroup(me)) return <Invites />;
   return <Home me={me} />;
 }

@@ -13,7 +13,7 @@ O que ainda não está pronto.
 | --- | --- | --- | --- |
 | Chefes: foto, idade estimada e a edição das tags | 1 | `spec/chefes.md` | O resto do perfil, a tutoria, as alergias e o peso já estão prontos; a foto precisa de um lugar para guardar (ADR); as tags entram com a voz |
 | Voz dos chefes: tags, frases base e modo sério | 1 | `spec/voz-dos-chefes.md` | Frases em `src/domain`, com testes |
-| Cartão SOS | 1 | `spec/cartao-sos.md` | A dois toques de qualquer tela |
+| Foto no Cartão SOS | 1 | `spec/cartao-sos.md` | O cartão já existe; falta mostrar a foto do chefe quando a foto (`feat/voz-dos-chefes`) chegar à `main` |
 | Carteirinha de vacinação | 1 | `spec/vacinas.md` | Protocolos por espécie e registro em grupo |
 | Lembretes por push | 1 | `spec/lembretes.md` | ADR-008; chaves VAPID, service worker e cron |
 | Mural da Chefia | 1 | `spec/mural.md` | Troca a tela `Home` de exemplo |

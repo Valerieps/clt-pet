@@ -10,8 +10,6 @@ e o peso.
 
 ## Em aberto
 
-- [ ] Os contatos do veterinário principal e da clínica 24 h entram no cadastro de cada chefe ou
-  são os mesmos para os três?
 - [ ] O limite de variação de peso (10% em até 60 dias) é igual para gatos e cachorros, ou ajusto por
   espécie na hora de cadastrar?
 

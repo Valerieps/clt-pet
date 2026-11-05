@@ -7,10 +7,16 @@ O "Manual de Sobrevivência do Funcionário": o que eu preciso saber de um chefe
 
 ## Em aberto
 
-- [ ] Qual é o veterinário principal e qual é a clínica 24 h? (Os botões de ligar dependem disso.)
-- [ ] Algum dos chefes tem plano de saúde ou convênio?
+- [ ] Quem é o veterinário principal e qual é a clínica 24 h de cada chefe? (Os botões de ligar
+  ficam escondidos até eu preencher o telefone, no próprio cartão.)
+- [ ] Algum dos chefes tem plano de saúde ou convênio? (Idem: preencho no cartão.)
 
 ## Regras
+
+- O veterinário principal, a clínica 24 h (nome e telefone) e o plano (nome e número da carteirinha)
+  são de cada chefe, opcionais, e eu os edito no próprio cartão. *(1)*
+- O botão SOS fica no cabeçalho de todas as telas: um toque abre a lista dos chefes, o segundo abre
+  o cartão. *(1)*
 
 - O Cartão SOS mostra a foto do chefe, o peso atual, as alergias em vermelho, as condições ativas e
   os remédios em uso. *(1)*

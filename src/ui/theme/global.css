@@ -63,6 +63,11 @@ a {
   text-decoration: none;
 }
 
+.tabs a.sos-link {
+  font-weight: 700;
+  color: var(--color-danger);
+}
+
 .tabs a[aria-current='page'] {
   font-weight: 600;
   border-bottom: 2px solid var(--color-brand);
