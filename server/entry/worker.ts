@@ -107,8 +107,20 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
   if (path === '/api/auth/login' && request.method === 'GET') return login(env, url);
   if (path === '/api/auth/callback' && request.method === 'GET') return callback(request, env, url);
 
-  if (!sameOrigin(request, url)) return json({ error: 'forbidden' }, 403);
   const hash = await sessionHash(request);
+
+  // A chefe's photo: an <img> sends no Origin, so this read is checked by the session alone.
+  const photo = /^\/api\/pets\/([\w-]+)\/photo$/.exec(path);
+  if (photo && request.method === 'GET') {
+    const image = hash ? await group(env).photo(hash, photo[1]) : null;
+    if (!image) return json({ error: hash ? 'not_found' : 'unauthenticated' }, hash ? 404 : 401);
+    // The address carries the photo's version, so the browser may keep it for good.
+    return new Response(Uint8Array.from(atob(image), (c) => c.charCodeAt(0)), {
+      headers: { ...SECURITY_HEADERS, 'Cache-Control': 'private, max-age=31536000, immutable', 'Content-Type': 'image/jpeg' },
+    });
+  }
+
+  if (!sameOrigin(request, url)) return json({ error: 'forbidden' }, 403);
 
   if (path === '/api/live' && request.headers.get('Upgrade') === 'websocket') {
     if (!hash) return json({ error: 'unauthenticated' }, 401);

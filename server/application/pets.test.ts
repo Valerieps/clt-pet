@@ -139,3 +139,60 @@ describe('weights', () => {
     expect(service.command('h-v', 'weight.remove', { weightId })).toEqual({ ok: false, error: 'not_found' });
   });
 });
+
+describe('pet.setTags', () => {
+  it('replaces the tags, keeping the order', () => {
+    const { id } = pet('Panda');
+    const result = service.command('h-c', 'pet.setTags', { petId: id, tags: ['  Dorminhoco ', 'Fofo'] });
+    expect(result).toMatchObject({ ok: true, changed: ['pets'], value: { tags: ['Dorminhoco', 'Fofo'] } });
+    expect(pet('Panda').tags).toEqual(['Dorminhoco', 'Fofo']);
+  });
+
+  it('refuses repeats beyond the limit, wrong types and unknown chefes', () => {
+    const { id } = pet('Panda');
+    expect(service.command('h-v', 'pet.setTags', { petId: id, tags: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] })).toEqual({ ok: false, error: 'invalid' });
+    expect(service.command('h-v', 'pet.setTags', { petId: id, tags: [1] })).toEqual({ ok: false, error: 'invalid' });
+    expect(service.command('h-v', 'pet.setTags', { petId: id, tags: 'a' })).toEqual({ ok: false, error: 'invalid' });
+    expect(service.command('h-v', 'pet.setTags', { petId: 'nope', tags: [] })).toEqual({ ok: false, error: 'not_found' });
+    expect(pet('Panda').tags).toHaveLength(3);
+  });
+});
+
+describe('pet.setPhoto', () => {
+  const jpeg = '/9j/4AAQSkZJRgABAQ=='; // starts like a JPEG
+  it('stores, serves and removes the photo, changing its version each time', () => {
+    const { id } = pet('Paçoca');
+    expect(pet('Paçoca').photoVersion).toBeNull();
+    expect(service.photo('h-v', id)).toBeNull();
+    const first = service.command('h-c', 'pet.setPhoto', { petId: id, image: jpeg }) as { value: PetView };
+    expect(first.value.photoVersion).not.toBeNull();
+    expect(service.photo('h-v', id)).toBe(jpeg);
+    clock.set('2026-11-04T16:00:00Z');
+    const second = service.command('h-c', 'pet.setPhoto', { petId: id, image: jpeg }) as { value: PetView };
+    expect(second.value.photoVersion).not.toBe(first.value.photoVersion);
+    expect(service.command('h-c', 'pet.setPhoto', { petId: id, image: null })).toMatchObject({ ok: true, value: { photoVersion: null } });
+    expect(service.photo('h-v', id)).toBeNull();
+  });
+
+  it('refuses what is not a small JPEG and hides the photo from strangers', () => {
+    const { id } = pet('Paçoca');
+    for (const image of ['iVBORw0KGgo=', 'not base64!', 42, '/9j/' + 'A'.repeat(400_000)]) {
+      expect(service.command('h-v', 'pet.setPhoto', { petId: id, image })).toEqual({ ok: false, error: 'invalid' });
+    }
+    service.command('h-v', 'pet.setPhoto', { petId: id, image: jpeg });
+    expect(service.photo('nobody', id)).toBeNull();
+  });
+});
+
+describe('estimated age', () => {
+  it('is saved with the birth date and dropped without a date', () => {
+    const { id } = pet('Berenice');
+    const base = { petId: id, name: 'Berenice', weightAlertPercent: 10 };
+    expect(service.command('h-v', 'pet.update', { ...base, birthDate: '2023-11-04', birthEstimated: true })).toMatchObject({
+      ok: true,
+      value: { profile: { birthDate: '2023-11-04', birthEstimated: true } },
+    });
+    expect(service.command('h-v', 'pet.update', { ...base, birthEstimated: true })).toMatchObject({ value: { profile: { birthEstimated: false } } });
+    expect(service.command('h-v', 'pet.update', { ...base, birthEstimated: 'sim' })).toEqual({ ok: false, error: 'invalid' });
+  });
+});
