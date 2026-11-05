@@ -101,15 +101,17 @@ describe('pet.setEmergency', () => {
     vetPhone: '(11) 91234-5678',
     clinicName: 'Clínica 24 h',
     clinicPhone: '11 3000-1234',
+    clinicAddress: 'Av. Brasil, 100',
     planName: 'Petlove',
     planNumber: '99887',
   });
 
   it('is per chefe and starts blank', () => {
-    expect(pet('Panda').emergency).toEqual({ vetName: null, vetPhone: null, clinicName: null, clinicPhone: null, planName: null, planNumber: null });
+    expect(pet('Panda').emergency).toEqual({ vetName: null, vetPhone: null, clinicName: null, clinicPhone: null, clinicAddress: null, planName: null, planNumber: null });
     const result = service.command('h-c', 'pet.setEmergency', contacts(pet('Panda').id));
     expect(result).toMatchObject({ ok: true, changed: ['pets'], value: { emergency: { vetName: 'Dra. Ana', planNumber: '99887' } } });
-    expect(pet('Panda').emergency.clinicPhone).toBe('11 3000-1234');
+    expect(pet('Panda').emergency.clinicPhone).toBe('(11) 3000-1234');
+    expect(pet('Panda').emergency.clinicAddress).toBe('Av. Brasil, 100');
     expect(pet('Berenice').emergency.vetName).toBeNull();
   });
 
