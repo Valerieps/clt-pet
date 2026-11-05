@@ -98,6 +98,30 @@ export const strings = {
     },
   },
 
+  vaccines: {
+    title: 'Carteirinha de vacinação',
+    empty: 'Nenhuma vacina registrada.',
+    status: { ok: 'Em dia', soon: 'Vence em até 30 dias', overdue: 'Atrasada' },
+    booster: (date: string) => `Reforço: ${date}`,
+    applied: (date: string) => `Aplicada em ${date}`,
+    history: 'Histórico',
+    form: {
+      title: 'Registrar vacina',
+      vaccine: 'Vacina',
+      appliedOn: 'Data de aplicação',
+      interval: 'Reforço a cada (dias)',
+      lot: 'Lote',
+      maker: 'Fabricante',
+      vet: 'Veterinário ou clínica',
+      together: 'Registrar também para',
+      add: 'Registrar vacina',
+      invalid: 'Essa vacina, essa data ou esse intervalo não parecem certos.',
+    },
+    by: (name: string) => `por ${name}`,
+    remove: 'Apagar',
+    removeConfirm: 'Apagar esse registro de vacina?',
+  },
+
   home: {
     greeting: (greeting: string, name: string) => `${greeting}, ${name}!`,
     nameLabel: 'Meu nome',
