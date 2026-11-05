@@ -959,6 +959,36 @@ label:has(> input[type='checkbox'], > input[type='radio']) {
   gap: var(--space-4);
 }
 
+/* ---------- Toast: a confirmation above the Manual handle ---------- */
+
+.toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: 68px;
+  z-index: 30;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 var(--space-4);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toast {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toast {
+    animation: rise 160ms ease-out;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .drawer {
     animation: rise 160ms ease-out;

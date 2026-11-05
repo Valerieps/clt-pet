@@ -198,6 +198,18 @@ export const strings = {
     },
   },
 
+  toast: {
+    weight: (name: string) => `Peso de ${name} registrado.`,
+    vaccine: (name: string) => `Vacina de ${name} registrada.`,
+    profile: (name: string) => `Perfil de ${name} atualizado.`,
+    tags: (name: string) => `Etiquetas de ${name} salvas.`,
+    photo: (name: string) => `Foto de ${name} salva.`,
+    photoRemoved: (name: string) => `Foto de ${name} removida.`,
+    name: 'Nome atualizado.',
+    pushOn: 'Avisos ligados neste aparelho.',
+    pushOff: 'Avisos desligados neste aparelho.',
+  },
+
   push: {
     title: 'Avisos no celular',
     explain: 'Receba os lembretes dos chefes neste aparelho. Cada aparelho precisa ser ativado.',

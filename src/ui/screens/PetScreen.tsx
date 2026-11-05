@@ -21,6 +21,7 @@ import {
 import { ALERT_WINDOW_DAYS, formatKilos, latestWeight, parseKilos, weightAlert } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
+import { useToast } from '../toast';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
 import { BackBar, CameraIcon, Faces, MeLink } from '../parts';
 import { PetPortrait } from '../PetPhoto';
@@ -215,6 +216,7 @@ function PetDetails({ pet, myId, allPets }: { pet: PetView; myId: string; allPet
 }
 
 function PhotoControls({ pet }: { pet: PetView }) {
+  const toast = useToast();
   const { backend } = useServices();
   const [error, setError] = useState<string | null>(null);
 
@@ -225,12 +227,14 @@ function PhotoControls({ pet }: { pet: PetView }) {
     const image = await shrinkToJpegBase64(file);
     if (!image) return setError(t.photo.invalid);
     const result = await backend.command('pet.setPhoto', { petId: pet.id, image });
+    if (result.ok) toast(strings.toast.photo(pet.profile.name));
     setError(result.ok ? null : result.error === 'invalid' ? t.photo.invalid : strings.genericError);
   }
 
   async function remove() {
     if (!window.confirm(t.photo.removeConfirm)) return;
     const result = await backend.command('pet.setPhoto', { petId: pet.id, image: null });
+    if (result.ok) toast(strings.toast.photoRemoved(pet.profile.name));
     setError(result.ok ? null : strings.genericError);
   }
 
@@ -257,6 +261,7 @@ function PhotoControls({ pet }: { pet: PetView }) {
 }
 
 function Tags({ pet }: { pet: PetView }) {
+  const toast = useToast();
   const { backend } = useServices();
   const [draft, setDraft] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -265,6 +270,7 @@ function Tags({ pet }: { pet: PetView }) {
     event.preventDefault();
     const result = await backend.command('pet.setTags', { petId: pet.id, tags: draft ?? [] });
     if (result.ok) {
+      toast(strings.toast.tags(pet.profile.name));
       setDraft(null);
       setError(null);
     } else {
@@ -358,6 +364,7 @@ function ProfileSummary({ pet, onEdit }: { pet: PetView; onEdit: () => void }) {
 }
 
 function ProfileForm({ pet, onDone }: { pet: PetView; onDone: () => void }) {
+  const toast = useToast();
   const { backend } = useServices();
   const { profile } = pet;
   const [name, setName] = useState(profile.name);
@@ -397,8 +404,10 @@ function ProfileForm({ pet, onDone }: { pet: PetView; onDone: () => void }) {
       weightAlertPercent: Number(percent),
     };
     const result = await backend.command('pet.update', update);
-    if (result.ok) onDone();
-    else setError(result.error === 'invalid' ? t.profile.invalid : strings.genericError);
+    if (result.ok) {
+      toast(strings.toast.profile(pet.profile.name));
+      onDone();
+    } else setError(result.error === 'invalid' ? t.profile.invalid : strings.genericError);
   }
 
   const setAllergy = (index: number, patch: Partial<Allergy>) =>
@@ -569,6 +578,7 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
 }
 
 function Weight({ pet }: { pet: PetView }) {
+  const toast = useToast();
   const { backend } = useServices();
   const [kilos, setKilos] = useState('');
   const [date, setDate] = useState(todayLocal());
@@ -582,6 +592,7 @@ function Weight({ pet }: { pet: PetView }) {
     if (grams === null) return setError(t.weight.invalid);
     const result = await backend.command('weight.add', { petId: pet.id, grams, onDate: date });
     if (result.ok) {
+      toast(strings.toast.weight(pet.profile.name));
       setKilos('');
       setError(null);
     } else {

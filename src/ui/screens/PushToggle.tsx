@@ -2,11 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import type { PushState } from '../../application/ports';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
+import { useToast } from '../toast';
 import { useQuery } from '../use-query';
 
 /** Turns the reminders on or off for this device (docs/spec/lembretes.md). */
 export function PushToggle() {
   const { backend, push } = useServices();
+  const toast = useToast();
   const info = useQuery('push', {}, []);
   const [state, setState] = useState<PushState | null>(null);
   const [busy, setBusy] = useState(false);
@@ -26,7 +28,7 @@ export function PushToggle() {
       await push.disable();
       // Refusing the permission prompt is not an error: the "blocked" notice explains it.
       setFailed(Notification.permission !== 'denied');
-    }
+    } else toast(strings.toast.pushOn);
     setBusy(false);
     refresh();
   }
@@ -35,6 +37,7 @@ export function PushToggle() {
     setBusy(true);
     const endpoint = await push.disable();
     if (endpoint) await backend.command('push.unsubscribe', { endpoint });
+    toast(strings.toast.pushOff);
     setBusy(false);
     refresh();
   }
