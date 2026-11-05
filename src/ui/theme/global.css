@@ -618,6 +618,32 @@ button[aria-pressed='true'] {
   color: var(--color-on-text);
 }
 
+/* A round icon button beside a title (the pencil that edits a history). */
+button.icon-btn {
+  flex: none;
+  width: 44px;
+  padding: 0;
+  border-color: var(--color-border-strong);
+  background: transparent;
+  color: var(--color-text);
+}
+
+button.icon-btn[aria-pressed='true'] {
+  border-color: var(--color-text);
+  background: var(--color-text);
+  color: var(--color-on-text);
+}
+
+button.icon-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .btn.danger-fill {
   border-color: var(--color-danger);
   background: var(--color-danger);
@@ -793,9 +819,93 @@ button:disabled {
   width: 56px;
   height: 56px;
   border-radius: 50%;
+  padding: 0;
+  border: 0;
   background: var(--color-danger);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   text-decoration: none;
+}
+
+.fab:hover {
+  color: inherit;
+}
+
+.fab svg {
+  transition: transform 0.15s;
+}
+
+.dial.open .fab svg {
+  transform: rotate(45deg);
+}
+
+/* The speed dial: the options stack above the +, each a label and a round icon. */
+.dial-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.dial-actions {
+  position: fixed;
+  right: max(16px, calc(50vw - 224px));
+  bottom: 144px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dial-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.dial-label {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.dial-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.dial-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.shell:has(input:focus, select:focus, textarea:focus) .dial-actions,
+.shell:has(input:focus, select:focus, textarea:focus) .dial-scrim {
+  display: none;
 }
 
 .fab svg {

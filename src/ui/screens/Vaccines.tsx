@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { PetView, VaccinationView } from '../../application/api-contract';
 import { formatDate } from '../../domain/pets/pet';
 import { strings } from '../../domain/strings';
@@ -14,7 +14,7 @@ import { useQuery } from '../use-query';
 const t = strings.vaccines;
 const todayLocal = () => new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD in the device's time zone
 
-export function Vaccines({ pet, removable }: { pet: PetView; removable: boolean }) {
+export function Vaccines({ pet, removable, action }: { pet: PetView; removable: boolean; action?: ReactNode }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const all = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
@@ -32,7 +32,10 @@ export function Vaccines({ pet, removable }: { pet: PetView; removable: boolean 
 
   return (
     <>
-      <h2>{t.title}</h2>
+      <div className="spread">
+        <h2>{t.title}</h2>
+        {action}
+      </div>
       {doses.length === 0 && <p>{t.empty}</p>}
       <ul className="list">
         {currentDoses(doses).map((d) => {

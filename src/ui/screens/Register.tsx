@@ -14,7 +14,11 @@ type Step = 'menu' | 'weight' | 'vaccine';
 /** What can be registered for a chefe (docs/spec/navegacao.md). Vaccine and weight open their form right here. */
 export function RegisterDrawer({ petId }: { petId: string }) {
   const { chefes } = useChefia();
-  const [step, setStep] = useState<Step>('menu');
+  // The speed dial opens straight on a form: /registrar#vacina or /registrar#peso.
+  const [step, setStep] = useState<Step>(() => {
+    const hash = window.location.hash.slice(1);
+    return hash === 'vacina' ? 'vaccine' : hash === 'peso' ? 'weight' : 'menu';
+  });
   const chefe = chefes.find((c) => c.pet.id === petId);
   const close = () => goBack(`/chefes/${petId}`);
   useEscape(close);

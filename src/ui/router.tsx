@@ -24,6 +24,21 @@ export function goBack(fallback: string): void {
   }
 }
 
+/** The #fragment, so a link to another tab of the same page is noticed. */
+export function useHash(): string {
+  const [hash, setHash] = useState(window.location.hash);
+  useEffect(() => {
+    const update = () => setHash(window.location.hash);
+    listeners.add(update);
+    window.addEventListener('popstate', update);
+    return () => {
+      listeners.delete(update);
+      window.removeEventListener('popstate', update);
+    };
+  }, []);
+  return hash;
+}
+
 export function usePath(): string {
   const [path, setPath] = useState(window.location.pathname);
   useEffect(() => {

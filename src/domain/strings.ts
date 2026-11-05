@@ -39,6 +39,7 @@ export const strings = {
     button: 'Registrar',
     vaccine: 'Vacina',
     weight: 'Peso',
+    medication: 'Medicações',
     soon: [
       { label: 'Dose dada', phase: 'F3' },
       { label: 'Antipulgas ou vermífugo', phase: 'F2' },
@@ -55,7 +56,8 @@ export const strings = {
     next: 'A seguir',
     noPortrait: 'Ainda sem retrato',
     weightAlert: 'Advertência',
-    sections: { history: 'Histórico', weight: 'Peso', profile: 'Perfil', tutoria: 'Tutoria' },
+    sections: { history: 'Histórico', weight: 'Peso', medication: 'Medicações', profile: 'Perfil', tutoria: 'Tutoria' },
+    medicationSoon: 'Medicações chegam na fase 3: doses diárias, estoque e lembretes.',
     editHistory: 'Editar histórico',
     doneEditing: 'Concluir',
     dueOn: (date: string) => `vence em ${date}`,

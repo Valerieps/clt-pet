@@ -24,6 +24,9 @@ export const PhoneIcon = () => <Icon path="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15
 export const HeartbeatIcon = () => <Icon path="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10zM8 12h2l1-2 2 4 1-2h2" />;
 export const CloseIcon = () => <Icon path="M6 6l12 12M18 6 6 18" />;
 export const VaccineIcon = () => <Icon path="M18 2l4 4M17 7l3-3M19 9 8.7 19.3a1 1 0 0 1-.7.3H5v-3a1 1 0 0 1 .3-.7L15.5 5.5M9 11l4 4M5 19l-3 3M14 4l6 6" />;
+export const PillIcon = () => <Icon path="M10.5 20.5 3.5 13.5a4.95 4.95 0 0 1 7-7l7 7a4.95 4.95 0 0 1-7 7zM8.5 8.5l7 7" />;
+export const PencilIcon = () => <Icon path="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z" />;
+export const CheckIcon = () => <Icon path="M5 12l5 5 9-10" />;
 export const PlusIcon = () => <Icon path="M12 5v14M5 12h14" />;
 export const ScaleIcon = () => <Icon path="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM6.5 13a5.5 5.5 0 0 1 11 0zM12 13l2.5-3.5" />;
 export const CatIcon = () => <Icon path="M5 20V6l4 3h6l4-3v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1zM9.5 13h.01M14.5 13h.01M11 16l1 1 1-1" />;
