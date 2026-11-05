@@ -4,16 +4,16 @@ import { canManageGroup } from '../domain/group/roles';
 import { strings } from '../domain/strings';
 import { useLiveStatus, useServices } from './backend-context';
 import { Link, navigate, usePath } from './router';
-import { Home } from './screens/Home';
 import { Invites } from './screens/Invites';
 import { Members } from './screens/Members';
+import { Mural } from './screens/Mural';
 import { PetScreen } from './screens/PetScreen';
 import { Pets } from './screens/Pets';
 import { SignIn } from './screens/SignIn';
 import { SosCard, SosList } from './screens/Sos';
 import { useQuery } from './use-query';
 
-/** The app's screens. Replace Home with the Mural da Chefia (docs/spec/mural.md). */
+/** The app's screens; the home is the Mural da Chefia (docs/spec/mural.md). */
 export function App() {
   const { backend, live } = useServices();
   const me = useQuery('me', {}, ['me']);
@@ -99,5 +99,5 @@ function Screen({ me }: { me: MeView }) {
   if (path === '/sos') return <SosList />;
   if (path.startsWith('/sos/')) return <SosCard petId={decodeURIComponent(path.slice('/sos/'.length))} />;
   if (path === '/convites' && canManageGroup(me)) return <Invites />;
-  return <Home me={me} />;
+  return <Mural me={me} />;
 }

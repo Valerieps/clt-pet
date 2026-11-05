@@ -22,6 +22,7 @@ interface PetRow {
   food_brand: string | null;
   food_daily: string | null;
   allergies_answered: number;
+  serious_mode: number;
   weight_alert_percent: number;
   tutor_member_id: string | null;
   tutor_email: string;
@@ -70,6 +71,7 @@ function toView(ctx: Context, row: PetRow): PetView {
     tags,
     photoVersion: ctx.sql.all<{ updated_at: string }>('SELECT updated_at FROM pet_photos WHERE pet_id = ?', row.id)[0]?.updated_at ?? null,
     allergiesAnswered: row.allergies_answered === 1,
+    seriousMode: row.serious_mode === 1,
     weightAlertPercent: row.weight_alert_percent,
     emergency: {
       vetName: row.vet_name,
