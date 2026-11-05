@@ -167,6 +167,17 @@ describe('weights', () => {
     expect(service.command('h-v', 'weight.add', { petId: id, grams: 4000, onDate: '2026-11-05' })).toEqual({ ok: false, error: 'invalid' });
   });
 
+  it('says who registered the newest record and when, across everything the Registrar saves', () => {
+    const { id } = pet('Berenice');
+    expect(pet('Berenice').lastRecord).toBeNull();
+    service.command('h-v', 'weight.add', { petId: id, grams: 4200, onDate: '2026-11-03' });
+    expect(pet('Berenice').lastRecord).toEqual({ byName: 'Valéria', at: '2026-11-04T15:00:00.000Z' });
+    clock.set('2026-11-04T18:00:00Z');
+    service.command('h-c', 'diary.add', { petId: id, onDate: '2026-11-04', text: 'Vomitou uma bola de pelo' });
+    expect(pet('Berenice').lastRecord).toEqual({ byName: 'Cesar', at: '2026-11-04T18:00:00.000Z' });
+    expect(pet('Panda').lastRecord).toBeNull();
+  });
+
   it('can be removed', () => {
     const { id } = pet('Berenice');
     const added = service.command('h-v', 'weight.add', { petId: id, grams: 4200, onDate: '2026-11-03' });

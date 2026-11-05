@@ -82,3 +82,23 @@ export const isSnoozed = (snoozedOn: string | null, today: string): boolean => s
 export function splitByTutor<T extends { readonly tutorMemberId: string | null }>(pets: readonly T[], memberId: string): { mine: T[]; others: T[] } {
   return { mine: pets.filter((p) => p.tutorMemberId === memberId), others: pets.filter((p) => p.tutorMemberId !== memberId) };
 }
+
+/**
+ * The "Feito" seal (docs/spec/mural.md): the first name of whoever registered something for the
+ * chefe today, or null. `at` is when it was saved (ISO); `localDay` turns it into the device's
+ * YYYY-MM-DD, so "today" ends at the tutor's midnight.
+ */
+export function doneToday(last: { readonly byName: string; readonly at: string } | null, today: string, localDay: (at: Date) => string): string | null {
+  if (!last || localDay(new Date(last.at)) !== today) return null;
+  return last.byName.trim().split(/\s+/)[0] || last.byName;
+}
+
+/**
+ * How a chefe shows on the Mural: a colored message with the button while it needs attention (and
+ * is not snoozed); a colored message with the seal, no button, once something was registered today;
+ * otherwise a small white message.
+ */
+export function messageKind(needsAttention: boolean, snoozed: boolean, doneBy: string | null): 'attention' | 'done' | 'calm' {
+  if (needsAttention && !snoozed) return 'attention';
+  return doneBy ? 'done' : 'calm';
+}

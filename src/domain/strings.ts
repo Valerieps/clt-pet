@@ -481,6 +481,8 @@ export const strings = {
     allergiesPill: 'Alergias em branco',
     fillAllergies: 'Informar alergias',
     snooze: 'Lembrar amanhã',
+    done: (name: string) => `Feito · ${name}`,
+    doneLabel: (name: string) => `Feito por ${name} hoje`,
     weightPill: (percent: number) => `Peso mudou ${Math.abs(percent).toFixed(1).replace('.', ',')}%`,
     weightWatch: 'O peso mudou. Vale ficar de olho.',
     addFirst: 'Cadastrar o primeiro chefe',

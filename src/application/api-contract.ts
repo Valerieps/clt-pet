@@ -65,6 +65,14 @@ export interface PetView {
   readonly arrivedOn: string;
   /** Oldest first. */
   readonly weights: readonly WeightEntryView[];
+  /** The newest thing registered for this chefe (weight, vaccine, medication, care, visit, diary): who and when (ISO). */
+  readonly lastRecord: LastRecordView | null;
+}
+
+export interface LastRecordView {
+  readonly byName: string;
+  /** ISO timestamp of when it was saved, not the day it refers to. */
+  readonly at: string;
 }
 
 /** What the app needs to subscribe this device to push. */

@@ -1,15 +1,21 @@
 import { useState } from 'react';
 import type { MeView } from '../../application/api-contract';
-import { dailyPhrase, isSnoozed, splitByTutor } from '../../domain/mural';
-import { dateLabel, dueLabel, initialOf } from '../../domain/navigation';
+import { dailyPhrase, doneToday, isSnoozed, messageKind, splitByTutor } from '../../domain/mural';
+import { dueLabel } from '../../domain/navigation';
 import { strings } from '../../domain/strings';
 import { todayLocal, useChefia, type Chefe } from '../chefia';
-import { Faces, MeLink } from '../parts';
+import { CheckIcon, ChefeFace, Faces, MeLink } from '../parts';
 import { Link } from '../router';
 
 const t = strings.mural;
 
-/** The home screen (docs/spec/mural.md): the chefes that need attention as cards, the rest as a calm line. */
+const localDay = (at: Date) => at.toLocaleDateString('sv-SE'); // YYYY-MM-DD in the device's time zone
+
+/**
+ * The home screen (docs/spec/mural.md): each chefe sends a message. The ones that need attention
+ * come first, in color, with the button; the rest follow as they are, colored with the "Feito"
+ * seal when something was registered today, white otherwise.
+ */
 export function Mural({ me }: { me: MeView }) {
   const { chefes, failed, loading } = useChefia();
   const today = todayLocal();
@@ -17,9 +23,12 @@ export function Mural({ me }: { me: MeView }) {
   const mine = new Set(splitByTutor(chefes.map((c) => c.pet), me.id).mine.map((p) => p.id));
   const ordered = [...chefes.filter((c) => mine.has(c.pet.id)), ...chefes.filter((c) => !mine.has(c.pet.id))];
   const [snoozes, setSnoozes] = useState<Record<string, string>>(readSnoozes);
-  const snoozed = (c: Chefe) => isSnoozed(snoozes[c.pet.id] ?? null, today);
-  const attention = ordered.filter((c) => c.status.needsAttention && !snoozed(c));
-  const calm = ordered.filter((c) => !c.status.needsAttention || snoozed(c));
+  const messages = ordered.map((chefe) => {
+    const doneBy = doneToday(chefe.pet.lastRecord, today, localDay);
+    const kind = messageKind(chefe.status.needsAttention, isSnoozed(snoozes[chefe.pet.id] ?? null, today), doneBy);
+    return { chefe, doneBy, kind };
+  });
+  const sorted = [...messages.filter((m) => m.kind === 'attention'), ...messages.filter((m) => m.kind !== 'attention')];
   const snooze = (petId: string) => {
     const next = { ...snoozes, [petId]: today };
     setSnoozes(next);
@@ -29,16 +38,9 @@ export function Mural({ me }: { me: MeView }) {
   return (
     <>
       <header className="mural-header">
-        <div className="spread">
-          <div>
-            <p className="lbl">{dateLabel(new Date())}</p>
-            <h1 className="monument" style={{ fontSize: 40, marginTop: 4 }}>
-              {t.title}
-            </h1>
-          </div>
-          <MeLink me={me} />
-        </div>
+        <h1 className="sr-only">{t.title}</h1>
         <Faces chefes={chefes} current="mural" />
+        <MeLink me={me} />
       </header>
       <main className="mural-list">
         {failed && <p className="notice">{strings.genericError}</p>}
@@ -53,12 +55,13 @@ export function Mural({ me }: { me: MeView }) {
             </div>
           </>
         )}
-        {attention.map((chefe) => (
-          <AttentionCard key={chefe.pet.id} chefe={chefe} today={today} onSnooze={() => snooze(chefe.pet.id)} />
-        ))}
-        {calm.map((chefe) => (
-          <CalmLine key={chefe.pet.id} chefe={chefe} today={today} />
-        ))}
+        {sorted.map(({ chefe, doneBy, kind }) =>
+          kind === 'calm' ? (
+            <CalmMessage key={chefe.pet.id} chefe={chefe} today={today} />
+          ) : (
+            <ColoredMessage key={chefe.pet.id} chefe={chefe} today={today} doneBy={doneBy} attention={kind === 'attention'} onSnooze={() => snooze(chefe.pet.id)} />
+          ),
+        )}
       </main>
     </>
   );
@@ -88,53 +91,73 @@ function writeSnoozes(value: Record<string, string>): void {
   }
 }
 
-function AttentionCard({ chefe, today, onSnooze }: { chefe: Chefe; today: string; onSnooze: () => void }) {
+/**
+ * A message in the chefe's aura. While the chefe needs attention it carries the reason and the
+ * button; once something was registered today it carries the "Feito" seal instead.
+ */
+function ColoredMessage({ chefe, today, doneBy, attention, onSnooze }: { chefe: Chefe; today: string; doneBy: string | null; attention: boolean; onSnooze: () => void }) {
   const { pet, aura, status } = chefe;
-  const name = pet.profile.name;
   const phrase = phraseOf(chefe, today);
-  const pill = status.vaccine
-    ? `${status.vaccine.item} · ${dueLabel(status.vaccine.overdue, status.vaccine.days)}`
-    : status.weightChange
-      ? t.weightPill(status.weightChange.percent)
-      : t.allergiesPill;
+  const pill = !attention
+    ? null
+    : status.vaccine
+      ? `${status.vaccine.item} · ${dueLabel(status.vaccine.overdue, status.vaccine.days)}`
+      : status.weightChange
+        ? t.weightPill(status.weightChange.percent)
+        : t.allergiesPill;
   return (
-    <article className={`mural-card sunbg ${aura}`}>
-      <Link to={`/chefes/${pet.id}`}>
-        <span className="monument">{name}</span>
-        <span className="when on-dark">{pill}</span>
-      </Link>
-      {phrase && <p>{phrase}</p>}
-      {status.weightChange && !status.vaccine && <p>{t.weightWatch}</p>}
-      {status.allergiesMissing && <p>{t.allergiesMissing}</p>}
-      <div className="actions">
-        {status.vaccine || status.weightChange ? (
-          <Link to={`/chefes/${pet.id}/registrar`} className="btn light">
-            {strings.register.button}
-          </Link>
-        ) : (
-          <Link to={`/chefes/${pet.id}`} className="btn light">
-            {t.fillAllergies}
-          </Link>
+    <article className={`msg ${aura}${doneBy ? ' sealed' : ''}`}>
+      <ChefeFace pet={pet} className="msg-face" />
+      <div className="bubble sunbg">
+        <Link to={`/chefes/${pet.id}`}>
+          <span className="monument">{pet.profile.name}</span>
+          {pill && <span className="when on-dark">{pill}</span>}
+        </Link>
+        {phrase && <p>{phrase}</p>}
+        {attention && status.weightChange && !status.vaccine && <p>{t.weightWatch}</p>}
+        {attention && status.allergiesMissing && <p>{t.allergiesMissing}</p>}
+        {attention && (
+          <div className="actions">
+            {status.vaccine || status.weightChange ? (
+              <Link to={`/chefes/${pet.id}/registrar`} className="btn light">
+                {strings.register.button}
+              </Link>
+            ) : (
+              <Link to={`/chefes/${pet.id}`} className="btn light">
+                {t.fillAllergies}
+              </Link>
+            )}
+            <button type="button" className="btn ghost" onClick={onSnooze}>
+              {t.snooze}
+            </button>
+          </div>
         )}
-        <button type="button" className="btn ghost" onClick={onSnooze}>
-          {t.snooze}
-        </button>
+        {doneBy && (
+          <span className="seal" role="img" aria-label={t.doneLabel(doneBy)}>
+            <CheckIcon />
+            <span aria-hidden="true">{t.done(doneBy)}</span>
+          </span>
+        )}
       </div>
     </article>
   );
 }
 
-function CalmLine({ chefe, today }: { chefe: Chefe; today: string }) {
+/** A chefe with nothing demanded and nothing registered today: a small white message. */
+function CalmMessage({ chefe, today }: { chefe: Chefe; today: string }) {
   const { pet, aura } = chefe;
   return (
-    <Link to={`/chefes/${pet.id}`} className={`mural-calm ${aura}`}>
-      <span className="dot">{initialOf(pet.profile.name)}</span>
-      <span>{phraseOf(chefe, today) ?? t.allGood}</span>
+    <Link to={`/chefes/${pet.id}`} className={`msg calm ${aura}`}>
+      <ChefeFace pet={pet} className="msg-face" />
+      <span className="bubble">
+        <b>{pet.profile.name}</b>
+        <span>{phraseOf(chefe, today) ?? t.allGood}</span>
+      </span>
     </Link>
   );
 }
 
-/** What shows while the chefes load: the cards' shape, so the screen is never blank. */
+/** What shows while the chefes load: the messages' shape, so the screen is never blank. */
 function MuralSkeleton() {
   return (
     <div role="status" aria-label={t.loading}>

@@ -1,6 +1,6 @@
 // Small pieces shared by the screens: icons, the row of faces, the Manual handle.
 import { useEffect, useRef, type ReactNode } from 'react';
-import type { MeView } from '../application/api-contract';
+import { petPhotoPath, type MeView, type PetView } from '../application/api-contract';
 import { initialOf } from '../domain/navigation';
 import { strings } from '../domain/strings';
 import type { Chefe } from './chefia';
@@ -53,12 +53,24 @@ export function Faces({ chefes, current, onDark = false }: { chefes: readonly Ch
       </Link>
       {chefes.map(({ pet, aura, status }) => (
         <Link key={pet.id} to={`/chefes/${pet.id}`} className={`face ${aura}`} aria-current={current === pet.id ? 'page' : undefined}>
-          <span className="dot">{initialOf(pet.profile.name)}</span>
+          <ChefeFace pet={pet} className="dot" />
           {status.needsAttention && <span className="pend" role="img" aria-label={strings.nav.pending} />}
           <span className="name">{pet.profile.name}</span>
         </Link>
       ))}
     </nav>
+  );
+}
+
+/**
+ * A chefe's round face: the photo, or the initial on the chefe's aura while there is none.
+ * Decorative: the chefe's name always sits next to it.
+ */
+export function ChefeFace({ pet, className }: { pet: PetView; className: string }) {
+  return (
+    <span className={className} aria-hidden="true">
+      {pet.photoVersion ? <img src={petPhotoPath(pet.id, pet.photoVersion)} alt="" /> : initialOf(pet.profile.name)}
+    </span>
   );
 }
 

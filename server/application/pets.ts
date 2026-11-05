@@ -53,6 +53,12 @@ const PET_SELECT = `SELECT pets.*, members.name AS tutor_name, back.name AS retu
   LEFT JOIN members ON members.id = pets.tutor_member_id AND members.active = 1
   LEFT JOIN members AS back ON back.id = pets.tutor_return_member_id AND back.active = 1`;
 
+/** What the Registrar drawer saves (docs/spec/navegacao.md): the Mural's "Feito" seal shows the newest of these. */
+const REGISTER_TABLES = ['weights', 'vaccinations', 'medications', 'care_records', 'visits', 'diary'] as const;
+const LAST_RECORD = `SELECT members.name, r.created_at FROM (
+  ${REGISTER_TABLES.map((table) => `SELECT member_id, created_at FROM ${table} WHERE pet_id = ?`).join(' UNION ALL ')}
+) AS r JOIN members ON members.id = r.member_id ORDER BY r.created_at DESC LIMIT 1`;
+
 /** Today in Brasília (UTC-3), as YYYY-MM-DD: the date a weight or birthday is judged against. */
 export function todayInBrasilia(ctx: Context): string {
   return new Date(ctx.clock.now().getTime() - 3 * 60 * 60 * 1000).toISOString().slice(0, 10);
@@ -67,6 +73,7 @@ function toView(ctx: Context, row: PetRow): PetView {
      WHERE weights.pet_id = ? ORDER BY weights.on_date, weights.created_at, weights.rowid`,
     row.id,
   );
+  const last = ctx.sql.all<{ name: string; created_at: string }>(LAST_RECORD, ...REGISTER_TABLES.map(() => row.id))[0];
   return {
     id: row.id,
     species: row.species,
@@ -104,6 +111,7 @@ function toView(ctx: Context, row: PetRow): PetView {
     tutorReturnName: row.tutor_until ? row.return_name : null,
     arrivedOn: row.created_at.slice(0, 10),
     weights: weights.map((w): WeightEntryView => ({ id: w.id, grams: w.grams, onDate: w.on_date, byName: w.name })),
+    lastRecord: last ? { byName: last.name, at: last.created_at } : null,
   };
 }
 
