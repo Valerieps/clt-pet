@@ -27,9 +27,9 @@ Nada por enquanto.
   sem querer.
 - Cada chefe tem uma aura (cor de fundo e luz de sol). São três, repetidas na ordem em que os chefes
   aparecem. O funcionário nunca ganha letreiro: o nome dele aparece em letra comum. *(1)*
-- A grandeza para onde a informação é de segurança: o Manual de Sobrevivência, as alergias e as
+- A grandeza para onde a informação é de segurança: o Cartão de Saúde, as alergias e as
   condições graves não têm aura, luz nem letreiro. Foto pequena, fundo branco, informação primeiro. *(1)*
-- O Manual de Sobrevivência tem uma alça fixa na borda de baixo de todas as telas. Abre como uma
+- O Cartão de Saúde tem uma alça fixa na borda de baixo de todas as telas. Abre como uma
   gaveta sobre a tela em que eu estou, já no chefe dela (ou no primeiro, se eu estou no Mural), com
   um botão por chefe para trocar. Fechar volta para a tela de antes. *(1)*
 - Registrar abre uma gaveta com o que dá para registrar para aquele chefe. Vacina e peso abrem o

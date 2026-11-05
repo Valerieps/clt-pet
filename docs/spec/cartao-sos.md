@@ -1,6 +1,6 @@
 # Cartão SOS
 
-O "Manual de Sobrevivência do Funcionário": o que eu preciso saber de um chefe numa emergência.
+O Cartão de Saúde: o que eu preciso saber de um chefe numa emergência.
 
 - **Entra aqui:** o conteúdo do Cartão SOS e como chego nele.
 - **Não entra aqui:** o cadastro dos dados em si (`chefes.md`) e as condições de saúde (fase 2).

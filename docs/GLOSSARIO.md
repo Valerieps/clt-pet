@@ -17,7 +17,7 @@ Um termo, um sentido. Estes nomes valem para os textos da interface e para as do
 - **Funcionário reserva:** o outro funcionário, que não é o tutor responsável de um chefe; é avisado só do que atrasa. (`spec/lembretes.md`)
 - **Funcionário temporário:** pet sitter com um link somente leitura, sem login (fase 2). (`spec/acesso-e-membros.md`)
 - **Grupo:** todas as pessoas que usam o app; há um só. (`spec/acesso-e-membros.md`)
-- **Manual de Sobrevivência:** o Cartão SOS, com os dados de emergência de um chefe. (`spec/cartao-sos.md`)
+- **Cartão de Saúde:** o Cartão SOS, com os dados de emergência de um chefe. (`spec/cartao-sos.md`)
 - **Manual do Funcionário Temporário:** o link de cuidados para o pet sitter (fase 2). (`spec/acesso-e-membros.md`)
 - **Membro:** quem entrou no grupo com um convite. (`spec/acesso-e-membros.md`)
 - **Modo sério:** interruptor por chefe que desliga o humor. (`spec/voz-dos-chefes.md`)

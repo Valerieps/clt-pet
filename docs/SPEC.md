@@ -37,7 +37,7 @@ As fases 2 a 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos
 | [spec/acesso-e-membros.md](spec/acesso-e-membros.md) | Login com Google, convites, papéis e membros |
 | [spec/chefes.md](spec/chefes.md) | Perfil dos chefes, tutoria, alergias, peso e os dados iniciais |
 | [spec/voz-dos-chefes.md](spec/voz-dos-chefes.md) | Tom de voz, tags de personalidade e a biblioteca de frases |
-| [spec/cartao-sos.md](spec/cartao-sos.md) | O Manual de Sobrevivência: dados de emergência a dois toques |
+| [spec/cartao-sos.md](spec/cartao-sos.md) | O Cartão de Saúde: dados de emergência a dois toques |
 | [spec/vacinas.md](spec/vacinas.md) | Carteirinha de vacinação, protocolos e status |
 | [spec/lembretes.md](spec/lembretes.md) | Push, prazos e escalonamento para o funcionário reserva |
 | [spec/mural.md](spec/mural.md) | O Mural da Chefia, a tela inicial |
