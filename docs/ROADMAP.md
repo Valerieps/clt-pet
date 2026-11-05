@@ -11,7 +11,7 @@ O que ainda não está pronto.
 
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
-| Voz dos chefes: tags, frases base e modo sério | 1 | `spec/voz-dos-chefes.md` | Frases em `src/domain`, com testes |
+| Modo sério: o interruptor por chefe na tela do chefe | 1 | `spec/voz-dos-chefes.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase nos lembretes e no Mural quando eles forem feitos |
 | Cartão SOS | 1 | `spec/cartao-sos.md` | A dois toques de qualquer tela |
 | Carteirinha de vacinação | 1 | `spec/vacinas.md` | Protocolos por espécie e registro em grupo |
 | Lembretes por push | 1 | `spec/lembretes.md` | ADR-008; chaves VAPID, service worker e cron |
