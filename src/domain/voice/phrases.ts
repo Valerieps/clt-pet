@@ -1,6 +1,6 @@
 // The base phrase library (docs/spec/voz-dos-chefes.md, "Biblioteca base"): a few phrases per chefe and
 // per event, shared by both tutors, always in the chefe's own voice (first person).
-// Variables: {nome}, {item}, {dias}, {funcionario}. The Mural fills only {nome}, {item} and {dias},
+// Variables: {nome}, {item}, {dias}, {funcionario}. Reminders fill only {nome}, {item} and {dias},
 // so {funcionario} stays out of dueSoon, overdue and allGood.
 
 export type VoiceEvent = 'dueSoon' | 'overdue' | 'dailyDose' | 'weightStale' | 'allGood';

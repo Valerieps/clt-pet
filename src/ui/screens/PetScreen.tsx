@@ -35,7 +35,7 @@ import { useQuery } from '../use-query';
 import { WeightChart } from './WeightChart';
 
 const t = strings.pets;
-const mural = strings.mural;
+const home = strings.home;
 const tabsT = strings.chefe.tabs;
 
 /** A chefe's page (docs/spec/navegacao.md): the portrait in an arch under the aura, then what the chefe demands. */
@@ -47,7 +47,7 @@ export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
     return (
       <>
         <header className="page-header">
-          <BackBar to="/" label={strings.nav.backToMural} />
+          <BackBar to="/" label={strings.nav.backToHome} />
         </header>
         <main className="sheet">
           {failed && <p className="notice">{strings.genericError}</p>}
@@ -71,7 +71,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
   const [editing, setEditing] = useState(NOT_EDITING);
   const setTabEditing = (key: PetTab, value: boolean) => setEditing((all) => ({ ...all, [key]: value }));
 
-  // Arriving at /chefes/<id>#vacinas (from a push, the Mural or an item) opens the tab that holds it.
+  // Arriving at /chefes/<id>#vacinas (from a push, Próximas Ações or an item) opens the tab that holds it.
   useEffect(() => {
     const key = window.location.hash.slice(1);
     const target = tabOfHash(key);
@@ -201,7 +201,7 @@ function Summary({ chefe }: { chefe: Chefe }) {
       {status.allergiesMissing && (
         <Link to={`/chefes/${pet.id}#perfil`} className="item">
           <p>{t.allergiesTitle}</p>
-          <span className="when">{mural.allergiesPill}</span>
+          <span className="when">{home.allergiesPill}</span>
         </Link>
       )}
     </div>
@@ -677,7 +677,7 @@ function LendTutoria({ pet, candidates, myId }: { pet: PetView; candidates: read
   );
 }
 
-/** Aposentadoria: the chefe leaves the Mural; the history stays. */
+/** Aposentadoria: the chefe leaves Próximas Ações; the history stays. */
 function Retire({ pet }: { pet: PetView }) {
   const toast = useToast();
   const confirm = useConfirm();

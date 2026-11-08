@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { CareView, PetView, PlanView, VaccinationView } from '../application/api-contract';
-import { muralStatus, type MuralStatus } from '../domain/mural';
+import { chefeStatus, type ChefeStatus } from '../domain/next-actions';
 import { auraClass } from '../domain/navigation';
 import { weightAlert } from '../domain/pets/weight';
 import { useQuery } from './use-query';
@@ -11,7 +11,7 @@ export interface Chefe {
   readonly pet: PetView;
   /** CSS class that sets the chefe's aura (docs/spec/navegacao.md). */
   readonly aura: string;
-  readonly status: MuralStatus;
+  readonly status: ChefeStatus;
   readonly doses: readonly VaccinationView[];
   /** Parasite and hygiene records (docs/spec/cuidados.md). */
   readonly care: readonly CareView[];
@@ -19,9 +19,9 @@ export interface Chefe {
   readonly plans: readonly PlanView[];
 }
 
-/** Every chefe with its aura and Mural status: what the faces, the Mural and the pages share. */
+/** Every chefe with its aura and status: what the faces, Próximas Ações and the pages share. */
 export function useChefia(): { chefes: readonly Chefe[]; loading: boolean; failed: boolean } {
-  // Every record the Registrar saves moves `lastRecord`, the Mural's "Feito" seal.
+  // Every record the Registrar saves moves `lastRecord`, Feito hoje on Próximas Ações.
   const pets = useQuery('pets', {}, ['pets', 'vaccinations', 'medications', 'care', 'visits', 'diary']);
   const vaccinations = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
   const careRecords = useQuery('care', {}, ['care', 'pets']);
@@ -31,11 +31,10 @@ export function useChefia(): { chefes: readonly Chefe[]; loading: boolean; faile
     return (pets.data ?? []).map((pet, index): Chefe => {
       const doses = (vaccinations.data ?? []).filter((d) => d.petId === pet.id);
       const care = (careRecords.data ?? []).filter((c) => c.petId === pet.id);
-      const forMural = { id: pet.id, name: pet.profile.name, seriousMode: pet.seriousMode, allergiesAnswered: pet.allergiesAnswered };
       const alert = weightAlert(pet.weights, pet.weightAlertPercent);
       const parasites = care.filter((c) => c.category === 'parasite');
       const plans = (planned.data ?? []).filter((p) => p.petId === pet.id);
-      return { pet, aura: auraClass(index), status: muralStatus(forMural, doses, today, alert?.percent ?? null, parasites, plans), doses, care, plans };
+      return { pet, aura: auraClass(index), status: chefeStatus(pet, doses, today, alert?.percent ?? null, parasites, plans), doses, care, plans };
     });
   }, [pets.data, vaccinations.data, careRecords.data, planned.data]);
   return { chefes, loading: pets.loading && !pets.data, failed: Boolean(pets.error && !pets.data) };

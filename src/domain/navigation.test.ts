@@ -5,7 +5,7 @@ describe('tabOfHash', () => {
   it('opens the new tabs by their own hash', () => {
     expect(['agendamentos', 'ficha', 'perfil'].map(tabOfHash)).toEqual(['agendamentos', 'ficha', 'perfil']);
   });
-  it('keeps the old hashes working, as push and the Mural send them', () => {
+  it('keeps the old hashes working, as push and the home screen send them', () => {
     expect(['prazos', 'historico', 'vacinas', 'cuidados', 'medicacoes', 'tratamentos', 'consultas'].map(tabOfHash)).toEqual(Array(7).fill('agendamentos'));
     expect(['saude', 'diario', 'condicoes', 'peso'].map(tabOfHash)).toEqual(Array(4).fill('ficha'));
     expect(['rotina', 'perfil', 'tutoria'].map(tabOfHash)).toEqual(['perfil', 'perfil', 'perfil']);

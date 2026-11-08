@@ -22,11 +22,11 @@ export const strings = {
 
   nav: {
     main: 'Chefes',
-    mural: 'Mural',
+    home: 'Ações',
     pending: 'Tem exigência',
     settings: 'Configurações',
     back: 'Voltar',
-    backToMural: 'Voltar ao Mural',
+    backToHome: 'Voltar às Próximas Ações',
     close: 'Fechar',
     manual: 'Cartão de Saúde',
     signOut: 'Sair',
@@ -89,6 +89,8 @@ export const strings = {
     account: 'Minha conta',
     admin: 'Administrador do grupo',
     member: 'Membro do grupo',
+    nameLabel: 'Meu nome',
+    save: 'Salvar',
   },
 
   // Neutral tone, no jokes (docs/spec/voz-dos-chefes.md).
@@ -218,8 +220,8 @@ export const strings = {
     },
     retire: {
       button: 'Aposentar',
-      explain: 'Falecimento ou doação: sai do Mural e dos lembretes; o histórico fica guardado.',
-      confirm: (name: string) => `Aposentar ${name}? Sai do Mural e dos lembretes; o histórico fica guardado.`,
+      explain: 'Falecimento ou doação: sai das Próximas Ações e dos lembretes; o histórico fica guardado.',
+      confirm: (name: string) => `Aposentar ${name}? Sai das Próximas Ações e dos lembretes; o histórico fica guardado.`,
       done: (name: string) => `${name} foi aposentado(a).`,
       listTitle: 'Aposentados',
       // Affectionate, never funny (docs/spec/voz-dos-chefes.md).
@@ -497,23 +499,26 @@ export const strings = {
     },
   },
 
-  mural: {
-    greeting: (greeting: string, name: string) => `${greeting}, ${name}!`,
-    title: 'Mural da Chefia',
+  // Próximas Ações, the home screen (docs/spec/proximas-acoes.md): plain information, no phrases.
+  home: {
+    title: 'Próximas Ações',
     empty: 'Nenhum chefe cadastrado.',
-    allGood: 'Estou em dia.',
-    allergiesMissing: 'Falta informar as minhas alergias.',
+    addFirst: 'Cadastrar o primeiro chefe',
+    loading: 'Carregando as Próximas Ações',
+    pendingTitle: 'Pendências',
+    nothingPending: 'Nada pendente.',
+    doneTitle: 'Feito hoje',
+    doneBy: (name: string) => `Registrado por ${name}`,
+    tutorTitle: (name: string) => `Chefes de ${name}`,
+    noTutor: 'Sem tutor no app',
     allergiesPill: 'Alergias em branco',
     fillAllergies: 'Informar alergias',
     snooze: 'Lembrar amanhã',
-    done: (name: string) => `Feito · ${name}`,
-    doneLabel: (name: string) => `Feito por ${name} hoje`,
+    snoozeLabel: (name: string) => `Lembrar amanhã das pendências de ${name}`,
     weightPill: (percent: number) => `Peso mudou ${Math.abs(percent).toFixed(1).replace('.', ',')}%`,
-    weightWatch: 'Meu peso mudou. Vale ficar de olho.',
-    addFirst: 'Cadastrar o primeiro chefe',
-    loading: 'Carregando o Mural',
-    nameLabel: 'Meu nome',
-    save: 'Salvar',
+    noWeight: 'Sem peso',
+    noPrazo: 'Sem prazos',
+    noRecord: 'Nada registrado',
   },
 
   invites: {
