@@ -18,9 +18,9 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
   ele se repete e, se quiser, o produto ou uma observação. *(2)*
 - Só o cuidado e a data são obrigatórios; a data não pode ser futura. *(2)*
 - Eu posso registrar o mesmo cuidado para vários chefes de uma vez. *(2)*
-- Eu chego ao formulário pelo +: "Antiparasitário dado" abre o formulário já em parasitas e
+- Eu chego ao formulário pelo +: "Medicação dada" abre o formulário já em parasitas e
   "Higiene feita", já em higiene. *(2)*
-- Na página do chefe, a aba Prazos mostra o estado de cada antiparasitário e de cada cuidado de
+- Na página do chefe, a aba Prazos mostra o estado de cada medicação e de cada cuidado de
   higiene, junto das vacinas, e o histórico dobrado embaixo (`navegacao.md`). *(2)*
 - Eu posso planejar um cuidado antes de ele ter acontecido (`prazos.md`). *(2)*
 

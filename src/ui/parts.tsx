@@ -30,7 +30,7 @@ export const ChevronLeftIcon = () => <Icon path="M15 5l-7 7 7 7" />;
 export const CheckIcon = () => <Icon path="M5 12l5 5 9-10" />;
 export const PlusIcon = () => <Icon path="M12 5v14M5 12h14" />;
 export const ScaleIcon = () => <Icon path="M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM6.5 13a5.5 5.5 0 0 1 11 0zM12 13l2.5-3.5" />;
-/** Antiparasitário dado: a shield. */
+/** Medicação dada: a shield. */
 export const ShieldIcon = () => <Icon path="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6zM9 12l2 2 4-4" />;
 /** Health: a stethoscope. */
 export const StethoscopeIcon = () => <Icon path="M6 3v6a4 4 0 0 0 8 0V3M10 13v2a5 5 0 0 0 10 0v-2M20 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />;

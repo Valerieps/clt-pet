@@ -35,7 +35,7 @@ Como eu me movo pelo app: dois níveis, as abas da página do chefe e o + que re
 - A página do chefe tem quatro abas, uma por pergunta, cada uma com um ícone e um rótulo curto
   embaixo. Tocar abre a aba abaixo delas; tocar de novo fecha. *(2)*
   *Por quê:* eram sete ícones sem nome, e o mesmo assunto aparecia em dois lugares.
-  - **Prazos** (calendário): o que vence, planejado ou registrado (`prazos.md`). Vacinas (`vacinas.md`), Antiparasitários e Higiene
+  - **Prazos** (calendário): o que vence, planejado ou registrado (`prazos.md`). Vacinas (`vacinas.md`), Medicações e Higiene
     (`cuidados.md`), todos com o mesmo status: Em dia, Vence logo ou Atrasado.
   - **Saúde** (estetoscópio): Condições, Tratamentos (`medicacoes.md`), Consultas e exames e "Algo
     estranho hoje" (`saude.md`).
@@ -62,7 +62,7 @@ Como eu me movo pelo app: dois níveis, as abas da página do chefe e o + que re
 
 ### Exige e A seguir
 
-- "Exige" mostra tudo o que está atrasado ou vence logo: vacinas, antiparasitários, higiene e o
+- "Exige" mostra tudo o que está atrasado ou vence logo: vacinas, medicações, higiene e o
   retorno de uma consulta, do que vence primeiro ao último; mais o aviso de peso e as alergias em
   branco. *(2)*
 - O retorno de uma consulta vence logo 7 dias antes da data e fica atrasado depois dela. Ele sai do
@@ -82,8 +82,8 @@ Como eu me movo pelo app: dois níveis, as abas da página do chefe e o + que re
   um botão por chefe para trocar. Fechar volta para a tela de antes. *(1)*
 - Registrar é um botão flutuante de + em todas as telas (some quando o Cartão de Saúde está aberto).
   Ao tocar, abre um leque (speed dial) só com acontecimentos, com nomes no passado: Vacina dada, Peso,
-  Antiparasitário dado, Higiene feita, Consulta ou exame e Algo estranho hoje. Cada um abre a gaveta
-  já no formulário, com o mesmo nome no título e no aviso curto que confirma. Antiparasitário dado e
+  Medicação dada, Higiene feita, Consulta ou exame e Algo estranho hoje. Cada um abre a gaveta
+  já no formulário, com o mesmo nome no título e no aviso curto que confirma. Medicação dada e
   Higiene feita abrem o formulário de cuidados já no tipo certo. Ao salvar, a gaveta fecha. Do Mural a
   um peso salvo são três toques: Registrar, Peso, Salvar. *(1, opções da fase 2)*
   *Por quê:* registrar é o laço que repetimos todo dia; não pode exigir rolar a página.
@@ -98,9 +98,9 @@ Como eu me movo pelo app: dois níveis, as abas da página do chefe e o + que re
   aparelho; o ponto amarelo no rosto continua. *(2)*
   *Por quê:* adiar é pessoal; o outro funcionário continua vendo a cobrança.
 - Tocar no aviso do celular abre a página do chefe já na aba do item (Prazos para vacinas e
-  antiparasitários, Saúde para o retorno de uma consulta), mostrando o estado atual: se o outro
+  medicações, Saúde para o retorno de uma consulta), mostrando o estado atual: se o outro
   funcionário já resolveu, o item aparece em dia. *(2)*
-- Vacina dada, Antiparasitário dado e Higiene feita podem ser registrados para outros chefes de uma
+- Vacina dada, Medicação dada e Higiene feita podem ser registrados para outros chefes de uma
   vez, no próprio formulário. *(2)*
 - O Manual do Funcionário Temporário fica nas Configurações (`manual-temporario.md`). *(2)*
 
