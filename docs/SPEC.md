@@ -44,6 +44,7 @@ As fases 3 e 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos
 | [spec/mural.md](spec/mural.md) | O Mural da Chefia, a tela inicial |
 | [spec/navegacao.md](spec/navegacao.md) | Os dois níveis, a fileira de rostos, a aura de cada chefe, as abas da página do chefe, o "Exige" e o + |
 | [spec/cuidados.md](spec/cuidados.md) | Parasitas e higiene: registro, modelos, prazo e status (fase 2) |
+| [spec/prazos.md](spec/prazos.md) | O planejamento de vacinas, antiparasitários e higiene antes do primeiro registro, e a aba Prazos (fase 2) |
 | [spec/saude.md](spec/saude.md) | Condições de saúde, consultas, exames e laudos, e o "algo estranho hoje" (fase 2) |
 | [spec/manual-temporario.md](spec/manual-temporario.md) | O link de uma página só para o pet sitter (fase 2) |
 | [spec/_modelo.md](spec/_modelo.md) | Modelo para um arquivo de feature novo |

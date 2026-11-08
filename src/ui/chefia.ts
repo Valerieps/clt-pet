@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { CareView, PetView, VaccinationView } from '../application/api-contract';
+import type { CareView, PetView, PlanView, VaccinationView } from '../application/api-contract';
 import { muralStatus, type MuralStatus } from '../domain/mural';
 import { auraClass } from '../domain/navigation';
 import { weightAlert } from '../domain/pets/weight';
@@ -15,6 +15,8 @@ export interface Chefe {
   readonly doses: readonly VaccinationView[];
   /** Parasite and hygiene records (docs/spec/cuidados.md). */
   readonly care: readonly CareView[];
+  /** Planned prazos (docs/spec/prazos.md). */
+  readonly plans: readonly PlanView[];
 }
 
 /** Every chefe with its aura and Mural status: what the faces, the Mural and the pages share. */
@@ -23,6 +25,7 @@ export function useChefia(): { chefes: readonly Chefe[]; loading: boolean; faile
   const pets = useQuery('pets', {}, ['pets', 'vaccinations', 'medications', 'care', 'visits', 'diary']);
   const vaccinations = useQuery('vaccinations', {}, ['vaccinations', 'pets']);
   const careRecords = useQuery('care', {}, ['care', 'pets']);
+  const planned = useQuery('plans', {}, ['plans', 'pets']);
   const chefes = useMemo(() => {
     const today = todayLocal();
     return (pets.data ?? []).map((pet, index): Chefe => {
@@ -31,8 +34,9 @@ export function useChefia(): { chefes: readonly Chefe[]; loading: boolean; faile
       const forMural = { id: pet.id, name: pet.profile.name, seriousMode: pet.seriousMode, allergiesAnswered: pet.allergiesAnswered };
       const alert = weightAlert(pet.weights, pet.weightAlertPercent);
       const parasites = care.filter((c) => c.category === 'parasite');
-      return { pet, aura: auraClass(index), status: muralStatus(forMural, doses, today, alert?.percent ?? null, parasites), doses, care };
+      const plans = (planned.data ?? []).filter((p) => p.petId === pet.id);
+      return { pet, aura: auraClass(index), status: muralStatus(forMural, doses, today, alert?.percent ?? null, parasites, plans), doses, care, plans };
     });
-  }, [pets.data, vaccinations.data, careRecords.data]);
+  }, [pets.data, vaccinations.data, careRecords.data, planned.data]);
   return { chefes, loading: pets.loading && !pets.data, failed: Boolean(pets.error && !pets.data) };
 }

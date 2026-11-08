@@ -33,6 +33,9 @@ Nada por enquanto.
 
 ## Revisar as lacunas que o agente decidiu
 
+- [ ] Fase 2, `spec/prazos.md`: a data planejada pode ser passada; qualquer registro do item apaga o
+  planejamento, mesmo um registro antigo lançado depois; cada item tem "Mudar data"; dá para
+  planejar para vários chefes de uma vez; o planejamento é por item, uma dose por vez.
 - [ ] Fase 2, `spec/cuidados.md`: os modelos e intervalos de parasitas e higiene por espécie; "Vence
   logo" a um quarto do intervalo (de 1 a 30 dias); só parasitas exigem atenção no Mural e geram
   aviso, higiene não; a coleira repelente fica em Cuidados.

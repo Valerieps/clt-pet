@@ -415,6 +415,31 @@ export const strings = {
     failed: 'Não consegui ativar os avisos. Tenta de novo?',
   },
 
+  // The Prazos tab (docs/spec/prazos.md): each item's next date, planned or from its last record.
+  prazos: {
+    empty: { vaccine: 'Nenhuma vacina planejada.', parasite: 'Nenhum antiparasitário planejado.', hygiene: 'Nenhum cuidado de higiene planejado.' },
+    next: (date: string) => `Próximo: ${date}`,
+    every: (days: number) => (days === 1 ? 'todo dia' : `a cada ${days} dias`),
+    last: (date: string) => `Último: ${date}`,
+    never: 'Ainda não aconteceu',
+    plan: { vaccine: '+ Planejar vacina', parasite: '+ Planejar antiparasitário', hygiene: '+ Planejar higiene' },
+    replan: 'Mudar data',
+    removePlan: 'Apagar planejamento',
+    removePlanConfirm: 'Apagar esse planejamento? Se já houver registro, o próximo prazo volta a contar dele.',
+    form: {
+      item: { vaccine: 'Qual vacina?', parasite: 'Qual antiparasitário?', hygiene: 'Qual cuidado?' },
+      other: 'Outro',
+      otherName: 'Nome',
+      pick: 'Escolha o que planejar.',
+      dueOn: 'Próxima data',
+      interval: 'Repetir a cada (dias)',
+      together: 'Planejar também para',
+      save: 'Planejar',
+      cancel: 'Cancelar',
+      invalid: 'Esse item, essa data ou esse intervalo não parecem certos.',
+    },
+    saved: (name: string) => `Prazo planejado para ${name}.`,
+  },
   vaccines: {
     empty: 'Nenhuma vacina registrada.',
     booster: (date: string) => `Reforço: ${date}`,

@@ -4,11 +4,13 @@ import { useState, type FormEvent } from 'react';
 import type { PetView } from '../../application/api-contract';
 import { CARE_NOTE_MAX, CARE_TEMPLATES, type CareCategory } from '../../domain/care/care';
 import { TEXT_MAX } from '../../domain/pets/pet';
+import { sameItem } from '../../domain/prazos';
 import { strings } from '../../domain/strings';
 import { MAX_INTERVAL_DAYS } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
 import { todayLocal } from '../chefia';
 import { useToast } from '../toast';
+import { useQuery } from '../use-query';
 
 const t = strings.care;
 
@@ -26,6 +28,8 @@ export function CareForm({ category, pet, allPets, onSaved }: { category: CareCa
   const [together, setTogether] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const others = allPets.filter((p) => p.id !== pet.id);
+  // A planned item's interval is the default (docs/spec/prazos.md).
+  const plans = useQuery('plans', {}, ['plans']);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -45,9 +49,10 @@ export function CareForm({ category, pet, allPets, onSaved }: { category: CareCa
   }
 
   const pick = (name: string, days: number) => {
+    const plan = plans.data?.find((p) => p.petId === pet.id && p.kind === category && sameItem(p.item, name));
     setCustom(false);
     setItem(name);
-    setInterval(String(days));
+    setInterval(String(plan?.intervalDays ?? days));
     setError(null);
   };
   const toggle = (id: string) => setTogether((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));

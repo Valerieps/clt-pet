@@ -1,7 +1,8 @@
 // What has a deadline on a chefe's page (docs/spec/navegacao.md, "Exige" and "A seguir"): vaccines,
 // parasites, hygiene, the return of a consulta and the end of a treatment. Pure: the UI passes the records.
-import { careDueDate, careStatus, currentCare, type CareCategory, type CareRecord } from './care/care';
-import { addDays, boosterDate, currentDoses, vaccineStatus, type Dose, type VaccineStatus } from './vaccines/vaccine';
+import { type CareCategory, type CareRecord } from './care/care';
+import { careOccurrences, currentPrazos, doseOccurrences, type Plan } from './prazos';
+import { addDays, type Dose, type VaccineStatus } from './vaccines/vaccine';
 
 /** Days before a consulta's return that it turns "vence logo". */
 export const RETURN_SOON_DAYS = 7;
@@ -40,6 +41,8 @@ export interface DeadlineSources {
   readonly care: readonly (CareRecord & { readonly id: string; readonly category: CareCategory })[];
   readonly visits: readonly DeadlineVisit[];
   readonly treatments: readonly DeadlineTreatment[];
+  /** The planned prazos (docs/spec/prazos.md); while one exists, it decides its item's date. */
+  readonly plans?: readonly Plan[];
 }
 
 /** A return turns "soon" 7 days before its date and "overdue" the day after. */
@@ -69,16 +72,17 @@ export const treatmentEndShows = (treatment: DeadlineTreatment, today: string): 
  * "A seguir": the next `nextCount` deadlines that are fine, the soonest first.
  */
 export function pageDeadlines(sources: DeadlineSources, today: string, nextCount = 2): { demanded: Deadline[]; next: Deadline[] } {
+  const plans = sources.plans ?? [];
   const care = (category: CareCategory): Deadline[] =>
-    currentCare(sources.care.filter((c) => c.category === category)).map((c) => ({
-      id: c.id,
+    currentPrazos(category, careOccurrences(sources.care.filter((c) => c.category === category)), plans, today).map((p) => ({
+      id: p.id,
       kind: category,
-      name: c.item,
-      due: careDueDate(c),
-      state: careStatus(c, today),
+      name: p.item,
+      due: p.due,
+      state: p.state,
     }));
   const all: Deadline[] = [
-    ...currentDoses(sources.doses).map((d): Deadline => ({ id: d.id, kind: 'vaccine', name: d.vaccine, due: boosterDate(d), state: vaccineStatus(d, today) })),
+    ...currentPrazos('vaccine', doseOccurrences(sources.doses), plans, today).map((p): Deadline => ({ id: p.id, kind: 'vaccine', name: p.item, due: p.due, state: p.state })),
     ...care('parasite'),
     ...care('hygiene'),
     ...openReturns(sources.visits).map((v): Deadline => ({ id: v.id, kind: 'return', name: v.title, due: v.returnOn!, state: returnStatus(v.returnOn!, today) })),

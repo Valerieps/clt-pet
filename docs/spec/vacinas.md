@@ -18,6 +18,7 @@ A carteirinha de vacinação de cada chefe, com protocolo, reforço e status.
   foto do selo. *(1)*
 - Só a vacina e a data são obrigatórias. *(1)*
 - Eu posso registrar a mesma vacina para vários chefes de uma vez. *(1)*
+- Eu posso planejar uma vacina antes da primeira dose (`prazos.md`). *(2)*
 
 ## Protocolos
 
@@ -34,5 +35,6 @@ A carteirinha de vacinação de cada chefe, com protocolo, reforço e status.
 
 ## Status
 
-- Em dia, Vence em até 30 dias, ou Atrasada. O status vem da data do reforço. *(1)*
+- Em dia, Vence em até 30 dias, ou Atrasada. O status vem da data do reforço ou do prazo planejado
+  (`prazos.md`). *(1)*
 - Atrasada é a "Advertência" na voz do chefe, fora das telas clínicas (`voz-dos-chefes.md`). *(1)*

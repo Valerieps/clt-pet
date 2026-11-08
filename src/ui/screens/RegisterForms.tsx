@@ -3,11 +3,13 @@ import { useState, type FormEvent } from 'react';
 import type { PetView } from '../../application/api-contract';
 import { TEXT_MAX } from '../../domain/pets/pet';
 import { parseKilos } from '../../domain/pets/weight';
+import { sameItem } from '../../domain/prazos';
 import { strings } from '../../domain/strings';
 import { DEFAULT_INTERVAL_DAYS, MAX_INTERVAL_DAYS, PROTOCOLS } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
 import { todayLocal } from '../chefia';
 import { useToast } from '../toast';
+import { useQuery } from '../use-query';
 
 const weightT = strings.pets.weight;
 const vaccineT = strings.vaccines;
@@ -68,6 +70,7 @@ export function VaccineForm({ pet, allPets, onSaved }: { pet: PetView; allPets: 
   const [together, setTogether] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const others = allPets.filter((p) => p.id !== pet.id);
+  const plans = useQuery('plans', {}, ['plans']);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -92,6 +95,8 @@ export function VaccineForm({ pet, allPets, onSaved }: { pet: PetView; allPets: 
   const pick = (name: string) => {
     setCustom(false);
     setVaccine(name);
+    const plan = plans.data?.find((p) => p.petId === pet.id && p.kind === 'vaccine' && sameItem(p.item, name));
+    if (plan) setInterval(String(plan.intervalDays));
     setError(null);
   };
   const toggle = (id: string) => setTogether((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));

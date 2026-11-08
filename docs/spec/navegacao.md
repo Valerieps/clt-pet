@@ -35,7 +35,7 @@ Como eu me movo pelo app: dois níveis, as abas da página do chefe e o + que re
 - A página do chefe tem quatro abas, uma por pergunta, cada uma com um ícone e um rótulo curto
   embaixo. Tocar abre a aba abaixo delas; tocar de novo fecha. *(2)*
   *Por quê:* eram sete ícones sem nome, e o mesmo assunto aparecia em dois lugares.
-  - **Prazos** (calendário): o que vence. Vacinas (`vacinas.md`), Antiparasitários e Higiene
+  - **Prazos** (calendário): o que vence, planejado ou registrado (`prazos.md`). Vacinas (`vacinas.md`), Antiparasitários e Higiene
     (`cuidados.md`), todos com o mesmo status: Em dia, Vence logo ou Atrasado.
   - **Saúde** (estetoscópio): Condições, Tratamentos (`medicacoes.md`), Consultas e exames e "Algo
     estranho hoje" (`saude.md`).
