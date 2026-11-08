@@ -235,6 +235,20 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     `ALTER TABLE pets ADD COLUMN tutor_return_member_id TEXT REFERENCES members(id)`,
     `ALTER TABLE pets ADD COLUMN tutor_return_email TEXT`,
   ],
+  // 11: the planned prazos (docs/spec/prazos.md): an item's next date before (or instead of) a record.
+  [
+    `CREATE TABLE plans (
+      id TEXT PRIMARY KEY,
+      pet_id TEXT NOT NULL REFERENCES pets(id),
+      kind TEXT NOT NULL,
+      item TEXT NOT NULL,
+      due_on TEXT NOT NULL,
+      interval_days INTEGER NOT NULL,
+      member_id TEXT NOT NULL REFERENCES members(id),
+      created_at TEXT NOT NULL
+    )`,
+    `CREATE INDEX plans_pet ON plans(pet_id)`,
+  ],
 ];
 
 export function migrate(sql: Sql): void {

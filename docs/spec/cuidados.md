@@ -22,6 +22,7 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
   "Higiene feita", já em higiene. *(2)*
 - Na página do chefe, a aba Prazos mostra o estado de cada antiparasitário e de cada cuidado de
   higiene, junto das vacinas, e o histórico dobrado embaixo (`navegacao.md`). *(2)*
+- Eu posso planejar um cuidado antes de ele ter acontecido (`prazos.md`). *(2)*
 
 ## Modelos
 
@@ -37,7 +38,8 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
 
 ## Status
 
-- Em dia, Vence logo ou Atrasado, a partir do último registro de cada cuidado. *(2)*
+- Em dia, Vence logo ou Atrasado, a partir do último registro de cada cuidado ou do prazo planejado
+  (`prazos.md`). *(2)*
 - "Vence logo" começa a um quarto do intervalo antes do prazo, entre 1 e 30 dias (antipulgas de 30
   dias: 7 dias antes). *(2)*
   Por quê: com a janela de 30 dias das vacinas, um antipulgas mensal ficaria sempre "vencendo".

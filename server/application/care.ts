@@ -1,9 +1,11 @@
 // Parasite and hygiene care (docs/spec/cuidados.md). Any member registers and removes records.
 import type { CareView } from '../../src/application/api-contract';
-import { careDueDate, currentCare, normalizeCare, type CareCategory } from '../../src/domain/care/care';
+import { normalizeCare, type CareCategory } from '../../src/domain/care/care';
+import { careOccurrences, currentPrazos } from '../../src/domain/prazos';
 import { failure, nowIso, type CommandResult, type Context } from './context';
 import type { Member } from './members';
 import { petsExist } from './pet-guard';
+import { dropPlans, listPlans, plansOf } from './plans';
 import { todayInBrasilia } from './pets';
 import type { ReminderSource } from './reminders';
 
@@ -39,11 +41,21 @@ export function listCare(ctx: Context): CareView[] {
   return ctx.sql.all<CareRow>(`${SELECT} ${ORDER}`).map(toView);
 }
 
-/** The next dose of each parasite item, for the push reminders. Hygiene has no push: its intervals are too short. */
+/**
+ * The next dose of each parasite item, recorded or planned (docs/spec/prazos.md), for the push reminders.
+ * Hygiene has no push: its intervals are too short.
+ */
 export const careReminders: ReminderSource = (ctx) => {
   const all = listCare(ctx).filter((c) => c.category === 'parasite');
-  return [...new Set(all.map((c) => c.petId))].flatMap((petId) =>
-    currentCare(all.filter((c) => c.petId === petId)).map((c) => ({ petId, item: c.item, dueOn: careDueDate(c), tab: 'cuidados' })),
+  const plans = listPlans(ctx).filter((p) => p.kind === 'parasite');
+  const today = todayInBrasilia(ctx);
+  return [...new Set([...all, ...plans].map((c) => c.petId))].flatMap((petId) =>
+    currentPrazos('parasite', careOccurrences(all.filter((c) => c.petId === petId)), plansOf(plans, petId), today).map((p) => ({
+      petId,
+      item: p.item,
+      dueOn: p.due,
+      tab: 'cuidados',
+    })),
   );
 };
 
@@ -72,7 +84,8 @@ export function addCare(ctx: Context, actor: Member, input: Record<string, unkno
       nowIso(ctx),
     );
   }
-  return { ok: true, value: listCare(ctx).filter((c) => created.includes(c.id)), changed: ['care'] };
+  const replanned = dropPlans(ctx, ids, record.category, record.item);
+  return { ok: true, value: listCare(ctx).filter((c) => created.includes(c.id)), changed: replanned ? ['care', 'plans'] : ['care'] };
 }
 
 export function removeCare(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<null> {

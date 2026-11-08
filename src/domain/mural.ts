@@ -1,8 +1,9 @@
 // The Mural da Chefia (docs/spec/mural.md): each chefe's overall status and the phrase of the day.
 // Pure: the caller passes today's date and the doses.
-import { careDueDate, careStatus, currentCare, type CareRecord } from './care/care';
+import { type CareRecord } from './care/care';
+import { careOccurrences, currentPrazos, doseOccurrences, type Plan } from './prazos';
 import { daysBetween } from './reminders/reminders';
-import { boosterDate, currentDoses, vaccineStatus, type Dose } from './vaccines/vaccine';
+import { type Dose } from './vaccines/vaccine';
 import { fillPhrase, pickTemplate, toneFor } from './voice/voice';
 
 export interface MuralPet {
@@ -24,7 +25,8 @@ export interface MuralStatus {
 
 /**
  * `parasites` are the parasite care records (docs/spec/cuidados.md): late or due soon, they demand
- * attention like a vaccine. Hygiene stays on the chefe's page only.
+ * attention like a vaccine. Hygiene stays on the chefe's page only. `plans` are the chefe's planned
+ * prazos (docs/spec/prazos.md): a planned vaccine or parasite counts even before its first record.
  */
 export function muralStatus(
   pet: MuralPet,
@@ -32,10 +34,12 @@ export function muralStatus(
   today: string,
   weightAlertPercent: number | null = null,
   parasites: readonly CareRecord[] = [],
+  plans: readonly Plan[] = [],
 ): MuralStatus {
+  const withIds = <T>(list: readonly T[]) => list.map((x, i) => ({ ...x, id: String(i) }));
   const pending = [
-    ...currentDoses(doses).map((dose) => ({ item: `Vacina ${dose.vaccine}`, status: vaccineStatus(dose, today), due: boosterDate(dose) })),
-    ...currentCare(parasites).map((record) => ({ item: record.item, status: careStatus(record, today), due: careDueDate(record) })),
+    ...currentPrazos('vaccine', doseOccurrences(withIds(doses)), plans, today).map((p) => ({ item: `Vacina ${p.item}`, status: p.state, due: p.due })),
+    ...currentPrazos('parasite', careOccurrences(withIds(parasites)), plans, today).map((p) => ({ item: p.item, status: p.state, due: p.due })),
   ].filter((p) => p.status !== 'ok');
   const first = pending.reduce<(typeof pending)[number] | null>((best, p) => (!best || p.due < best.due ? p : best), null);
   const worst = first && { item: first.item, overdue: first.status === 'overdue', due: first.due };

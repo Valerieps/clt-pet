@@ -1,9 +1,11 @@
 // The vaccination card (docs/spec/vacinas.md). Any member registers and removes doses.
 import type { VaccinationView } from '../../src/application/api-contract';
-import { boosterDate, currentDoses, normalizeDose } from '../../src/domain/vaccines/vaccine';
+import { currentPrazos, doseOccurrences } from '../../src/domain/prazos';
+import { normalizeDose } from '../../src/domain/vaccines/vaccine';
 import { failure, nowIso, type CommandResult, type Context } from './context';
 import type { Member } from './members';
 import { todayInBrasilia } from './pets';
+import { dropPlans, listPlans, plansOf } from './plans';
 import type { ReminderSource } from './reminders';
 
 interface VaccinationRow {
@@ -40,11 +42,18 @@ export function listVaccinations(ctx: Context): VaccinationView[] {
   return ctx.sql.all<VaccinationRow>(`${SELECT} ${ORDER}`).map(toView);
 }
 
-/** The booster date of each chefe's current doses, for the push reminders (docs/spec/lembretes.md). */
+/** The next date of each chefe's vaccines, recorded or planned (docs/spec/prazos.md), for the push reminders (docs/spec/lembretes.md). */
 export const vaccineReminders: ReminderSource = (ctx) => {
   const all = listVaccinations(ctx);
-  return [...new Set(all.map((v) => v.petId))].flatMap((petId) =>
-    currentDoses(all.filter((v) => v.petId === petId)).map((v) => ({ petId, item: `Vacina ${v.vaccine}`, dueOn: boosterDate(v), tab: 'vacinas' })),
+  const plans = listPlans(ctx).filter((p) => p.kind === 'vaccine');
+  const today = todayInBrasilia(ctx);
+  return [...new Set([...all, ...plans].map((v) => v.petId))].flatMap((petId) =>
+    currentPrazos('vaccine', doseOccurrences(all.filter((v) => v.petId === petId)), plansOf(plans, petId), today).map((p) => ({
+      petId,
+      item: `Vacina ${p.item}`,
+      dueOn: p.due,
+      tab: 'vacinas',
+    })),
   );
 };
 
@@ -76,8 +85,9 @@ export function addVaccination(ctx: Context, actor: Member, input: Record<string
       nowIso(ctx),
     );
   }
+  const replanned = dropPlans(ctx, ids, 'vaccine', dose.vaccine);
   const value = listVaccinations(ctx).filter((v) => created.includes(v.id));
-  return { ok: true, value, changed: ['vaccinations'] };
+  return { ok: true, value, changed: replanned ? ['vaccinations', 'plans'] : ['vaccinations'] };
 }
 
 export function removeVaccination(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<null> {

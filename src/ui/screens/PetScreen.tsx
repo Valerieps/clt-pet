@@ -163,7 +163,7 @@ function deadlineLabel(d: Deadline): string {
 
 /** Under the name: what the chefe demands (Exige) and what is next (A seguir), from every deadline (docs/spec/navegacao.md). */
 function Summary({ chefe }: { chefe: Chefe }) {
-  const { pet, status, doses, care } = chefe;
+  const { pet, status, doses, care, plans } = chefe;
   const today = todayLocal();
   const visits = useQuery('visits', {}, ['visits', 'pets']);
   const medications = useQuery('medications', {}, ['medications', 'pets']);
@@ -171,6 +171,7 @@ function Summary({ chefe }: { chefe: Chefe }) {
     {
       doses,
       care,
+      plans,
       visits: (visits.data ?? []).filter((v) => v.petId === pet.id),
       treatments: (medications.data ?? []).filter((m) => m.petId === pet.id),
     },

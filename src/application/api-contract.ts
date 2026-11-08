@@ -1,6 +1,7 @@
 // The contract between the app and the server: query and command names, inputs and outputs.
 // Types only. The server imports it with `import type`, so nothing here runs on either side.
 import type { CareCategory } from '../domain/care/care';
+import type { PrazoKind } from '../domain/prazos';
 import type { Role } from '../domain/group/roles';
 import type { VisitKind } from '../domain/health/health';
 import type { Emergency } from '../domain/pets/emergency';
@@ -113,6 +114,18 @@ export interface CareView {
   readonly doneOn: string;
   readonly intervalDays: number;
   readonly note: string | null;
+  readonly byName: string;
+}
+
+/** A planned prazo (docs/spec/prazos.md): the next date of an item, before or instead of a record. */
+export interface PlanView {
+  readonly id: string;
+  readonly petId: string;
+  readonly kind: PrazoKind;
+  readonly item: string;
+  /** YYYY-MM-DD. */
+  readonly dueOn: string;
+  readonly intervalDays: number;
   readonly byName: string;
 }
 
@@ -233,6 +246,8 @@ export interface Queries {
   retiredPets: { input: Record<string, never>; output: RetiredPetView[] };
   /** Parasite and hygiene records of the chefes that are not retired, oldest first. */
   care: { input: Record<string, never>; output: CareView[] };
+  /** The planned prazos of the chefes that are not retired, soonest first. */
+  plans: { input: Record<string, never>; output: PlanView[] };
   /** Every condition, active and resolved. */
   conditions: { input: Record<string, never>; output: ConditionView[] };
   /** Consultas, exames and laudos, oldest first. */
@@ -300,6 +315,12 @@ export interface Commands {
     output: CareView[];
   };
   'care.remove': { input: { careId: string }; output: null };
+  /**
+   * Plans an item's next date for every chefe in `petIds`, replacing that item's earlier plan. A record
+   * of the same item (`vaccine.add`, `care.add`) removes the plan: from then on the record decides.
+   */
+  'plan.add': { input: { petIds: string[]; kind: PrazoKind; item: string; dueOn: string; intervalDays: number }; output: PlanView[] };
+  'plan.remove': { input: { planId: string }; output: null };
   'condition.add': { input: { petId: string; name: string; grave?: boolean; since?: string | null; notes?: string | null }; output: ConditionView };
   /** `resolvedOn` null reopens the condition; omitted means today. */
   'condition.resolve': { input: { conditionId: string; resolvedOn?: string | null }; output: ConditionView };
@@ -337,6 +358,7 @@ export type Topic =
   | 'vaccinations'
   | 'medications'
   | 'care'
+  | 'plans'
   | 'conditions'
   | 'visits'
   | 'diary'

@@ -3,6 +3,7 @@
 import type { ApiResult, CommandName, Commands, QueryName, Queries, SitterManualView, Topic } from '../../src/application/api-contract';
 import { failure, QueryError, type CommandResult, type Context } from './context';
 import { addCare, careReminders, listCare, removeCare } from './care';
+import { addPlan, listPlans, removePlan } from './plans';
 import {
   addCondition,
   addVisit,
@@ -70,6 +71,7 @@ const QUERIES: { [N in QueryName]: Handler<Queries[N]['output'] | QueryError | n
   push: (ctx) => pushInfo(ctx),
   vaccinations: (ctx) => listVaccinations(ctx),
   care: (ctx) => listCare(ctx),
+  plans: (ctx) => listPlans(ctx),
   conditions: (ctx) => listConditions(ctx),
   visits: (ctx) => listVisits(ctx),
   diary: (ctx) => listDiary(ctx),
@@ -101,6 +103,8 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'vaccine.remove': removeVaccination,
   'care.add': addCare,
   'care.remove': removeCare,
+  'plan.add': addPlan,
+  'plan.remove': removePlan,
   'condition.add': addCondition,
   'condition.resolve': resolveCondition,
   'condition.remove': removeCondition,
