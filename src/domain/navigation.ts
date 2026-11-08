@@ -38,7 +38,7 @@ export const SWIPE_MAX_DRIFT = 40;
 
 /**
  * The path a horizontal swipe leads to, or null. `order` is the main screens left to right (the
- * Mural, then each chefe); swiping left goes to the next, right to the previous.
+ * Próximas Ações, then each chefe); swiping left goes to the next, right to the previous.
  */
 export function swipeTarget(order: readonly string[], current: string, dx: number, dy: number): string | null {
   const index = order.indexOf(current);
@@ -52,7 +52,7 @@ export const PET_TABS: readonly PetTab[] = ['prazos', 'saude', 'peso', 'perfil']
 
 /**
  * The tab a link's hash opens. The old hashes (before the four tabs) keep working, because push
- * notifications and the Mural already sent them; a section's hash opens the tab that holds it.
+ * notifications and the home screen already sent them; a section's hash opens the tab that holds it.
  */
 const TAB_OF_HASH: Readonly<Record<string, PetTab>> = {
   prazos: 'prazos',

@@ -47,15 +47,15 @@ export const DogIcon = () => (
   <Icon path="M8 6C6 5 3.5 6 3.5 10c0 2 .5 4 2.5 4.5M16 6c2-1 4.5 0 4.5 4 0 2-.5 4-2.5 4.5M8 6c1-1 2.5-1.5 4-1.5S15 5 16 6v7c0 3.5-2 6-4 6s-4-2.5-4-6zM10 11h.01M14 11h.01M11 15h2l-1 1.2z" />
 );
 
-/** The main navigation: the Mural, then one round face per chefe. A sun dot marks what needs attention. */
-export function Faces({ chefes, current, onDark = false }: { chefes: readonly Chefe[]; current: 'mural' | string; onDark?: boolean }) {
+/** The main navigation: Próximas Ações, then one round face per chefe. A sun dot marks what needs attention. */
+export function Faces({ chefes, current, onDark = false }: { chefes: readonly Chefe[]; current: 'home' | string; onDark?: boolean }) {
   return (
     <nav className={`faces${onDark ? ' on-dark' : ''}`} aria-label={strings.nav.main}>
-      <Link to="/" className="face" aria-current={current === 'mural' ? 'page' : undefined}>
+      <Link to="/" className="face" aria-current={current === 'home' ? 'page' : undefined}>
         <span className="dot sun">
           <SunIcon />
         </span>
-        {strings.nav.mural}
+        {strings.nav.home}
       </Link>
       {chefes.map(({ pet, aura, status }) => (
         <Link key={pet.id} to={`/chefes/${pet.id}`} className={`face ${aura}`} aria-current={current === pet.id ? 'page' : undefined}>

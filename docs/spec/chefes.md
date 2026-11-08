@@ -86,9 +86,9 @@ a alimentação e o peso.
 
 ## Aposentadoria
 
-- Eu posso aposentar um chefe (falecimento ou doação). Ele sai do Mural e o histórico fica guardado.
+- Eu posso aposentar um chefe (falecimento ou doação). Ele sai das Próximas Ações e o histórico fica guardado.
   *(2)*
-- O botão Aposentar fica no editar perfil, com confirmação. O chefe aposentado sai do Mural, dos
+- O botão Aposentar fica no editar perfil, com confirmação. O chefe aposentado sai das Próximas Ações, dos
   lembretes, do Cartão de Saúde e dos links do pet sitter, e aparece em "Aposentados", na lista de
   chefes das Configurações: "{nome} — chefe de {ano de chegada} a {ano}". *(2)*
 - O ano de chegada é o ano em que o chefe entrou no app. *(2)*

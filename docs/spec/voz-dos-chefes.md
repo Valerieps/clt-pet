@@ -4,8 +4,8 @@ Cada chefe "fala" comigo pelo app, com humor, mas nunca onde a informação é c
 
 - **Entra aqui:** o tom de voz por contexto, as tags de personalidade, a biblioteca de frases e o
   modo sério.
-- **Não entra aqui:** quando uma notificação é enviada (`lembretes.md`) e onde a frase aparece na
-  tela inicial (`mural.md`).
+- **Não entra aqui:** quando uma notificação é enviada (`lembretes.md`). A tela inicial não usa
+  frases (`proximas-acoes.md`).
 
 ## Em aberto
 
@@ -14,10 +14,11 @@ Cada chefe "fala" comigo pelo app, com humor, mas nunca onde a informação é c
 
 ## Tom
 
-- Humor nos lembretes, nas cobranças, na tela inicial e nas conquistas, na voz do chefe. *(1)*
+- Humor nos avisos do celular (lembretes e cobranças) e nas conquistas, na voz do chefe. A tela
+  inicial é só informativa, sem frases (`proximas-acoes.md`). *(1)*
 - O chefe sempre fala na primeira pessoa, comigo, inclusive no modo sério e no tom sem cobrança
   ("Estou com tudo em dia"). *(1)*
-  *Por quê:* no Mural cada chefe manda uma mensagem; na terceira pessoa a frase não parecia dita por ele.
+  *Por quê:* cada aviso é uma mensagem do chefe; na terceira pessoa a frase não parecia dita por ele.
 - Tom neutro e objetivo no Cartão SOS, nos contatos de emergência, nos diagnósticos, nas condições,
   nos exames e no relatório PDF. Essa regra vale acima de qualquer tag. *(1)*
 - Condição grave ou crônica ativa: o chefe pode aparecer, mas sem cobrança dramática ("Agradeço o
@@ -37,7 +38,7 @@ Cada chefe "fala" comigo pelo app, com humor, mas nunca onde a informação é c
 ## Biblioteca base
 
 Algumas frases por chefe e por evento, compartilhadas pelos dois, sempre na primeira pessoa. O app
-preenche as variáveis. O Mural não preenche `{funcionario}`, então ele só aparece na dose do dia. *(1)*
+preenche as variáveis. `{funcionario}` só aparece na dose do dia. *(1)*
 
 ### Berenice
 

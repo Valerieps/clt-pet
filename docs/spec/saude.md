@@ -12,7 +12,7 @@ e o "algo estranho hoje".
 ## Em aberto
 
 - [ ] Algum chefe tem condição crônica hoje? Se sim, qual e desde quando?
-- [ ] O "algo estranho hoje" deve aparecer no Mural (a última anotação) ou só na página do chefe?
+- [ ] O "algo estranho hoje" deve aparecer nas Próximas Ações (a última anotação) ou só na página do chefe?
   Hoje, só na página.
 - [ ] Anexar o PDF ou a foto do exame e do laudo entra agora ou fica com a leitura por foto
   (fase 4)? Hoje eu escrevo o resultado em texto.

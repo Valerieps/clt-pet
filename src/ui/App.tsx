@@ -10,7 +10,7 @@ import { SpeedDial } from './SpeedDial';
 import { navigate, usePath } from './router';
 import { Invites } from './screens/Invites';
 import { Members } from './screens/Members';
-import { Mural } from './screens/Mural';
+import { NextActions } from './screens/NextActions';
 import { PetScreen } from './screens/PetScreen';
 import { Pets } from './screens/Pets';
 import { RegisterDrawer } from './screens/Register';
@@ -32,7 +32,7 @@ export function App() {
   return sitter ? <SitterPage token={sitter[1]!} /> : <MemberApp />;
 }
 
-/** The app's screens; the home is the Mural da Chefia (docs/spec/mural.md, docs/spec/navegacao.md). */
+/** The app's screens; the home is Próximas Ações (docs/spec/proximas-acoes.md, docs/spec/navegacao.md). */
 function MemberApp() {
   const { backend, live } = useServices();
   const me = useQuery('me', {}, ['me']);
@@ -46,12 +46,12 @@ function MemberApp() {
 
   if (me.loading && !me.data) {
     return (
-      <header className="mural-header">
+      <header className="home-header">
         <p className="lbl">{strings.appName}</p>
         <h1 className="monument" style={{ fontSize: 40, marginTop: 4 }}>
-          {strings.mural.title}
+          {strings.home.title}
         </h1>
-        <div className="skeleton" role="status" aria-label={strings.mural.loading} />
+        <div className="skeleton" role="status" aria-label={strings.home.loading} />
         <div className="skeleton" />
       </header>
     );
@@ -100,7 +100,7 @@ function Shell({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
   const petId = register?.[1] ?? PET_PATH.exec(path)?.[1] ?? manual?.[1] ?? null;
   const currentPetId = petId ? decodeURIComponent(petId) : null;
 
-  // Swiping sideways walks the main screens: the Mural, then each chefe.
+  // Swiping sideways walks the main screens: Próximas Ações, then each chefe.
   const order = ['/', ...chefes.map((c) => `/chefes/${c.pet.id}`)];
   const here = currentPetId && !register && !manual ? `/chefes/${currentPetId}` : path;
   const onTouchStart = (event: TouchEvent) => {
@@ -184,5 +184,5 @@ function Screen({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
   const register = REGISTER_PATH.exec(path);
   const petId = register?.[1] ?? PET_PATH.exec(path)?.[1] ?? MANUAL_PATH.exec(path)?.[1];
   if (petId) return <PetScreen petId={decodeURIComponent(petId)} me={me} />;
-  return <Mural me={me} />;
+  return <NextActions me={me} />;
 }

@@ -17,7 +17,7 @@ export function Settings({ me, onSignOut }: { me: MeView; onSignOut: () => void 
   return (
     <>
       <header className="page-header">
-        <BackBar to="/" label={strings.nav.backToMural} />
+        <BackBar to="/" label={strings.nav.backToHome} />
         <div className="pet-header" style={{ gap: 12 }}>
           <span className="me" style={{ width: 'auto', height: 'auto' }}>
             <span style={{ width: 44, height: 44, fontSize: 16 }}>{initialOf(me.name)}</span>
@@ -86,10 +86,10 @@ function Account({ me }: { me: MeView }) {
   return (
     <form className="row" onSubmit={submit} style={{ marginTop: 8 }}>
       <label className="grow">
-        <span className="muted">{strings.mural.nameLabel}</span>
+        <span className="muted">{strings.settings.nameLabel}</span>
         <input required maxLength={NAME_MAX_LENGTH} value={name} onChange={(e) => setName(e.target.value)} />
       </label>
-      <button type="submit">{strings.mural.save}</button>
+      <button type="submit">{strings.settings.save}</button>
       {error && (
         <p className="notice" role="alert">
           {error}
