@@ -11,7 +11,7 @@ O que ainda não está pronto.
 
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
-| Modo sério: o interruptor por chefe na tela do chefe | 1 | `spec/voz-dos-chefes.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase nos lembretes e no Mural quando eles forem feitos |
+| Modo sério: o interruptor por chefe na tela do chefe | 1 | `spec/voz-dos-chefes.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase neutra nos lembretes |
 | Tags novas com frases próprias | 2 | `spec/voz-dos-chefes.md`, "Tags e frases" | As frases ainda são fixas por chefe (`src/domain/voice/phrases.ts`); falta guardar tags e frases criadas por nós no banco e sorteá-las |
 | "Desfazer" depois de resolver no card | 3 | `spec/navegacao.md`, "Fora da fase 2" | Depende de o card ganhar um "Feito" |
 | Fases 3 e 4 | 3 e 4 | `SPEC.md` | Cada uma ganha seus arquivos em `spec/` na vez dela |
@@ -27,7 +27,7 @@ Nada por enquanto.
 - Foto do selo da vacina (`spec/vacinas.md`, "Registro"): o registro já guarda lote, fabricante e
   veterinário; falta anexar a foto.
 - "Atrasada" como "Advertência" na voz do chefe (`spec/vacinas.md`, "Status"): entra com a voz nos
-  lembretes e no Mural.
+  lembretes.
 - Anexar PDF ou foto a exames e laudos (`spec/saude.md`, "Em aberto"): hoje o resultado é texto;
   junto com a leitura por foto (fase 4) ou antes, se a Valéria quiser.
 
@@ -37,13 +37,13 @@ Nada por enquanto.
   planejamento, mesmo um registro antigo lançado depois; cada item tem "Mudar data"; dá para
   planejar para vários chefes de uma vez; o planejamento é por item, uma dose por vez.
 - [ ] Fase 2, `spec/cuidados.md`: os modelos e intervalos de parasitas e higiene por espécie; "Vence
-  logo" a um quarto do intervalo (de 1 a 30 dias); só parasitas exigem atenção no Mural e geram
+  logo" a um quarto do intervalo (de 1 a 30 dias); só parasitas exigem atenção nas Próximas Ações e geram
   aviso, higiene não; a coleira repelente fica em Cuidados.
 - [ ] Fase 2, `spec/saude.md`: só o nome é obrigatório numa condição; as graves vão para o Cartão de
   Saúde em vermelho e para o pet sitter; consulta pode ter data futura, exame e laudo não; o retorno
   gera aviso como uma vacina; resultado de exame em texto, sem anexo por enquanto.
 - [ ] Fase 2, `spec/chefes.md` e `spec/saude.md`: refeições só com horário obrigatório e sem
-  lembrete; "algo estranho hoje" até 500 letras, só na página do chefe (não no Mural).
+  lembrete; "algo estranho hoje" até 500 letras, só na página do chefe (não nas Próximas Ações).
 - [ ] Fase 2, `spec/navegacao.md`, as quatro abas: o retorno de uma consulta vence logo 7 dias antes
   e sai do "Exige" quando há uma consulta registrada a partir de 7 dias antes dele; o fim de um
   tratamento entra no "A seguir" nos 7 dias antes do último dia; o "A seguir" mostra os dois próximos
@@ -69,9 +69,14 @@ Nada por enquanto.
 - [ ] `spec/lembretes.md`: o aviso chega às 9h, no fuso de Brasília.
 - [ ] `spec/chefes.md`: só nome e espécie são obrigatórios no cadastro; os tutores são ligados pelos
   e-mails `souza.pereira.valeria@gmail.com` e `csrgamboa@gmail.com`.
-- [ ] `spec/mural.md`: "Exige atenção" quando há vacina atrasada ou a vencer em 30 dias, ou alergia em
+- [ ] `spec/proximas-acoes.md`: "Exige atenção" quando há vacina atrasada ou a vencer em 30 dias, ou alergia em
   branco; os dois funcionários veem os próprios chefes primeiro; o formulário do nome e o aviso no
   celular ficam nas Configurações.
+- [ ] `spec/proximas-acoes.md` (troca do Mural): uma linha de Pendência por item, cada vacina e cada
+  parasita pendentes à parte; a ordem atrasado, depois peso e alergia, depois o que vence; "Lembrar
+  amanhã" tira todas as linhas do chefe; Feito hoje mostra só quem fez o último registro, não o quê;
+  os chefes sem tutor no app ficam num card próprio; a linha do card mostra peso, próximo prazo e
+  último registro.
 - [ ] `spec/navegacao.md`: as três auras (Berenice, Panda, Paçoca no desenho) são dadas na ordem em
   que os chefes aparecem, não pelas tags; o modo escuro continua, com as auras iguais; os formulários
   de vacina e peso ficam dentro da gaveta de Registrar (decidido pela Valéria).

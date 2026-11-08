@@ -43,8 +43,8 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
 - "Vence logo" começa a um quarto do intervalo antes do prazo, entre 1 e 30 dias (antipulgas de 30
   dias: 7 dias antes). *(2)*
   Por quê: com a janela de 30 dias das vacinas, um antipulgas mensal ficaria sempre "vencendo".
-- Parasitas atrasados ou vencendo exigem atenção no Mural e na página do chefe, como as vacinas, e
+- Parasitas atrasados ou vencendo exigem atenção nas Próximas Ações e na página do chefe, como as vacinas, e
   geram aviso no celular. *(2)*
 - Higiene atrasada ou vencendo exige atenção na página do chefe ("Exige"), como os parasitas. *(2)*
-- Higiene não exige atenção no Mural nem gera aviso no celular. *(2)*
+- Higiene não exige atenção nas Próximas Ações nem gera aviso no celular. *(2)*
   Por quê: escovar os dentes a cada 7 dias viraria um aviso por semana.

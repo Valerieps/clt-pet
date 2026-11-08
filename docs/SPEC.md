@@ -23,7 +23,7 @@ Cada fase precisa ser usável sozinha. Cada regra em `spec/` diz de que fase val
 
 | Fase | O que entra |
 | --- | --- |
-| 1 (MVP) | Perfil dos chefes, peso, Cartão SOS, carteirinha de vacinação, lembretes por push e o Mural da Chefia com a voz de cada chefe |
+| 1 (MVP) | Perfil dos chefes, peso, Cartão SOS, carteirinha de vacinação, lembretes por push e as Próximas Ações; a voz de cada chefe nos avisos do celular |
 | 2 | Parasitas e vermífugos, condições de saúde, consultas, exames e laudos, diário do chefe, alimentação, higiene, Manual do Funcionário Temporário (link por pet sitter) |
 | 3 | Central de notificações com horário de silêncio, medicação diária com trava anti-duplicidade e estoque, Dossiê para o Conselho Médico (PDF) |
 | 4 | Ideias sem prioridade: ler a carteirinha física e exames por foto, Avaliação de Desempenho, Funcionário do Mês, aniversários, escore de condição corporal |
@@ -41,7 +41,7 @@ As fases 3 e 4 ganham seus arquivos em `spec/` quando chegar a vez delas. Gastos
 | [spec/vacinas.md](spec/vacinas.md) | Carteirinha de vacinação, protocolos e status |
 | [spec/medicacoes.md](spec/medicacoes.md) | Tratamentos (medicações): remédio, dose, frequência e período |
 | [spec/lembretes.md](spec/lembretes.md) | Push, prazos e escalonamento para o funcionário reserva |
-| [spec/mural.md](spec/mural.md) | O Mural da Chefia, a tela inicial |
+| [spec/proximas-acoes.md](spec/proximas-acoes.md) | As Próximas Ações, a tela inicial |
 | [spec/navegacao.md](spec/navegacao.md) | Os dois níveis, a fileira de rostos, a aura de cada chefe, as abas da página do chefe, o "Exige" e o + |
 | [spec/cuidados.md](spec/cuidados.md) | Parasitas e higiene: registro, modelos, prazo e status (fase 2) |
 | [spec/prazos.md](spec/prazos.md) | O planejamento de vacinas, medicações e higiene antes do primeiro registro, e a aba Prazos (fase 2) |

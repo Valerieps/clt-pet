@@ -280,7 +280,7 @@ export interface Commands {
   'pet.setEmergency': { input: { petId: string } & Emergency; output: PetView };
   /** The Exame Admissional: a new chefe, with only the name and species; the actor is its tutor. */
   'pet.create': { input: { name: string; species: Species }; output: PetView };
-  /** Retires a chefe (death or adoption): it leaves the Mural; its history stays. */
+  /** Retires a chefe (death or adoption): it leaves Próximas Ações; its history stays. */
   'pet.retire': { input: { petId: string }; output: null };
   /** Lends the tutoria to `memberId` until `until` (a future date); the current tutor takes it back that day. */
   'pet.lendTutoria': { input: { petId: string; memberId: string; until: string }; output: PetView };

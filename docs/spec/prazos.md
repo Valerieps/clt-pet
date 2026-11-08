@@ -42,7 +42,7 @@ antes de ele ter acontecido alguma vez.
 
 - Um item planejado tem o mesmo status de um registrado (Em dia, Vence logo ou Atrasado), pelas
   regras do seu tipo (`vacinas.md`, `cuidados.md`). *(2)*
-- Ele entra no "Exige" e no "A seguir", no Mural e nos avisos do celular exatamente como um item
+- Ele entra no "Exige" e no "A seguir", nas Próximas Ações e nos avisos do celular exatamente como um item
   registrado: vacinas e medicações em tudo, higiene só na página do chefe. *(2)*
 
 ## A aba Prazos

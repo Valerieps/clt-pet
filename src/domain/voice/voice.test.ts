@@ -40,13 +40,13 @@ describe('base library', () => {
     }
   });
 
-  it('leaves {funcionario} out of the Mural events, which do not fill it', () => {
+  it('leaves {funcionario} out of the reminder events, which do not fill it', () => {
     const sets = [...Object.values(BASE_PHRASES), NEUTRAL_PHRASES];
     const mural = sets.flatMap((set) => [...set.dueSoon, ...set.overdue, ...set.allGood]);
     for (const phrase of mural) expect(phrase).not.toContain('{funcionario}');
   });
 
-  it('gives every chefe more than one phrase for the Mural events', () => {
+  it('gives every chefe more than one phrase for the reminder events', () => {
     for (const set of Object.values(BASE_PHRASES)) {
       for (const event of ['dueSoon', 'overdue', 'allGood'] as const) expect(set[event].length).toBeGreaterThan(1);
     }

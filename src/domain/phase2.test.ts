@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { careDueDate, careStatus, currentCare, normalizeCare, soonWindow } from './care/care';
 import { normalizeCondition, normalizeVisit } from './health/health';
-import { isSnoozed, muralStatus } from './mural';
+import { chefeStatus, isSnoozed } from './next-actions';
 import { normalizeDiary, normalizeMeal } from './routine/routine';
 import { isSitterTokenShape, normalizeSitterLink } from './sitter/sitter';
 
@@ -109,17 +109,17 @@ describe('lembrar amanhã', () => {
   });
 });
 
-describe('mural with parasites', () => {
+describe('home status with parasites', () => {
   const pet = { id: 'p', name: 'Paçoca', seriousMode: false, allergiesAnswered: true };
 
   it('demands attention for a late parasite care, like a vaccine', () => {
-    const status = muralStatus(pet, [], TODAY, null, [{ item: 'Vermífugo', doneOn: '2026-07-01', intervalDays: 90 }]);
+    const status = chefeStatus(pet, [], TODAY, null, [{ item: 'Vermífugo', doneOn: '2026-07-01', intervalDays: 90 }]);
     expect(status.needsAttention).toBe(true);
     expect(status.vaccine).toEqual({ item: 'Vermífugo', overdue: true, days: 36 });
   });
 
   it('picks the earliest due among vaccines and parasites', () => {
-    const status = muralStatus(pet, [{ vaccine: 'V10', appliedOn: '2025-11-20', intervalDays: 365 }], TODAY, null, [
+    const status = chefeStatus(pet, [{ vaccine: 'V10', appliedOn: '2025-11-20', intervalDays: 365 }], TODAY, null, [
       { item: 'Antipulgas', doneOn: '2026-10-08', intervalDays: 30 },
     ]);
     expect(status.vaccine?.item).toBe('Antipulgas');
