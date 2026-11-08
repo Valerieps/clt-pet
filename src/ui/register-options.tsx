@@ -27,7 +27,7 @@ export const REGISTER_OPTIONS: readonly RegisterOption[] = [
 
 /**
  * The form a drawer hash opens, or null for the menu. `cuidado` is the old "care" link and opens the
- * Antiparasitário form; `medicacao` (medication left the + until phase 3) and unknown hashes get the menu.
+ * Medicação form; `medicacao` (medication left the + until phase 3) and unknown hashes get the menu.
  */
 export function stepOfHash(hash: string): RegisterStep | null {
   const key = hash.replace(/^#/, '');

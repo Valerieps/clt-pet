@@ -6,7 +6,7 @@ Um termo, um sentido. Estes nomes valem para os textos da interface e para as do
 - **Não entra aqui:** as regras em si, que ficam em `spec/`. Se uma definição daqui e uma regra
   divergirem, vale o spec, e o termo daqui é corrigido.
 
-- **Acontecimento:** algo que aconteceu numa data (vacina dada, peso, antiparasitário dado, higiene feita, consulta ou exame, algo estranho hoje). Entra só pelo +. O contrário de ficha. (`spec/navegacao.md`)
+- **Acontecimento:** algo que aconteceu numa data (vacina dada, peso, medicação dada, higiene feita, consulta ou exame, algo estranho hoje). Entra só pelo +. O contrário de ficha. (`spec/navegacao.md`)
 - **Admin:** membro que convida, remove e dá papéis. Sempre há pelo menos um. (`spec/acesso-e-membros.md`)
 - **Advertência:** item atrasado, cobrado com mais insistência, na voz do chefe. (`spec/vacinas.md`, `spec/lembretes.md`)
 - **Aposentadoria:** arquivar um chefe, por falecimento ou doação. (`spec/chefes.md`)
@@ -24,8 +24,8 @@ Um termo, um sentido. Estes nomes valem para os textos da interface e para as do
 - **Membro:** quem entrou no grupo com um convite. (`spec/acesso-e-membros.md`)
 - **Modo sério:** interruptor por chefe que desliga o humor. (`spec/voz-dos-chefes.md`)
 - **Mural da Chefia:** a tela inicial, com um card por chefe. (`spec/mural.md`)
-- **Prazo planejado:** a próxima data e o intervalo de uma vacina, antiparasitário ou cuidado de higiene, marcados antes (ou no lugar) de um registro. É uma ficha. (`spec/prazos.md`)
-- **Prazos:** a aba da página do chefe com tudo o que vence: vacinas, antiparasitários e higiene. (`spec/navegacao.md`)
+- **Prazo planejado:** a próxima data e o intervalo de uma vacina, medicação ou cuidado de higiene, marcados antes (ou no lugar) de um registro. É uma ficha. (`spec/prazos.md`)
+- **Prazos:** a aba da página do chefe com tudo o que vence: vacinas, medicações e higiene. (`spec/navegacao.md`)
 - **Reunião com o Conselho Médico:** uma consulta, exame ou laudo veterinário (fase 2). (`spec/saude.md`)
 - **Tag de personalidade:** característica do chefe que escolhe as frases dele. (`spec/voz-dos-chefes.md`)
 - **Tratamento:** uma medicação cadastrada para um chefe (remédio, dose, frequência e período), na aba Saúde. (`spec/medicacoes.md`)

@@ -47,9 +47,9 @@ Nada por enquanto.
 - [ ] Fase 2, `spec/navegacao.md`, as quatro abas: o retorno de uma consulta vence logo 7 dias antes
   e sai do "Exige" quando há uma consulta registrada a partir de 7 dias antes dele; o fim de um
   tratamento entra no "A seguir" nos 7 dias antes do último dia; o "A seguir" mostra os dois próximos
-  prazos; os nomes exatos do + ("Vacina dada", "Peso", "Antiparasitário dado", "Higiene feita",
+  prazos; os nomes exatos do + ("Vacina dada", "Peso", "Medicação dada", "Higiene feita",
   "Consulta ou exame", "Algo estranho hoje") e das seções; o menu da gaveta só aparece para um link
-  sem formulário (o antigo `#cuidado` abre Antiparasitário dado, o antigo `#medicacao` cai no menu);
+  sem formulário (o antigo `#cuidado` abre Medicação dada, o antigo `#medicacao` cai no menu);
   "Algo estranho hoje" mostra as três anotações mais novas e dobra as outras; Consultas e exames
   mostra primeiro as agendadas e as com retorno em aberto; o lápis abre o histórico dobrado; as
   alergias aparecem como uma linha dos dados do Perfil.
