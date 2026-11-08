@@ -3,16 +3,15 @@ import { auraClass, dateLabel, dueLabel, initialOf, nameSize, NAME_SIZE_MAX, NAM
 
 describe('tabOfHash', () => {
   it('opens the new tabs by their own hash', () => {
-    expect(['prazos', 'saude', 'peso', 'perfil'].map(tabOfHash)).toEqual(['prazos', 'saude', 'peso', 'perfil']);
+    expect(['agendamentos', 'ficha', 'perfil'].map(tabOfHash)).toEqual(['agendamentos', 'ficha', 'perfil']);
   });
   it('keeps the old hashes working, as push and the Mural send them', () => {
-    expect(['historico', 'vacinas', 'cuidados'].map(tabOfHash)).toEqual(['prazos', 'prazos', 'prazos']);
-    expect(['saude', 'diario', 'medicacoes'].map(tabOfHash)).toEqual(['saude', 'saude', 'saude']);
+    expect(['prazos', 'historico', 'vacinas', 'cuidados', 'medicacoes', 'tratamentos', 'consultas'].map(tabOfHash)).toEqual(Array(7).fill('agendamentos'));
+    expect(['saude', 'diario', 'condicoes', 'peso'].map(tabOfHash)).toEqual(Array(4).fill('ficha'));
     expect(['rotina', 'perfil', 'tutoria'].map(tabOfHash)).toEqual(['perfil', 'perfil', 'perfil']);
-    expect(tabOfHash('peso')).toBe('peso');
   });
   it('accepts the leading # and ignores unknown hashes', () => {
-    expect(tabOfHash('#vacinas')).toBe('prazos');
+    expect(tabOfHash('#vacinas')).toBe('agendamentos');
     expect(tabOfHash('')).toBeNull();
     expect(tabOfHash('abas')).toBeNull();
   });

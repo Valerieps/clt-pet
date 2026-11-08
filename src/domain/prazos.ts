@@ -1,13 +1,19 @@
-// The Prazos tab (docs/spec/prazos.md): vaccines, parasites and hygiene, each item with its next due
-// date. A prazo comes from the item's latest record (its date plus its interval) or from a plan; a
+// The Agendamentos tab (docs/spec/prazos.md): vaccines, medications, hygiene and routine consultas,
+// each item with its next due date. A prazo comes from the item's latest record (its date plus its interval) or from a plan; a
 // plan can exist before anything was done and, while it exists, it decides the next date.
 // Pure: the UI and the server pass the records and the plans.
 import { CARE_CATEGORIES, soonWindow, type CareCategory, type CareRecord } from './care/care';
 import { isIsoDate, TEXT_MAX } from './pets/pet';
 import { addDays, isValidInterval, SOON_DAYS, type Dose, type VaccineStatus } from './vaccines/vaccine';
 
-export type PrazoKind = 'vaccine' | CareCategory;
-export const PRAZO_KINDS: readonly PrazoKind[] = ['vaccine', ...CARE_CATEGORIES];
+export type PrazoKind = 'vaccine' | CareCategory | 'visit';
+export const PRAZO_KINDS: readonly PrazoKind[] = ['vaccine', ...CARE_CATEGORIES, 'visit'];
+
+/** The routine consultas offered when planning one; the interval is a default the tutor can edit. */
+export const VISIT_TEMPLATES: readonly { readonly item: string; readonly intervalDays: number }[] = [
+  { item: 'Check-up', intervalDays: 365 },
+  { item: 'Check-up semestral', intervalDays: 180 },
+];
 
 /** A planned prazo: the next date of an item and how often it repeats, set before (or instead of) a record. */
 export interface Plan {
@@ -17,6 +23,8 @@ export interface Plan {
   /** YYYY-MM-DD; any date, past or future. */
   readonly dueOn: string;
   readonly intervalDays: number;
+  /** A medication's dose, optional; only medications have one. */
+  readonly dose?: string | null;
 }
 
 /** One record of an item, whatever the kind: a dose or a care record. */
@@ -41,6 +49,8 @@ export interface Prazo {
   readonly lastOn: string | null;
   /** The plan behind the due date, if any. */
   readonly planId: string | null;
+  /** The planned dose of a medication, if any. */
+  readonly dose: string | null;
 }
 
 export const sameItem = (a: string, b: string): boolean => a.trim().toLocaleLowerCase('pt-BR') === b.trim().toLocaleLowerCase('pt-BR');
@@ -54,6 +64,30 @@ export function prazoStatus(kind: PrazoKind, due: string, intervalDays: number, 
 
 export const doseOccurrences = (doses: readonly (Dose & { readonly id: string })[]): Occurrence[] =>
   doses.map((d) => ({ id: d.id, item: d.vaccine, on: d.appliedOn, intervalDays: d.intervalDays }));
+
+/**
+ * The consultas that count as an occurrence of a routine consulta: a consulta already done whose subject
+ * is the planned item. Exames, laudos and consultas with no routine plan are not prazos.
+ */
+export function visitOccurrences(
+  visits: readonly { readonly id: string; readonly kind: string; readonly onDate: string; readonly title: string }[],
+  plans: readonly Plan[],
+  today: string,
+): Occurrence[] {
+  return visits.flatMap((v) => {
+    const plan = plans.find((p) => p.kind === 'visit' && sameItem(p.item, v.title));
+    return v.kind === 'consulta' && v.onDate <= today && plan ? [{ id: v.id, item: plan.item, on: v.onDate, intervalDays: plan.intervalDays }] : [];
+  });
+}
+
+/**
+ * A routine consulta done on `onDate` moves its plan to `onDate` plus the interval, unless the plan
+ * is already later. Null when the plan stays as it is.
+ */
+export function routineDueAfter(plan: { readonly dueOn: string; readonly intervalDays: number }, onDate: string): string | null {
+  const next = addDays(onDate, plan.intervalDays);
+  return next > plan.dueOn ? next : null;
+}
 
 export const careOccurrences = (records: readonly (CareRecord & { readonly id: string })[]): Occurrence[] =>
   records.map((c) => ({ id: c.id, item: c.item, on: c.doneOn, intervalDays: c.intervalDays }));
@@ -79,10 +113,27 @@ export function currentPrazos(kind: PrazoKind, occurrences: readonly Occurrence[
   const build = (item: string, lastOn: string | null, plan: Plan | undefined, record: Occurrence | undefined): Prazo => {
     const due = plan ? plan.dueOn : addDays(record!.on, record!.intervalDays);
     const intervalDays = plan ? plan.intervalDays : record!.intervalDays;
-    return { id: plan?.id ?? record!.id, kind, item, due, intervalDays, state: prazoStatus(kind, due, intervalDays, today), lastOn, planId: plan?.id ?? null };
+    return {
+      id: plan?.id ?? record!.id,
+      kind,
+      item,
+      due,
+      intervalDays,
+      state: prazoStatus(kind, due, intervalDays, today),
+      lastOn,
+      planId: plan?.id ?? null,
+      dose: plan?.dose ?? null,
+    };
   };
   return [
-    ...latest.map((o) => build(o.item, o.on, mine.find((p) => sameItem(p.item, o.item)), o)),
+    ...latest.map((o) =>
+      build(
+        o.item,
+        o.on,
+        mine.find((p) => sameItem(p.item, o.item)),
+        o,
+      ),
+    ),
     ...mine.filter((p) => !latest.some((o) => sameItem(o.item, p.item))).map((p) => build(p.item, null, p, undefined)),
   ];
 }
@@ -92,9 +143,13 @@ export interface PlanInput {
   readonly item: string;
   readonly dueOn: string;
   readonly intervalDays: number;
+  readonly dose: string | null;
 }
 
-/** The kind, the item, the next date and the interval are all required; the date may be past or future. Null when invalid. */
+/**
+ * The kind, the item, the next date and the interval are all required; the date may be past or future.
+ * A medication may carry a dose. Null when invalid.
+ */
 export function normalizePlan(raw: Record<string, unknown>): PlanInput | null {
   if (!PRAZO_KINDS.includes(raw.kind as PrazoKind)) return null;
   if (typeof raw.item !== 'string') return null;
@@ -102,5 +157,8 @@ export function normalizePlan(raw: Record<string, unknown>): PlanInput | null {
   if (item === '' || item.length > TEXT_MAX) return null;
   if (typeof raw.dueOn !== 'string' || !isIsoDate(raw.dueOn)) return null;
   if (!isValidInterval(raw.intervalDays)) return null;
-  return { kind: raw.kind as PrazoKind, item, dueOn: raw.dueOn, intervalDays: raw.intervalDays };
+  const dose = raw.dose === undefined || raw.dose === null ? '' : raw.dose;
+  if (typeof dose !== 'string' || dose.trim().length > TEXT_MAX) return null;
+  if (dose.trim() !== '' && raw.kind !== 'parasite') return null;
+  return { kind: raw.kind as PrazoKind, item, dueOn: raw.dueOn, intervalDays: raw.intervalDays, dose: dose.trim() || null };
 }

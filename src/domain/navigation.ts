@@ -46,28 +46,30 @@ export function swipeTarget(order: readonly string[], current: string, dx: numbe
   return order[dx < 0 ? index + 1 : index - 1] ?? null;
 }
 
-/** The four tabs of a chefe's page (docs/spec/navegacao.md). */
-export type PetTab = 'prazos' | 'saude' | 'peso' | 'perfil';
-export const PET_TABS: readonly PetTab[] = ['prazos', 'saude', 'peso', 'perfil'];
+/** The three tabs of a chefe's page (docs/spec/navegacao.md). */
+export type PetTab = 'agendamentos' | 'ficha' | 'perfil';
+export const PET_TABS: readonly PetTab[] = ['agendamentos', 'ficha', 'perfil'];
 
 /**
- * The tab a link's hash opens. The old hashes (before the four tabs) keep working, because push
+ * The tab a link's hash opens. The old hashes (of earlier tabs) keep working, because push
  * notifications and the Mural already sent them; a section's hash opens the tab that holds it.
  */
 const TAB_OF_HASH: Readonly<Record<string, PetTab>> = {
-  prazos: 'prazos',
-  historico: 'prazos',
-  vacinas: 'prazos',
-  cuidados: 'prazos',
-  antiparasitarios: 'prazos',
-  higiene: 'prazos',
-  saude: 'saude',
-  condicoes: 'saude',
-  tratamentos: 'saude',
-  medicacoes: 'saude',
-  consultas: 'saude',
-  diario: 'saude',
-  peso: 'peso',
+  agendamentos: 'agendamentos',
+  prazos: 'agendamentos',
+  historico: 'agendamentos',
+  vacinas: 'agendamentos',
+  cuidados: 'agendamentos',
+  antiparasitarios: 'agendamentos',
+  medicacoes: 'agendamentos',
+  tratamentos: 'agendamentos',
+  higiene: 'agendamentos',
+  consultas: 'agendamentos',
+  ficha: 'ficha',
+  saude: 'ficha',
+  condicoes: 'ficha',
+  diario: 'ficha',
+  peso: 'ficha',
   perfil: 'perfil',
   alimentacao: 'perfil',
   rotina: 'perfil',
