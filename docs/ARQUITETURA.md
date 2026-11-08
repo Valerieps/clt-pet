@@ -80,7 +80,7 @@ Em `pets`, a tutoria emprestada usa `tutor_until`, `tutor_return_member_id` e `t
 
 O cron de 5 minutos chama `GroupService.tick`. Primeiro ele devolve as tutorias emprestadas cujo dia
 chegou (e avisa os apps abertos com o tópico `pets`). Depois vêm os lembretes: cada feature com prazo
-registra uma `ReminderSource` (vacinas, antiparasitários, retornos de consulta), que diz o item, o
+registra uma `ReminderSource` (vacinas, medicações, retornos de consulta), que diz o item, o
 prazo e a aba da página do chefe que o aviso abre. Às 9h de Brasília, o `tick` grava em `reminders_sent` o estágio devido (30 dias, 7 dias,
 no dia, 24 h depois para o reserva) e envia o push, tudo na mesma transação. Um estágio já gravado não
 é enviado de novo. A frase vem de `src/domain` (voz-dos-chefes.md), nunca do servidor.

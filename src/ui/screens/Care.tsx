@@ -1,4 +1,4 @@
-// Parasites and hygiene (docs/spec/cuidados.md): the Registrar form behind "Antiparasitário dado" and "Higiene feita".
+// Parasites and hygiene (docs/spec/cuidados.md): the Registrar form behind "Medicação dada" and "Higiene feita".
 // The current state lives in the Prazos tab (Prazos.tsx).
 import { useState, type FormEvent } from 'react';
 import type { PetView } from '../../application/api-contract';

@@ -40,7 +40,7 @@ export const strings = {
     button: 'Registrar',
     vaccine: 'Vacina dada',
     weight: 'Peso',
-    parasite: 'Antiparasitário dado',
+    parasite: 'Medicação dada',
     hygiene: 'Higiene feita',
     visit: 'Consulta ou exame',
     diary: 'Algo estranho hoje',
@@ -58,7 +58,7 @@ export const strings = {
     tabs: { prazos: 'Prazos', saude: 'Saúde', peso: 'Peso', perfil: 'Perfil' },
     sections: {
       vaccines: 'Vacinas',
-      parasites: 'Antiparasitários',
+      parasites: 'Medicações',
       hygiene: 'Higiene',
       conditions: 'Condições',
       treatments: 'Tratamentos',
@@ -259,7 +259,7 @@ export const strings = {
     name: 'Nome atualizado.',
     pushOn: 'Avisos ligados neste aparelho.',
     pushOff: 'Avisos desligados neste aparelho.',
-    parasite: (name: string) => `Antiparasitário dado: registrado para ${name}.`,
+    parasite: (name: string) => `Medicação dada: registrado para ${name}.`,
     hygiene: (name: string) => `Higiene feita: registrada para ${name}.`,
     condition: (name: string) => `Condição de ${name} registrada.`,
     visit: (name: string) => `Consulta ou exame de ${name} registrado.`,
@@ -271,8 +271,8 @@ export const strings = {
 
   // Parasites and hygiene (docs/spec/cuidados.md).
   care: {
-    categories: { parasite: 'Antiparasitários', hygiene: 'Higiene' },
-    empty: { parasite: 'Nenhum antiparasitário registrado.', hygiene: 'Nenhum cuidado de higiene registrado.' },
+    categories: { parasite: 'Medicações', hygiene: 'Higiene' },
+    empty: { parasite: 'Nenhuma medicação registrada.', hygiene: 'Nenhum cuidado de higiene registrado.' },
     status: { ok: 'Em dia', soon: 'Vence logo', overdue: 'Atrasado' },
     done: (date: string) => `Feito em ${date}`,
     next: (date: string) => `Próximo: ${date}`,
@@ -417,17 +417,17 @@ export const strings = {
 
   // The Prazos tab (docs/spec/prazos.md): each item's next date, planned or from its last record.
   prazos: {
-    empty: { vaccine: 'Nenhuma vacina planejada.', parasite: 'Nenhum antiparasitário planejado.', hygiene: 'Nenhum cuidado de higiene planejado.' },
+    empty: { vaccine: 'Nenhuma vacina planejada.', parasite: 'Nenhuma medicação planejada.', hygiene: 'Nenhum cuidado de higiene planejado.' },
     next: (date: string) => `Próximo: ${date}`,
     every: (days: number) => (days === 1 ? 'todo dia' : `a cada ${days} dias`),
     last: (date: string) => `Último: ${date}`,
     never: 'Ainda não aconteceu',
-    plan: { vaccine: '+ Planejar vacina', parasite: '+ Planejar antiparasitário', hygiene: '+ Planejar higiene' },
+    plan: { vaccine: '+ Planejar vacina', parasite: '+ Planejar medicação', hygiene: '+ Planejar higiene' },
     replan: 'Mudar data',
     removePlan: 'Apagar planejamento',
     removePlanConfirm: 'Apagar esse planejamento? Se já houver registro, o próximo prazo volta a contar dele.',
     form: {
-      item: { vaccine: 'Qual vacina?', parasite: 'Qual antiparasitário?', hygiene: 'Qual cuidado?' },
+      item: { vaccine: 'Qual vacina?', parasite: 'Qual medicação?', hygiene: 'Qual cuidado?' },
       other: 'Outro',
       otherName: 'Nome',
       pick: 'Escolha o que planejar.',

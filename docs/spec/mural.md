@@ -32,7 +32,7 @@ Nada por enquanto.
   A regra é a mesma para os dois funcionários. *(1)*
 - Exige atenção quando há vacina atrasada ou a vencer em até 30 dias, o cadastro tem alergia
   em branco, ou o alerta de peso disparou (`chefes.md`). No card, o motivo é "Peso mudou X%". *(1)*
-- Antiparasitário atrasado ou vencendo também exige atenção, com o nome dele no motivo
+- Medicação atrasada ou vencendo também exige atenção, com o nome dela no motivo
   ("Vermífugo · 3 dias"); vale o que vence primeiro entre vacinas e parasitas (`cuidados.md`). *(2)*
 - O balão colorido tem um só caminho para a página do chefe (o nome) e o botão principal:
   Registrar, ou Informar alergias quando é o único motivo. O balão branco inteiro leva à página do
