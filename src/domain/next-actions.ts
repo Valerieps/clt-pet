@@ -119,13 +119,17 @@ export function tutorGroups<T extends { readonly tutorMemberId: string | null; r
 }
 
 /**
- * Feito hoje (docs/spec/proximas-acoes.md): the first name of whoever registered something for the
- * pet today, or null. `at` is when it was saved (ISO); `localDay` turns it into the device's
+ * Feito hoje (docs/spec/proximas-acoes.md): what was registered for the pet today and the first
+ * name of whoever did it, or null. `at` is when it was saved (ISO); `localDay` turns it into the device's
  * YYYY-MM-DD, so "today" ends at the tutor's midnight.
  */
-export function doneToday(last: { readonly byName: string; readonly at: string } | null, today: string, localDay: (at: Date) => string): string | null {
+export function doneToday(
+  last: { readonly byName: string; readonly what: string; readonly at: string } | null,
+  today: string,
+  localDay: (at: Date) => string,
+): { readonly by: string; readonly what: string; readonly at: Date } | null {
   if (!last || localDay(new Date(last.at)) !== today) return null;
-  return firstName(last.byName);
+  return { by: firstName(last.byName), what: last.what, at: new Date(last.at) };
 }
 
 /** The tutor card's last record: "Cesar · hoje", "Cesar · ontem" or "Cesar · 03/11"; null without one. */

@@ -50,3 +50,13 @@ describe('medication.remove', () => {
     expect(service.command('h-v', 'medication.remove', { medicationId: medication.id })).toEqual({ ok: false, error: 'not_found' });
   });
 });
+
+describe('lastRecord.what', () => {
+  it('names what a medication and a care record were', () => {
+    const pets = () => (service.query('h-v', 'pets', {}) as { value: { id: string; lastRecord: { what: string } | null }[] }).value;
+    service.command('h-v', 'medication.add', input);
+    expect(pets().find((p) => p.id === 'pet-panda')?.lastRecord?.what).toBe('Apoquel');
+    service.command('h-v', 'care.add', { petIds: ['pet-pacoca'], category: 'parasite', item: 'Antipulgas', doneOn: '2026-11-01', intervalDays: 30 });
+    expect(pets().find((p) => p.id === 'pet-pacoca')?.lastRecord?.what).toBe('Antipulgas');
+  });
+});

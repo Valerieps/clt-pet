@@ -499,7 +499,7 @@ export const strings = {
     pendingTitle: 'Pendências',
     nothingPending: 'Nada pendente.',
     doneTitle: 'Feito hoje',
-    doneBy: (name: string) => `Registrado por ${name}`,
+    doneBy: (what: string, name: string, hour: number) => `${what} · ${name}, ${hour}h`,
     tutorTitle: (name: string) => `Pets de ${firstName(name)}`,
     noTutor: 'Sem tutor no app',
     allergiesPill: 'Alergias em branco',

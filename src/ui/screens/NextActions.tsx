@@ -27,8 +27,8 @@ export function NextActions({ me }: { me: MeView }) {
     snoozed,
   );
   const done = summaries.flatMap((summary) => {
-    const by = doneToday(summary.pet.lastRecord, today, localDay);
-    return by ? [{ summary, by }] : [];
+    const record = doneToday(summary.pet.lastRecord, today, localDay);
+    return record ? [{ summary, record }] : [];
   });
   const groups = tutorGroups(
     summaries.map((c) => ({ ...c, tutorMemberId: c.pet.tutorMemberId, tutorName: c.pet.tutorName })),
@@ -83,12 +83,12 @@ export function NextActions({ me }: { me: MeView }) {
                   {t.doneTitle}
                 </h2>
                 <ul className="list home-rows">
-                  {done.map(({ summary, by }) => (
+                  {done.map(({ summary, record }) => (
                     <li key={summary.pet.id} className={`home-row ${summary.aura}`}>
                       <PetFace pet={summary.pet} className="home-face" />
                       <Link to={`/pets/${summary.pet.id}`} className="home-what">
                         <b>{summary.pet.profile.name}</b>
-                        <span>{t.doneBy(by)}</span>
+                        <span>{t.doneBy(record.what, record.by, record.at.getHours())}</span>
                       </Link>
                       <span className="home-check" aria-hidden="true">
                         <CheckIcon />
