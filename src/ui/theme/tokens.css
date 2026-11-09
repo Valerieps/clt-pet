@@ -21,6 +21,16 @@
   src: url('./fonts/Figtree.woff2') format('woff2');
 }
 
+/* Baloo 2 (SIL Open Font License, fonts/Baloo2-OFL.txt): the round face of the "Retrato" look. A variable
+   font, subset to Latin and Latin-1 (all of Portuguese), bundled like the others: no CDN. */
+@font-face {
+  font-family: 'Baloo 2';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./fonts/Baloo2.woff2') format('woff2');
+}
+
 :root {
   color-scheme: light;
 
@@ -47,6 +57,7 @@
   --color-scrim: rgba(10, 10, 16, 0.58);
 
   --font-display: Anton, Impact, 'Arial Narrow', sans-serif;
+  --font-round: 'Baloo 2', Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-sans: Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-size-base: 15px;
   /* 16px stops iOS from zooming the page when a field gets focus. */
@@ -68,6 +79,18 @@
   --aura-ber: #262145;
   --aura-pan: #141c28;
   --aura-pac: #6b3f1a;
+
+  /* Each pet's soft tones, for the "Retrato" look: --tint-<pet> is the light tone, -mid the stronger one, -ink
+     the text on both (AA on both: 9.7:1 and 6.9:1 for Berenice, 9.9:1 and 7.5:1 for Panda, 6.5:1 and 5.2:1 for Paçoca). */
+  --tint-ber: #efebfa;
+  --tint-ber-mid: #cfc5f0;
+  --tint-ber-ink: #3b3170;
+  --tint-pan: #e9eef5;
+  --tint-pan-mid: #c5d2e3;
+  --tint-pan-ink: #2b3a4f;
+  --tint-pac: #f8eee3;
+  --tint-pac-mid: #ecd2b5;
+  --tint-pac-ink: #7c4820;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -89,5 +112,16 @@
     --color-sol-soft: #3a2f14;
     --color-sol-ink: #f4c46a;
     --color-on-text: #17161a;
+
+    /* the pets' soft tones turn deep, with a light ink (AA on both: at least 6.9:1) */
+    --tint-ber: #2a2548;
+    --tint-ber-mid: #3d3568;
+    --tint-ber-ink: #d9d0f5;
+    --tint-pan: #1c2634;
+    --tint-pan-mid: #33445c;
+    --tint-pan-ink: #cfdbea;
+    --tint-pac: #4a2c14;
+    --tint-pac-mid: #6b4222;
+    --tint-pac-ink: #f0d6b8;
   }
 }

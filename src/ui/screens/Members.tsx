@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ApiError, MeView, MemberListItem } from '../../application/api-contract';
 import { canManageGroup, isAdmin } from '../../domain/group/roles';
+import { firstName } from '../../domain/people';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
@@ -50,7 +51,7 @@ export function Members({ me }: { me: MeView }) {
           <li key={member.id} className="card row">
             {member.photoUrl && <img className="avatar" src={member.photoUrl} alt="" referrerPolicy="no-referrer" />}
             <span className="grow">
-              {member.name} {member.id === me.id && <span className="muted">{strings.members.you}</span>}
+              {firstName(member.name)} {member.id === me.id && <span className="muted">{strings.members.you}</span>}
               <br />
               <span className="muted">{isAdmin(member) ? strings.members.admin : strings.members.member}</span>
               {member.email && (

@@ -1,5 +1,8 @@
 // Every user-facing text, in Brazilian Portuguese, in the app's voice (docs/GLOSSARIO.md has the
 // terms). The UI imports from here; it never writes its own text.
+import { intervalLabel } from './due-text';
+import { firstName } from './people';
+
 export const strings = {
   appName: 'CLT Pet',
   genericError: 'Algo deu errado. Tenta de novo?',
@@ -132,7 +135,7 @@ export const strings = {
     notFound: 'Não achei esse pet.',
     back: 'Voltar para os pets',
     species: { cat: 'Gato', dog: 'Cachorro' },
-    tutor: (name: string) => `Tutor responsável: ${name}`,
+    tutor: (name: string) => `Tutor responsável: ${firstName(name)}`,
     tutorPending: (email: string) => `Tutor responsável: ${email} (ainda não entrou)`,
     currentWeight: (weight: string) => `Peso atual: ${weight}`,
     noWeight: 'Sem peso registrado',
@@ -196,7 +199,7 @@ export const strings = {
       lendUntil: 'Até (a tutoria volta nesse dia)',
       lendConfirm: 'Passar até a data',
       lendInvalid: 'Escolha alguém e uma data a partir de amanhã.',
-      lent: (date: string, name: string | null) => `Emprestada até ${date}${name ? `; depois volta para ${name}` : ''}.`,
+      lent: (date: string, name: string | null) => `Emprestada até ${date}${name ? `; depois volta para ${firstName(name)}` : ''}.`,
     },
     admission: {
       title: 'Exame Admissional',
@@ -223,7 +226,7 @@ export const strings = {
       invalid: 'Esse peso ou essa data não parecem certos.',
       remove: 'Apagar',
       removeConfirm: 'Apagar esse registro de peso?',
-      by: (name: string) => `por ${name}`,
+      by: (name: string) => `por ${firstName(name)}`,
       limit: (percent: number, days: number) => `Aviso quando o peso mudar ${percent}% em até ${days} dias.`,
       chart: (name: string) => `Evolução do peso de ${name}`,
       alert: (percent: number, from: string, to: string) =>
@@ -263,7 +266,7 @@ export const strings = {
     status: { ok: 'Em dia', soon: 'Vence logo', overdue: 'Atrasado' },
     done: (date: string) => `Feito em ${date}`,
     next: (date: string) => `Próximo: ${date}`,
-    by: (name: string) => `por ${name}`,
+    by: (name: string) => `por ${firstName(name)}`,
     remove: 'Apagar',
     removeConfirm: 'Apagar esse registro de cuidado?',
     form: {
@@ -314,7 +317,7 @@ export const strings = {
       invalid: 'Esse assunto ou essas datas não parecem certos. Exame e laudo não podem ter data futura.',
     },
     remove: 'Apagar',
-    by: (name: string) => `por ${name}`,
+    by: (name: string) => `por ${firstName(name)}`,
     cancel: 'Cancelar',
   },
 
@@ -341,7 +344,7 @@ export const strings = {
     },
     removeDiaryConfirm: 'Apagar essa anotação?',
     remove: 'Apagar',
-    by: (name: string) => `por ${name}`,
+    by: (name: string) => `por ${firstName(name)}`,
     cancel: 'Cancelar',
   },
 
@@ -365,7 +368,7 @@ export const strings = {
     share: 'Compartilhar',
     revoke: 'Desativar',
     revokeConfirm: (label: string) => `Desativar o link de ${label}? Ele para de abrir na hora.`,
-    by: (name: string) => `criado por ${name}`,
+    by: (name: string) => `criado por ${firstName(name)}`,
     // The public page. Neutral, clear: the reader is not part of the household.
     page: {
       hello: (label: string) => `Olá, ${label}!`,
@@ -410,7 +413,7 @@ export const strings = {
       visit: 'Nenhuma consulta planejada.',
     },
     next: (date: string) => `Próximo: ${date}`,
-    every: (days: number) => (days === 1 ? 'todo dia' : `a cada ${days} dias`),
+    every: (days: number) => intervalLabel(days),
     last: (date: string) => `Último: ${date}`,
     never: 'Ainda não aconteceu',
     plan: { vaccine: '+ Planejar vacina', parasite: '+ Planejar medicação', hygiene: '+ Planejar higiene', visit: '+ Planejar consulta' },
@@ -453,7 +456,7 @@ export const strings = {
       add: 'Registrar vacina',
       invalid: 'Essa vacina, essa data ou esse intervalo não parecem certos.',
     },
-    by: (name: string) => `por ${name}`,
+    by: (name: string) => `por ${firstName(name)}`,
     remove: 'Apagar',
     removeConfirm: 'Apagar esse registro de vacina?',
   },
@@ -463,7 +466,7 @@ export const strings = {
     continuous: 'uso contínuo',
     since: (date: string) => `desde ${date}`,
     until: (date: string) => `até ${date}`,
-    by: (name: string) => `por ${name}`,
+    by: (name: string) => `por ${firstName(name)}`,
     remove: 'Apagar',
     removeConfirm: 'Apagar essa medicação?',
     frequency: {
@@ -497,7 +500,7 @@ export const strings = {
     nothingPending: 'Nada pendente.',
     doneTitle: 'Feito hoje',
     doneBy: (name: string) => `Registrado por ${name}`,
-    tutorTitle: (name: string) => `Pets de ${name}`,
+    tutorTitle: (name: string) => `Pets de ${firstName(name)}`,
     noTutor: 'Sem tutor no app',
     allergiesPill: 'Alergias em branco',
     fillAllergies: 'Informar alergias',
@@ -528,11 +531,11 @@ export const strings = {
     admin: 'Admin',
     member: 'Membro',
     makeAdmin: 'Admin',
-    rolesOf: (name: string) => `Papéis de ${name}`,
+    rolesOf: (name: string) => `Papéis de ${firstName(name)}`,
     lastAdmin: 'O grupo precisa de pelo menos um admin. Dê o papel a outra pessoa antes.',
     remove: 'Remover',
-    removeOf: (name: string) => `Remover ${name} do grupo`,
-    removeConfirm: (name: string) => `Remover ${name} do grupo? O acesso acaba na hora. Para voltar, é só convidar de novo.`,
+    removeOf: (name: string) => `Remover ${firstName(name)} do grupo`,
+    removeConfirm: (name: string) => `Remover ${firstName(name)} do grupo? O acesso acaba na hora. Para voltar, é só convidar de novo.`,
     empty: 'Só você por aqui. Convide alguém!',
   },
 } as const;

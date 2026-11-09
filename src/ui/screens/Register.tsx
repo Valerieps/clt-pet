@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { dueLabel } from '../../domain/navigation';
+import { dueLabel } from '../../domain/due-text';
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { usePets } from '../use-pets';

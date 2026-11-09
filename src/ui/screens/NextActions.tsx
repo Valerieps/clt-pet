@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { MeView } from '../../application/api-contract';
 import { doneToday, isSnoozed, lastRecordLabel, pendingActions, tutorGroups, type PendingAction } from '../../domain/next-actions';
-import { dueLabel } from '../../domain/navigation';
+import { dueLabel } from '../../domain/due-text';
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { todayLocal, usePets, type PetSummary } from '../use-pets';
