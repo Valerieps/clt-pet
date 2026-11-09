@@ -249,6 +249,8 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     )`,
     `CREATE INDEX plans_pet ON plans(pet_id)`,
   ],
+  // 12: a planned medication's dose (docs/spec/medicacoes.md); null for the other kinds.
+  [`ALTER TABLE plans ADD COLUMN dose TEXT`],
 ];
 
 export function migrate(sql: Sql): void {

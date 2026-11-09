@@ -1,4 +1,5 @@
-// Conditions, consultas, exames and laudos (docs/spec/saude.md). Clinical screens: no voice, no jokes.
+// The Ficha Médica's conditions, and the consultas, exames and laudos shown in Agendamentos (docs/spec/saude.md).
+// Clinical screens: no voice, no jokes.
 import { useState, type FormEvent } from 'react';
 import type { PetView, VisitView } from '../../application/api-contract';
 import { openReturns } from '../../domain/deadlines';
@@ -10,7 +11,6 @@ import { todayLocal } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
-import { Treatments } from './Medications';
 import { Diary } from './Routine';
 
 const t = strings.health;
@@ -24,15 +24,13 @@ function ErrorLine({ error }: { error: string | null }) {
 }
 
 /**
- * The Saúde tab (docs/spec/navegacao.md): conditions, treatments, consultas and exames, and "algo estranho
- * hoje". Fichas (conditions, treatments) get a button at the end of their section; acontecimentos come by the +.
+ * The Ficha Médica tab after the weight (docs/spec/navegacao.md): conditions and "algo estranho hoje".
+ * Conditions get a button at the end of their section; acontecimentos come by the +.
  */
 export function HealthPanel({ pet, editing }: { pet: PetView; editing: boolean }) {
   return (
     <>
       <Conditions pet={pet} removable={editing} />
-      <Treatments pet={pet} removable={editing} />
-      <Visits pet={pet} removable={editing} />
       <Diary pet={pet} removable={editing} />
     </>
   );
@@ -89,7 +87,11 @@ function Conditions({ pet, removable }: { pet: PetView; removable: boolean }) {
                 <span className="grow">
                   {c.name} <span className="muted">{t.resolvedOn(formatDate(c.resolvedOn!))}</span>
                 </span>
-                <button type="button" className="secondary" onClick={() => void run(backend.command('condition.resolve', { conditionId: c.id, resolvedOn: null }))}>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => void run(backend.command('condition.resolve', { conditionId: c.id, resolvedOn: null }))}
+                >
                   {t.reopen}
                 </button>
                 {removable && (
@@ -163,12 +165,10 @@ function ConditionForm({ pet, onDone }: { pet: PetView; onDone: () => void }) {
   );
 }
 
-/** Upcoming consultas and open returns first; every consulta, exame and laudo folded below. */
-function Visits({ pet, removable }: { pet: PetView; removable: boolean }) {
+/** In Consultas: scheduled consultas and open returns first; every consulta, exame and laudo folded below. */
+export function VisitList({ visits: mine, removable }: { visits: readonly VisitView[]; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
-  const all = useQuery('visits', {}, ['visits', 'pets']);
-  const mine = (all.data ?? []).filter((v) => v.petId === pet.id);
   const today = todayLocal();
   const pending = new Set(openReturns(mine).map((v) => v.id));
   const current = mine.filter((v) => v.onDate > today || pending.has(v.id));
@@ -202,9 +202,7 @@ function Visits({ pet, removable }: { pet: PetView; removable: boolean }) {
   );
 
   return (
-    <section id="consultas" className="stack">
-      <h3>{strings.petPage.sections.visits}</h3>
-      {mine.length === 0 && <p className="muted">{t.visitsEmpty}</p>}
+    <>
       <ul className="list">{current.map(card)}</ul>
       <ErrorLine error={error} />
       {mine.length > 0 && (
@@ -213,7 +211,7 @@ function Visits({ pet, removable }: { pet: PetView; removable: boolean }) {
           <ul className="list">{[...mine].reverse().map(card)}</ul>
         </details>
       )}
-    </section>
+    </>
   );
 }
 
@@ -231,7 +229,15 @@ export function VisitForm({ pet, onSaved }: { pet: PetView; onSaved: () => void 
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    const result = await backend.command('visit.add', { petId: pet.id, kind, title, onDate, vet: vet || null, notes: notes || null, returnOn: returnOn || null });
+    const result = await backend.command('visit.add', {
+      petId: pet.id,
+      kind,
+      title,
+      onDate,
+      vet: vet || null,
+      notes: notes || null,
+      returnOn: returnOn || null,
+    });
     if (result.ok) {
       toast(strings.toast.visit(pet.profile.name));
       onSaved();

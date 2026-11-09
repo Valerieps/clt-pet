@@ -36,6 +36,15 @@ Nada por enquanto.
   viraram `/pets/...` (os antigos, de avisos já no celular, abrem a página nova); o aposentado
   aparece como "{nome} — com a gente de {ano de chegada} a {ano}"; o Exame Admissional termina com
   "Bem-vindo(a) à família!"; o subtítulo do app fala do carinho e do cuidado com os pets da casa.
+- [ ] Fase 2, `spec/prazos.md` e `spec/medicacoes.md`, Agendamentos e Ficha Médica: medicações e
+  tratamentos viram um formulário só, em que a frequência "Periódica (a cada X dias)" planeja um prazo
+  (dose opcional) e as frequências diárias cadastram um tratamento (dose obrigatória); "Mudar data"
+  só move a data de uma periódica; toda a seção de consultas, exames e laudos foi para Agendamentos
+  (não só as consultas); o Peso abre a Ficha Médica; o fim de um tratamento deixou de aparecer na
+  página (ele só aparecia no "A seguir").
+- [ ] Fase 2, `spec/prazos.md`, consulta de rotina: os modelos (Check-up a cada 365 dias, Check-up
+  semestral a cada 180); a consulta feita conta pela igualdade do assunto com o item planejado; vence
+  logo a um quarto do intervalo; entra no "Exige", mas não nas Próximas Ações nem nos avisos do celular.
 - [ ] Fase 2, `spec/prazos.md`: a data planejada pode ser passada; qualquer registro do item apaga o
   planejamento, mesmo um registro antigo lançado depois; cada item tem "Mudar data"; dá para
   planejar para vários pets de uma vez; o planejamento é por item, uma dose por vez.
@@ -47,10 +56,8 @@ Nada por enquanto.
   gera aviso como uma vacina; resultado de exame em texto, sem anexo por enquanto.
 - [ ] Fase 2, `spec/pets.md` e `spec/saude.md`: refeições só com horário obrigatório e sem
   lembrete; "algo estranho hoje" até 500 letras, só na página do pet (não nas Próximas Ações).
-- [ ] Fase 2, `spec/navegacao.md`, as quatro abas: o retorno de uma consulta vence logo 7 dias antes
-  e sai do "Exige" quando há uma consulta registrada a partir de 7 dias antes dele; o fim de um
-  tratamento entra no "A seguir" nos 7 dias antes do último dia; o "A seguir" mostra os dois próximos
-  prazos; os nomes exatos do + ("Vacina dada", "Peso", "Medicação dada", "Higiene feita",
+- [ ] Fase 2, `spec/navegacao.md`, as abas: o retorno de uma consulta vence logo 7 dias antes
+  e sai do "Exige" quando há uma consulta registrada a partir de 7 dias antes dele; os nomes exatos do + ("Vacina dada", "Peso", "Medicação dada", "Higiene feita",
   "Consulta ou exame", "Algo estranho hoje") e das seções; o menu da gaveta só aparece para um link
   sem formulário (o antigo `#cuidado` abre Medicação dada, o antigo `#medicacao` cai no menu);
   "Algo estranho hoje" mostra as três anotações mais novas e dobra as outras; Consultas e exames

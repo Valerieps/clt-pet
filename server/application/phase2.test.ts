@@ -79,7 +79,7 @@ describe('visits', () => {
       returnOn: '2026-12-01',
     });
     expect(result).toMatchObject({ ok: true, changed: ['visits'], value: { title: 'Check-up', returnOn: '2026-12-01', byName: 'Valéria' } });
-    expect(visitReminders(ctx())).toEqual([{ petId: 'pet-berenice', item: 'Retorno: Check-up', dueOn: '2026-12-01', tab: 'saude' }]);
+    expect(visitReminders(ctx())).toEqual([{ petId: 'pet-berenice', item: 'Retorno: Check-up', dueOn: '2026-12-01', tab: 'consultas' }]);
     const [visit] = query<VisitView[]>('visits');
     expect(service.command('h-v', 'visit.remove', { visitId: visit.id })).toMatchObject({ ok: true });
     expect(service.command('h-v', 'visit.remove', { visitId: visit.id })).toEqual({ ok: false, error: 'not_found' });

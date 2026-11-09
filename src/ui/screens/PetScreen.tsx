@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import type { MeView, PetUpdate, PetView } from '../../application/api-contract';
-import { pageDeadlines, type Deadline } from '../../domain/deadlines';
+import { demandedDeadlines, type Deadline } from '../../domain/deadlines';
 import { nameSize, dueLabel, PET_TABS, tabOfHash, type PetTab } from '../../domain/navigation';
 import { daysBetween } from '../../domain/reminders/reminders';
 import {
@@ -22,9 +22,9 @@ import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { todayLocal, usePets, type PetSummary } from '../use-pets';
-import { BackBar, CalendarIcon, CameraIcon, CatIcon, CheckIcon, DogIcon, Faces, MeLink, PencilIcon, ScaleIcon, StethoscopeIcon } from '../parts';
+import { BackBar, CalendarIcon, CameraIcon, CatIcon, CheckIcon, DogIcon, Faces, MeLink, PencilIcon, StethoscopeIcon } from '../parts';
+import { AgendamentosPanel } from './Agendamentos';
 import { HealthPanel } from './Health';
-import { PrazosPanel } from './Prazos';
 import { Food } from './Routine';
 import { PetPortrait } from '../PetPhoto';
 import { shrinkToJpegBase64 } from '../photo';
@@ -57,7 +57,7 @@ export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
   return <PetPage summary={summary} summaries={summaries} me={me} />;
 }
 
-const NOT_EDITING: Record<PetTab, boolean> = { prazos: false, saude: false, peso: false, perfil: false };
+const NOT_EDITING: Record<PetTab, boolean> = { agendamentos: false, ficha: false, perfil: false };
 
 function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: readonly PetSummary[]; me: MeView }) {
   const { pet, aura } = summary;
@@ -79,9 +79,8 @@ function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: r
   }, [path, hash]);
 
   const icons: Record<PetTab, ReactNode> = {
-    prazos: <CalendarIcon />,
-    saude: <StethoscopeIcon />,
-    peso: <ScaleIcon />,
+    agendamentos: <CalendarIcon />,
+    ficha: <StethoscopeIcon />,
     perfil: pet.species === 'cat' ? <CatIcon /> : <DogIcon />,
   };
 
@@ -131,9 +130,16 @@ function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: r
               <h2>{tabsT[tab]}</h2>
               <EditToggle label={tabsT[tab]} editing={editing[tab]} onToggle={() => setTabEditing(tab, !editing[tab])} />
             </div>
-            {tab === 'prazos' && <PrazosPanel summary={summary} editing={editing.prazos} />}
-            {tab === 'saude' && <HealthPanel pet={pet} editing={editing.saude} />}
-            {tab === 'peso' && <Weight pet={pet} removable={editing.peso} />}
+            {tab === 'agendamentos' && <AgendamentosPanel summary={summary} editing={editing.agendamentos} />}
+            {tab === 'ficha' && (
+              <>
+                <section id="peso" className="stack">
+                  <h3>{strings.petPage.sections.weight}</h3>
+                  <Weight pet={pet} removable={editing.ficha} />
+                </section>
+                <HealthPanel pet={pet} editing={editing.ficha} />
+              </>
+            )}
             {tab === 'perfil' && <ProfilePanel pet={pet} myId={me.id} editing={editing.perfil} onDone={() => setTabEditing('perfil', false)} />}
           </div>
         )}
@@ -146,84 +152,56 @@ function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: r
 /** The section a deadline lives in, as a hash of the pet's page. */
 const HASH_OF_DEADLINE: Record<Deadline['kind'], string> = {
   vaccine: 'vacinas',
-  parasite: 'antiparasitarios',
+  parasite: 'medicacoes',
   hygiene: 'higiene',
+  visit: 'consultas',
   return: 'consultas',
-  treatmentEnd: 'tratamentos',
 };
 
 function deadlineLabel(d: Deadline): string {
   if (d.kind === 'return') return strings.petPage.deadline.return(d.name);
-  if (d.kind === 'treatmentEnd') return strings.petPage.deadline.treatmentEnd(d.name);
+  if (d.kind === 'visit') return strings.petPage.deadline.visit(d.name);
   return d.name;
 }
 
-/** Under the name: what the pet demands (Exige) and what is next (A seguir), from every deadline (docs/spec/navegacao.md). */
+/** Under the tabs: what the pet demands (Exige), from every deadline (docs/spec/navegacao.md). */
 function Summary({ summary }: { summary: PetSummary }) {
   const { pet, status, doses, care, plans } = summary;
   const today = todayLocal();
   const visits = useQuery('visits', {}, ['visits', 'pets']);
-  const medications = useQuery('medications', {}, ['medications', 'pets']);
-  const { demanded, next } = pageDeadlines(
-    {
-      doses,
-      care,
-      plans,
-      visits: (visits.data ?? []).filter((v) => v.petId === pet.id),
-      treatments: (medications.data ?? []).filter((m) => m.petId === pet.id),
-    },
-    today,
-  );
+  const demanded = demandedDeadlines({ doses, care, plans, visits: (visits.data ?? []).filter((v) => v.petId === pet.id) }, today);
   const alert = weightAlert(pet.weights, pet.weightAlertPercent);
-  const nothingDemanded = demanded.length === 0 && !alert && !status.allergiesMissing;
   const days = (d: Deadline) => Math.abs(daysBetween(today, d.due));
+  if (demanded.length === 0 && !alert && !status.allergiesMissing) return null;
 
   return (
-    <>
-      {!nothingDemanded && (
-        <div>
-          <p className="lbl">{strings.petPage.requires}</p>
-          {alert && (
-            <Link to={`/pets/${pet.id}#peso`} className="item">
-              <span>
-                <p>{strings.register.weight}</p>
-                <span className="meta">{t.weight.alert(alert.percent, `${formatKilos(alert.fromGrams)} em ${formatDate(alert.fromDate)}`, `${formatKilos(alert.toGrams)} em ${formatDate(alert.toDate)}`)}</span>
-              </span>
-              <span className="when late">{strings.petPage.weightAlert}</span>
-            </Link>
-          )}
-          {demanded.map((d) => (
-            <Link key={`${d.kind}:${d.id}`} to={`/pets/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
-              <span>
-                <p>{deadlineLabel(d)}</p>
-                <span className="meta">{formatDate(d.due)}</span>
-              </span>
-              <span className={`when${d.state === 'overdue' ? ' late' : ''}`}>{dueLabel(d.state === 'overdue', days(d))}</span>
-            </Link>
-          ))}
-          {status.allergiesMissing && (
-            <Link to={`/pets/${pet.id}#perfil`} className="item">
-              <p>{t.allergiesTitle}</p>
-              <span className="when">{home.allergiesPill}</span>
-            </Link>
-          )}
-        </div>
+    <div>
+      <p className="lbl">{strings.petPage.requires}</p>
+      {alert && (
+        <Link to={`/pets/${pet.id}#peso`} className="item">
+          <span>
+            <p>{strings.register.weight}</p>
+            <span className="meta">{t.weight.alert(alert.percent, `${formatKilos(alert.fromGrams)} em ${formatDate(alert.fromDate)}`, `${formatKilos(alert.toGrams)} em ${formatDate(alert.toDate)}`)}</span>
+          </span>
+          <span className="when late">{strings.petPage.weightAlert}</span>
+        </Link>
       )}
-      {next.length > 0 && (
-        <div>
-          <p className="lbl">{strings.petPage.next}</p>
-          {next.map((d) => (
-            <Link key={`${d.kind}:${d.id}`} to={`/pets/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
-              <span>
-                <p>{deadlineLabel(d)}</p>
-                <span className="meta">{d.kind === 'treatmentEnd' ? strings.petPage.endsOn(formatDate(d.due)) : strings.petPage.dueOn(formatDate(d.due))}</span>
-              </span>
-              <span className="when ok">{d.kind === 'return' || d.kind === 'treatmentEnd' ? dueLabel(false, days(d)) : strings.care.status.ok}</span>
-            </Link>
-          ))}
-        </div>
+      {demanded.map((d) => (
+        <Link key={`${d.kind}:${d.id}`} to={`/pets/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
+          <span>
+            <p>{deadlineLabel(d)}</p>
+            <span className="meta">{formatDate(d.due)}</span>
+          </span>
+          <span className={`when${d.state === 'overdue' ? ' late' : ''}`}>{dueLabel(d.state === 'overdue', days(d))}</span>
+        </Link>
+      ))}
+      {status.allergiesMissing && (
+        <Link to={`/pets/${pet.id}#perfil`} className="item">
+          <p>{t.allergiesTitle}</p>
+          <span className="when">{home.allergiesPill}</span>
+        </Link>
       )}
-    </>
+    </div>
   );
 }
 
@@ -657,7 +635,7 @@ function Retire({ pet }: { pet: PetView }) {
   );
 }
 
-/** The Peso tab: the current weight, the alert and the chart; every weighing folded below. */
+/** Peso, first in the Ficha Médica tab: the current weight, the alert and the chart; every weighing folded below. */
 function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();

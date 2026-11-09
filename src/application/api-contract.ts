@@ -125,6 +125,8 @@ export interface PlanView {
   /** YYYY-MM-DD. */
   readonly dueOn: string;
   readonly intervalDays: number;
+  /** A planned medication's dose; null otherwise. */
+  readonly dose: string | null;
   readonly byName: string;
 }
 
@@ -314,8 +316,9 @@ export interface Commands {
   /**
    * Plans an item's next date for every pet in `petIds`, replacing that item's earlier plan. A record
    * of the same item (`vaccine.add`, `care.add`) removes the plan: from then on the record decides.
+   * A routine consulta (`visit`) stays: a consulta done with the same subject moves it forward.
    */
-  'plan.add': { input: { petIds: string[]; kind: PrazoKind; item: string; dueOn: string; intervalDays: number }; output: PlanView[] };
+  'plan.add': { input: { petIds: string[]; kind: PrazoKind; item: string; dueOn: string; intervalDays: number; dose?: string | null }; output: PlanView[] };
   'plan.remove': { input: { planId: string }; output: null };
   'condition.add': { input: { petId: string; name: string; grave?: boolean; since?: string | null; notes?: string | null }; output: ConditionView };
   /** `resolvedOn` null reopens the condition; omitted means today. */

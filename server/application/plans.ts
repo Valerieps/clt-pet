@@ -1,7 +1,7 @@
 // Planned prazos (docs/spec/prazos.md). Any member plans an item's next date and removes a plan; a
 // record of the same item removes the plan, so from then on the record decides.
 import type { PlanView } from '../../src/application/api-contract';
-import { normalizePlan, sameItem, type Plan, type PrazoKind } from '../../src/domain/prazos';
+import { normalizePlan, routineDueAfter, sameItem, type Plan, type PrazoKind } from '../../src/domain/prazos';
 import { failure, nowIso, type CommandResult, type Context } from './context';
 import type { Member } from './members';
 import { petsExist } from './pet-guard';
@@ -13,6 +13,7 @@ interface PlanRow {
   item: string;
   due_on: string;
   interval_days: number;
+  dose: string | null;
   name: string;
 }
 
@@ -23,13 +24,14 @@ const toView = (r: PlanRow): PlanView => ({
   item: r.item,
   dueOn: r.due_on,
   intervalDays: r.interval_days,
+  dose: r.dose,
   byName: r.name,
 });
 
 export function listPlans(ctx: Context): PlanView[] {
   return ctx.sql
     .all<PlanRow>(
-      `SELECT p.id, p.pet_id, p.kind, p.item, p.due_on, p.interval_days, members.name
+      `SELECT p.id, p.pet_id, p.kind, p.item, p.due_on, p.interval_days, p.dose, members.name
        FROM plans p
        JOIN members ON members.id = p.member_id
        JOIN pets ON pets.id = p.pet_id AND pets.retired_at IS NULL
@@ -54,6 +56,25 @@ export function dropPlans(ctx: Context, petIds: readonly string[], kind: PrazoKi
   return dropped;
 }
 
+/**
+ * A consulta done moves the routine plan of the same subject (docs/spec/prazos.md): the next one is the
+ * consulta's date plus the interval. Unlike the other kinds the plan stays, as a consulta has no interval.
+ */
+export function advanceRoutine(ctx: Context, petId: string, title: string, onDate: string): boolean {
+  const rows = ctx.sql.all<{ id: string; item: string; due_on: string; interval_days: number }>(
+    `SELECT id, item, due_on, interval_days FROM plans WHERE pet_id = ? AND kind = 'visit'`,
+    petId,
+  );
+  let moved = false;
+  for (const row of rows.filter((r) => sameItem(r.item, title))) {
+    const next = routineDueAfter({ dueOn: row.due_on, intervalDays: row.interval_days }, onDate);
+    if (next === null) continue;
+    ctx.sql.run('UPDATE plans SET due_on = ? WHERE id = ?', next, row.id);
+    moved = true;
+  }
+  return moved;
+}
+
 /** Plans the same item for several pets at once, replacing each one's earlier plan of that item; all must exist, or nothing is saved. */
 export function addPlan(ctx: Context, actor: Member, input: Record<string, unknown>): CommandResult<PlanView[]> {
   const plan = normalizePlan(input);
@@ -67,13 +88,14 @@ export function addPlan(ctx: Context, actor: Member, input: Record<string, unkno
     const id = ctx.ids.next();
     created.push(id);
     ctx.sql.run(
-      `INSERT INTO plans (id, pet_id, kind, item, due_on, interval_days, member_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO plans (id, pet_id, kind, item, due_on, interval_days, dose, member_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       id,
       petId,
       plan.kind,
       plan.item,
       plan.dueOn,
       plan.intervalDays,
+      plan.dose,
       actor.id,
       nowIso(ctx),
     );

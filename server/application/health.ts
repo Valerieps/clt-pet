@@ -5,6 +5,7 @@ import { isIsoDate } from '../../src/domain/pets/pet';
 import { failure, nowIso, type CommandResult, type Context } from './context';
 import type { Member } from './members';
 import { petsExist } from './pet-guard';
+import { advanceRoutine } from './plans';
 import { todayInBrasilia } from './pets';
 import type { ReminderSource } from './reminders';
 
@@ -116,7 +117,7 @@ export function listVisits(ctx: Context): VisitView[] {
 export const visitReminders: ReminderSource = (ctx) =>
   listVisits(ctx)
     .filter((v) => v.returnOn !== null)
-    .map((v) => ({ petId: v.petId, item: `Retorno: ${v.title}`, dueOn: v.returnOn!, tab: 'saude' }));
+    .map((v) => ({ petId: v.petId, item: `Retorno: ${v.title}`, dueOn: v.returnOn!, tab: 'consultas' }));
 
 export function addVisit(ctx: Context, actor: Member, input: Record<string, unknown>): CommandResult<VisitView> {
   const visit = normalizeVisit(input, todayInBrasilia(ctx));
@@ -137,7 +138,9 @@ export function addVisit(ctx: Context, actor: Member, input: Record<string, unkn
     actor.id,
     nowIso(ctx),
   );
-  return { ok: true, value: ctx.sql.all<VisitRow>(`${VISIT_SELECT} WHERE v.id = ?`, id).map(visitView)[0], changed: ['visits'] };
+  const moved = visit.kind === 'consulta' && visit.onDate <= todayInBrasilia(ctx) && advanceRoutine(ctx, input.petId, visit.title, visit.onDate);
+  const value = ctx.sql.all<VisitRow>(`${VISIT_SELECT} WHERE v.id = ?`, id).map(visitView)[0];
+  return { ok: true, value, changed: moved ? ['visits', 'plans'] : ['visits'] };
 }
 
 export function removeVisit(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<null> {

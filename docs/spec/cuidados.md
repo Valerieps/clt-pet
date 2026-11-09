@@ -20,7 +20,7 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
 - Eu posso registrar o mesmo cuidado para vários pets de uma vez. *(2)*
 - Eu chego ao formulário pelo +: "Medicação dada" abre o formulário já em parasitas e
   "Higiene feita", já em higiene. *(2)*
-- Na página do pet, a aba Prazos mostra o estado de cada medicação e de cada cuidado de
+- Na página do pet, a aba Agendamentos mostra o estado de cada medicação e de cada cuidado de
   higiene, junto das vacinas, e o histórico dobrado embaixo (`navegacao.md`). *(2)*
 - Eu posso planejar um cuidado antes de ele ter acontecido (`prazos.md`). *(2)*
 

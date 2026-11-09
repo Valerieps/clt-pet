@@ -66,7 +66,7 @@ app (celular) ──POST /api/query|command──► Worker ──RPC──► G
 | `push_subscriptions` | `endpoint`, `member_id`, `p256dh`, `auth` | Um por aparelho; o endpoint só pode ser de uma origem de ADR-008 |
 | `reminders_sent` | `pet_id`, `item`, `due_on`, `stage` (`30d`, `7d`, `due`, `escalated`), `sent_at` | Evita avisar duas vezes |
 | `care_records` | `pet_id`, `category` (`parasite`, `hygiene`), `item`, `done_on`, `interval_days`, `note`, `member_id` | O próximo prazo é `done_on` + `interval_days`, calculado, nunca guardado |
-| `plans` | `pet_id`, `kind` (`vaccine`, `parasite`, `hygiene`), `item`, `due_on`, `interval_days`, `member_id` | O prazo planejado (`spec/prazos.md`). Enquanto existe, decide a data do item; `vaccine.add` e `care.add` apagam o do mesmo item |
+| `plans` | `pet_id`, `kind` (`vaccine`, `parasite`, `hygiene`, `visit`), `item`, `due_on`, `interval_days`, `dose` (só `parasite`), `member_id` | O prazo planejado (`spec/prazos.md`). Enquanto existe, decide a data do item; `vaccine.add` e `care.add` apagam o do mesmo item; `visit.add` de uma consulta já feita com o mesmo assunto empurra o `due_on` do `visit` e o mantém |
 | `conditions` | `pet_id`, `name`, `grave`, `since`, `notes`, `resolved_on`, `member_id` | `resolved_on` nulo é condição ativa |
 | `visits` | `pet_id`, `kind` (`consulta`, `exame`, `laudo`), `on_date`, `title`, `vet`, `notes`, `return_on`, `member_id` | `return_on` vira lembrete |
 | `diary` | `pet_id`, `on_date`, `text`, `member_id` | |

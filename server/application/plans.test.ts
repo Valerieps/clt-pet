@@ -67,6 +67,23 @@ describe('plans', () => {
     expect(plans().map((p) => p.petId)).toEqual(['pet-panda']);
   });
 
+  it("keeps a medication's dose", () => {
+    plan({ dose: '1 comprimido' });
+    expect(plans().map((p) => p.dose)).toEqual(['1 comprimido']);
+  });
+
+  it('a consulta done moves the routine consulta of the same subject, and the plan stays', () => {
+    plan({ kind: 'visit', item: 'Check-up', dueOn: '2026-11-01', intervalDays: 365 });
+    const done = service.command('h-v', 'visit.add', { petId: 'pet-pacoca', kind: 'consulta', title: 'check-up', onDate: '2026-11-03' });
+    expect(done).toMatchObject({ ok: true, changed: ['visits', 'plans'] });
+    expect(plans().map((p) => [p.item, p.dueOn])).toEqual([['Check-up', '2027-11-03']]);
+    const exam = service.command('h-v', 'visit.add', { petId: 'pet-pacoca', kind: 'exame', title: 'Check-up', onDate: '2026-11-04' });
+    expect(exam).toMatchObject({ ok: true, changed: ['visits'] });
+    const scheduled = service.command('h-v', 'visit.add', { petId: 'pet-pacoca', kind: 'consulta', title: 'Check-up', onDate: '2026-12-20' });
+    expect(scheduled).toMatchObject({ ok: true, changed: ['visits'] });
+    expect(plans().map((p) => p.dueOn)).toEqual(['2027-11-03']);
+  });
+
   it('removes a plan', () => {
     plan({});
     expect(service.command('h-v', 'plan.remove', { planId: plans()[0].id })).toMatchObject({ ok: true, changed: ['plans'] });
