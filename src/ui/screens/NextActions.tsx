@@ -1,20 +1,23 @@
 import { useState } from 'react';
 import type { MeView } from '../../application/api-contract';
-import { doneToday, isSnoozed, lastRecordLabel, pendingActions, tutorGroups, type PendingAction } from '../../domain/next-actions';
+import { doneToday, isSnoozed, upcomingCare, type CareLine } from '../../domain/next-actions';
 import { dueLabel } from '../../domain/due-text';
-import { formatKilos, latestWeight } from '../../domain/pets/weight';
+import { greetingFor } from '../../domain/greeting';
+import { careRing, homeState, type CareRing } from '../../domain/portrait';
 import { strings } from '../../domain/strings';
 import { todayLocal, usePets, type PetSummary } from '../use-pets';
-import { CheckIcon, PetFace, Faces, MeLink } from '../parts';
+import { PetFace, Faces, MeLink } from '../parts';
 import { Link } from '../router';
 
 const t = strings.home;
 
 const localDay = (at: Date) => at.toLocaleDateString('sv-SE'); // YYYY-MM-DD in the device's time zone
 
+const isFemale = (summary: PetSummary) => summary.pet.profile.sex === 'female';
+
 /**
- * The home screen (docs/spec/proximas-acoes.md): plain information, no phrases. The Pendências of
- * every pet, what was done today, and one card per tutor with each pet's numbers.
+ * The home screen (docs/spec/proximas-acoes.md): the greeting and a line of state, each pet in a big round
+ * photo with the ring of its state, then "Hoje" and "Próximos cuidados" as a timeline.
  */
 export function NextActions({ me }: { me: MeView }) {
   const { summaries, failed, loading } = usePets();
@@ -22,7 +25,7 @@ export function NextActions({ me }: { me: MeView }) {
   const [snoozes, setSnoozes] = useState<Record<string, string>>(readSnoozes);
   const byId = new Map(summaries.map((c) => [c.pet.id, c]));
   const snoozed = new Set(summaries.filter((c) => isSnoozed(snoozes[c.pet.id] ?? null, today)).map((c) => c.pet.id));
-  const actions = pendingActions(
+  const lines = upcomingCare(
     summaries.map((c) => ({ petId: c.pet.id, status: c.status })),
     snoozed,
   );
@@ -30,10 +33,8 @@ export function NextActions({ me }: { me: MeView }) {
     const record = doneToday(summary.pet.lastRecord, today, localDay);
     return record ? [{ summary, record }] : [];
   });
-  const groups = tutorGroups(
-    summaries.map((c) => ({ ...c, tutorMemberId: c.pet.tutorMemberId, tutorName: c.pet.tutorName })),
-    me.id,
-  );
+  const rings = summaries.map((c) => careRing(c.status));
+  const state = homeState(rings);
   const snooze = (petId: string) => {
     const next = { ...snoozes, [petId]: today };
     setSnoozes(next);
@@ -42,74 +43,74 @@ export function NextActions({ me }: { me: MeView }) {
 
   return (
     <>
-      <header className="home-header">
-        <h1 className="sr-only">{t.title}</h1>
+      <header className="top-row">
         <Faces summaries={summaries} current="home" />
         <MeLink me={me} />
       </header>
       <main className="home">
+        <div className="greeting">
+          <h1>{t.greeting(greetingFor(new Date()), me.name)}</h1>
+          {summaries.length > 0 && <p className="support">{state.late + state.soon === 0 ? t.calm : t.stateLine(state.late, state.soon)}</p>}
+        </div>
         {failed && <p className="notice">{strings.genericError}</p>}
         {loading && <HomeSkeleton />}
         {summaries.length === 0 && !failed && !loading && (
-          <>
-            <p className="muted">{t.empty}</p>
-            <div className="actions">
-              <Link to="/pets" className="btn">
-                {t.addFirst}
-              </Link>
-            </div>
-          </>
+          <p className="support">
+            {t.empty}{' '}
+            <Link to="/pets" className="text-link">
+              {t.addFirst}
+            </Link>
+          </p>
         )}
         {summaries.length > 0 && (
           <>
-            <section aria-labelledby="home-pending">
-              <h2 id="home-pending" className="lbl">
-                {t.pendingTitle}
-              </h2>
-              {actions.length === 0 ? (
-                <p className="home-empty">{t.nothingPending}</p>
-              ) : (
-                <ul className="list home-rows">
-                  {actions.map((action, i) => {
-                    const summary = byId.get(action.petId);
-                    return summary && <PendingRow key={`${action.petId}-${i}`} summary={summary} action={action} onSnooze={() => snooze(action.petId)} />;
-                  })}
-                </ul>
-              )}
+            <section aria-label={t.petsTitle}>
+              <ul className="portraits">
+                {summaries.map((summary, i) => (
+                  <li key={summary.pet.id}>
+                    <Link to={`/pets/${summary.pet.id}`} className={`portrait ${summary.aura}`}>
+                      <span className={`ring ${rings[i]}`}>
+                        <PetFace pet={summary.pet} className="portrait-face" />
+                      </span>
+                      <b>{summary.pet.profile.name}</b>
+                      <span className={`state ${rings[i]}`}>{t.ring[rings[i] as CareRing]}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </section>
             {done.length > 0 && (
               <section aria-labelledby="home-done">
                 <h2 id="home-done" className="lbl">
                   {t.doneTitle}
                 </h2>
-                <ul className="list home-rows">
+                <ol className="timeline">
                   {done.map(({ summary, record }) => (
-                    <li key={summary.pet.id} className={`home-row ${summary.aura}`}>
-                      <PetFace pet={summary.pet} className="home-face" />
-                      <Link to={`/pets/${summary.pet.id}`} className="home-what">
-                        <b>{summary.pet.profile.name}</b>
-                        <span>{t.doneBy(record.what, record.by, record.at.getHours())}</span>
+                    <li key={summary.pet.id} className="ok">
+                      <Link to={`/pets/${summary.pet.id}`} className="tl-what">
+                        <b>{t.of(record.what, summary.pet.profile.name, isFemale(summary))}</b>
+                        <span className="support">{t.by(record.by, record.at.getHours())}</span>
                       </Link>
-                      <span className="home-check" aria-hidden="true">
-                        <CheckIcon />
-                      </span>
                     </li>
                   ))}
-                </ul>
+                </ol>
               </section>
             )}
-            {groups.map((group) => (
-              <section key={group.memberId ?? 'none'} className="home-card" aria-label={group.name ? t.tutorTitle(group.name) : t.noTutor}>
-                <h2 className="lbl">{group.name ? t.tutorTitle(group.name) : t.noTutor}</h2>
-                <ul className="list">
-                  {group.pets.map((summary) => (
-                    <li key={summary.pet.id}>
-                      <PetLine summary={summary} today={today} />
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
+            <section aria-labelledby="home-next">
+              <h2 id="home-next" className="lbl">
+                {t.upcomingTitle}
+              </h2>
+              {lines.length === 0 ? (
+                <p className="support">{t.nothingUpcoming}</p>
+              ) : (
+                <ol className="timeline">
+                  {lines.map((line, i) => {
+                    const summary = byId.get(line.petId);
+                    return summary && <CareRow key={`${line.petId}-${i}`} summary={summary} line={line} onSnooze={() => snooze(line.petId)} />;
+                  })}
+                </ol>
+              )}
+            </section>
           </>
         )}
       </main>
@@ -117,61 +118,31 @@ export function NextActions({ me }: { me: MeView }) {
   );
 }
 
-/** One line of the Pendências: the pet, what is due and when, and the button. */
-function PendingRow({ summary, action, onSnooze }: { summary: PetSummary; action: PendingAction; onSnooze: () => void }) {
-  const { pet, aura } = summary;
-  const what = action.kind === 'prazo' ? action.prazo.item : action.kind === 'weight' ? t.weightPill(action.percent) : t.allergiesPill;
-  const when = action.kind === 'prazo' ? dueLabel(action.prazo.overdue, action.prazo.days) : null;
-  const late = action.kind === 'prazo' && action.prazo.overdue;
+/** A point of "Próximos cuidados": what, of which pet, when and whose; a pending one can wait until tomorrow. */
+function CareRow({ summary, line, onSnooze }: { summary: PetSummary; line: CareLine; onSnooze: () => void }) {
+  const { pet } = summary;
+  const name = pet.profile.name;
+  const female = isFemale(summary);
+  const what =
+    line.kind === 'weight' ? t.of(t.weightWhat, name, female) : line.kind === 'allergies' ? t.of(t.allergiesWhat, name, female) : t.of(line.prazo.item, name, female);
+  const when =
+    line.kind === 'weight' ? t.weightPill(line.percent) : line.kind === 'allergies' ? t.allergiesPill : dueLabel(line.prazo.overdue, line.prazo.days);
+  const tone = line.kind === 'next' ? 'next' : line.kind === 'prazo' && line.prazo.overdue ? 'late' : 'soon';
+  const to = line.kind === 'allergies' ? `/pets/${pet.id}#perfil` : line.kind === 'next' ? `/pets/${pet.id}#agendamentos` : `/pets/${pet.id}/registrar`;
   return (
-    <li className={`home-row ${aura}`}>
-      <PetFace pet={pet} className="home-face" />
-      <div className="home-what">
-        <Link to={`/pets/${pet.id}`}>
-          <b>{pet.profile.name}</b>
-        </Link>
-        <span>
-          {what}
-          {when && <span className={`when${late ? ' late' : ''}`}>{when}</span>}
+    <li className={tone}>
+      <Link to={to} className="tl-what">
+        <b>{what}</b>
+        <span className="support">
+          <span className={tone === 'next' ? undefined : `state ${tone}`}>{t.tutorOf(when, pet.tutorName)}</span>
         </span>
-      </div>
-      <div className="home-buttons">
-        {action.kind === 'allergies' ? (
-          <Link to={`/pets/${pet.id}`} className="btn small">
-            {t.fillAllergies}
-          </Link>
-        ) : (
-          <Link to={`/pets/${pet.id}/registrar`} className="btn small">
-            {strings.register.button}
-          </Link>
-        )}
-        <button type="button" className="btn small line" onClick={onSnooze} aria-label={t.snoozeLabel(pet.profile.name)}>
+      </Link>
+      {line.kind !== 'next' && (
+        <button type="button" className="text-link small" onClick={onSnooze} aria-label={t.snoozeLabel(name)}>
           {t.snooze}
         </button>
-      </div>
+      )}
     </li>
-  );
-}
-
-/** A pet in the tutor's card: the newest weight, the next prazo and the last record. The whole line opens the page. */
-function PetLine({ summary, today }: { summary: PetSummary; today: string }) {
-  const { pet, aura, status } = summary;
-  const weight = latestWeight(pet.weights);
-  const next = status.next;
-  const last = lastRecordLabel(pet.lastRecord, today, localDay);
-  return (
-    <Link to={`/pets/${pet.id}`} className={`home-pet ${aura}`}>
-      <span className="home-face-wrap">
-        <PetFace pet={pet} className="home-face" />
-        {status.needsAttention && <span className="pend" role="img" aria-label={strings.nav.pending} />}
-      </span>
-      <span className="home-what">
-        <b>{pet.profile.name}</b>
-        <span>{weight ? formatKilos(weight.grams) : t.noWeight}</span>
-        <span>{next ? `${next.item} · ${dueLabel(next.overdue, next.days)}` : t.noPrazo}</span>
-        <span className="home-last">{last ?? t.noRecord}</span>
-      </span>
-    </Link>
   );
 }
 
@@ -195,12 +166,13 @@ function writeSnoozes(value: Record<string, string>): void {
   }
 }
 
-/** What shows while the pets load: the lines' shape, so the screen is never blank. */
+/** What shows while the pets load: the circles' shape, so the screen is never blank. */
 function HomeSkeleton() {
   return (
-    <div role="status" aria-label={t.loading}>
-      <div className="skeleton" />
-      <div className="skeleton" />
+    <div className="portraits" role="status" aria-label={t.loading}>
+      <span className="skeleton round" />
+      <span className="skeleton round" />
+      <span className="skeleton round" />
     </div>
   );
 }

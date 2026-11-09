@@ -1,23 +1,11 @@
-// Navigation rules (docs/spec/navegacao.md): who gets which aura, how big a name is on its page,
-// where a swipe leads. Pure: the UI passes what it knows.
+// Navigation rules (docs/spec/navegacao.md): who gets which tones, where a swipe leads. Pure: the UI passes what it knows.
 
-/** The three auras of the design. A pet gets one by its place in the list, cycling when there are more. */
+/** The three tones of the design (tokens.css). A pet gets one by its place in the list, cycling when there are more. */
 const AURAS = ['aura-ber', 'aura-pan', 'aura-pac'] as const;
 export const auraClass = (index: number): (typeof AURAS)[number] => AURAS[((index % AURAS.length) + AURAS.length) % AURAS.length]!;
 
 /** The letter inside a pet's or member's round face. */
 export const initialOf = (name: string): string => ([...name.trim()][0] ?? '?').toLocaleUpperCase('pt-BR');
-
-/**
- * The font size, in px, that makes a name fill the width of the page without overflowing. The maximum is
- * Berenice's size (790 / 8 letters), so every pet with a name that short or shorter looks the same.
- */
-export const NAME_SIZE_MAX = 98;
-export const NAME_SIZE_MIN = 32; // a 20-letter name still fits 343px (375px phone minus gutters)
-export function nameSize(name: string): number {
-  const length = Math.max([...name.trim()].length, 1);
-  return Math.max(NAME_SIZE_MIN, Math.min(NAME_SIZE_MAX, Math.floor(790 / length)));
-}
 
 /** "Segunda, 2 de novembro": the weekday without "-feira", capitalized. */
 export function dateLabel(now: Date): string {

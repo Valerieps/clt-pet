@@ -1,9 +1,10 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import type { MeView, PetUpdate, PetView } from '../../application/api-contract';
 import { demandedDeadlines, type Deadline } from '../../domain/deadlines';
 import { dueLabel } from '../../domain/due-text';
 import { firstName } from '../../domain/people';
-import { nameSize, PET_TABS, tabOfHash, type PetTab } from '../../domain/navigation';
+import { PET_TABS, tabOfHash, type PetTab } from '../../domain/navigation';
+import { petSubtitle } from '../../domain/portrait';
 import { daysBetween } from '../../domain/reminders/reminders';
 import {
   ageParts,
@@ -24,7 +25,7 @@ import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { todayLocal, usePets, type PetSummary } from '../use-pets';
-import { BackBar, CalendarIcon, CameraIcon, CatIcon, CheckIcon, DogIcon, Faces, MeLink, PencilIcon, StethoscopeIcon } from '../parts';
+import { BackBar, CameraIcon, Faces, MeLink, PetFace, SectionHead } from '../parts';
 import { AgendamentosPanel } from './Agendamentos';
 import { HealthPanel } from './Health';
 import { Food } from './Routine';
@@ -38,7 +39,7 @@ const t = strings.pets;
 const home = strings.home;
 const tabsT = strings.petPage.tabs;
 
-/** A pet's page (docs/spec/navegacao.md): the portrait in an arch under the aura, then what the pet demands. */
+/** A pet's page (docs/spec/navegacao.md): the photo edge to edge, fading into the pet's tone, then the tabs. */
 export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
   const { summaries, loading, failed } = usePets();
   const summary = summaries.find((c) => c.pet.id === petId);
@@ -80,72 +81,79 @@ function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: r
     requestAnimationFrame(() => (document.getElementById(key) ?? document.getElementById('abas'))?.scrollIntoView());
   }, [path, hash]);
 
-  const icons: Record<PetTab, ReactNode> = {
-    agendamentos: <CalendarIcon />,
-    ficha: <StethoscopeIcon />,
-    perfil: pet.species === 'cat' ? <CatIcon /> : <DogIcon />,
-  };
+  // Once the name scrolls away, a thin bar with the back arrow, the small photo and the name takes the top.
+  const caption = useRef<HTMLDivElement>(null);
+  const [compact, setCompact] = useState(false);
+  useEffect(() => {
+    const target = caption.current;
+    if (!target || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => setCompact(!entry!.isIntersecting && entry!.boundingClientRect.top < 0));
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <>
-      <section className={`hero sunbg ${aura}`}>
-        <div className="hero-top">
-          <Faces summaries={summaries} current={pet.id} onDark />
-          <MeLink me={me} />
-        </div>
-        <div className="arch">
-          {pet.photoVersion ? (
-            <PetPortrait pet={pet} />
-          ) : (
-            <span className="ph">
-              <CameraIcon />
-              {strings.petPage.noPortrait}
-            </span>
-          )}
-        </div>
-        <div className="hero-caption">
-          <h1 className="monument" style={{ fontSize: nameSize(name) }}>
-            {name}
-          </h1>
-          <p className="meta">{pet.tutorName ? t.tutor(pet.tutorName) : t.tutorPending(pet.tutorEmail)}</p>
+    <div className={`pet-page ${aura}`}>
+      <header className="top-row">
+        <Faces summaries={summaries} current={pet.id} />
+        <MeLink me={me} />
+      </header>
+      <div className={`compact-bar${compact ? ' shown' : ''}`} aria-hidden={!compact} inert={!compact || undefined}>
+        <BackBar to="/" label={strings.nav.backToHome} />
+        <PetFace pet={pet} className="compact-face" />
+        <span className="compact-name">{name}</span>
+      </div>
+      <section className={`photo-hero${pet.photoVersion ? '' : ' empty'}`}>
+        {pet.photoVersion ? (
+          <PetPortrait pet={pet} />
+        ) : (
+          <span className="ph">
+            <CameraIcon />
+            {strings.petPage.noPortrait}
+          </span>
+        )}
+        <div className="hero-caption" ref={caption}>
+          <h1 className="pet-name">{name}</h1>
+          <p className="support">{petSubtitle(pet, todayLocal())}</p>
         </div>
       </section>
-      <main className="ground-sheet">
-        <div id="abas" className="tabs" role="tablist">
+      <main className="pet-body">
+        <div id="abas" className="seg" role="tablist" aria-label={strings.petPage.tabsLabel}>
           {PET_TABS.map((key) => (
             <button
               key={key}
               type="button"
               role="tab"
-              className={`tab${tab === key ? ' on' : ''}`}
+              className={`seg-tab${tab === key ? ' on' : ''}`}
               aria-selected={tab === key}
               onClick={() => setTab(key)}
             >
-              <span className="tab-icon">{icons[key]}</span>
               {tabsT[key]}
             </button>
           ))}
         </div>
         <div id={tab} className="tab-panel" role="tabpanel" aria-label={tabsT[tab]}>
-          <div className="spread">
-            <h2>{tabsT[tab]}</h2>
+          <div className="panel-head">
+            <h2 className="sr-only">{tabsT[tab]}</h2>
             <EditToggle label={tabsT[tab]} editing={editing[tab]} onToggle={() => setTabEditing(tab, !editing[tab])} />
           </div>
           {tab === 'agendamentos' && <AgendamentosPanel summary={summary} editing={editing.agendamentos} />}
           {tab === 'ficha' && (
             <>
-              <section id="peso" className="stack">
-                <h3>{strings.petPage.sections.weight}</h3>
+              <section id="peso" className="group">
+                <SectionHead title={strings.petPage.sections.weight} />
                 <Weight pet={pet} removable={editing.ficha} />
               </section>
               <HealthPanel pet={pet} editing={editing.ficha} />
             </>
           )}
-          {tab === 'perfil' && <ProfilePanel pet={pet} myId={me.id} editing={editing.perfil} onDone={() => setTabEditing('perfil', false)} />}
+          {tab === 'perfil' && (
+            <ProfilePanel pet={pet} myId={me.id} editing={editing.perfil} onEdit={() => setTabEditing('perfil', true)} onDone={() => setTabEditing('perfil', false)} />
+          )}
         </div>
         <Summary summary={summary} />
       </main>
-    </>
+    </div>
   );
 }
 
@@ -175,35 +183,42 @@ function Summary({ summary }: { summary: PetSummary }) {
   if (demanded.length === 0 && !alert && !status.allergiesMissing) return null;
 
   return (
-    <div>
-      <p className="lbl">{strings.petPage.requires}</p>
-      {alert && (
-        <Link to={`/pets/${pet.id}#peso`} className="item">
-          <span>
-            <p>{strings.register.weight}</p>
-            <span className="meta">{t.weight.alert(alert.percent, `${formatKilos(alert.fromGrams)} em ${formatDate(alert.fromDate)}`, `${formatKilos(alert.toGrams)} em ${formatDate(alert.toDate)}`)}</span>
-          </span>
-          <span className="when late">{strings.petPage.weightAlert}</span>
-        </Link>
-      )}
-      {demanded.map((d) => (
-        <Link key={`${d.kind}:${d.id}`} to={`/pets/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
-          <span>
-            <p>{deadlineLabel(d)}</p>
-            <span className="meta">{formatDate(d.due)}</span>
-          </span>
-          <span className={`when${d.state === 'overdue' ? ' late' : ''}`}>{dueLabel(d.state === 'overdue', days(d))}</span>
-        </Link>
-      ))}
-      {status.allergiesMissing && (
-        <Link to={`/pets/${pet.id}#perfil`} className="item">
-          <p>{t.allergiesTitle}</p>
-          <span className="when">{home.allergiesPill}</span>
-        </Link>
-      )}
-    </div>
+    <section className="group" aria-labelledby="exige">
+      <h2 id="exige" className="lbl">
+        {strings.petPage.requires}
+      </h2>
+      <div className="rows">
+        {alert && (
+          <Link to={`/pets/${pet.id}#peso`} className="item">
+            <span>
+              <p>{strings.register.weight}</p>
+              <span className="support">{t.weight.alert(alert.percent, `${formatKilos(alert.fromGrams)} em ${formatDate(alert.fromDate)}`, `${formatKilos(alert.toGrams)} em ${formatDate(alert.toDate)}`)}</span>
+            </span>
+            <span className="state soon">{strings.petPage.weightAlert}</span>
+          </Link>
+        )}
+        {demanded.map((d) => (
+          <Link key={`${d.kind}:${d.id}`} to={`/pets/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
+            <span>
+              <p>{deadlineLabel(d)}</p>
+              <span className="support">{formatDate(d.due)}</span>
+            </span>
+            <span className={`state ${d.state === 'overdue' ? 'late' : 'soon'}`}>{dueLabel(d.state === 'overdue', days(d))}</span>
+          </Link>
+        ))}
+        {status.allergiesMissing && (
+          <Link to={`/pets/${pet.id}#perfil`} className="item">
+            <p>{t.allergiesTitle}</p>
+            <span className="state soon">{home.allergiesPill}</span>
+          </Link>
+        )}
+      </div>
+    </section>
   );
 }
+
+/** Every field missingFields can name: what the profile's progress bar counts. */
+const PROFILE_FIELDS = 7;
 
 /** "04/11/2023 · 3 anos", or "cerca de 3 anos (estimado)" when only the age was known. */
 function birthText(birthDate: string, estimated: boolean): string {
@@ -211,27 +226,36 @@ function birthText(birthDate: string, estimated: boolean): string {
   return estimated ? t.profile.ageEstimated(age) : `${formatDate(birthDate)} · ${t.profile.age(age)}`;
 }
 
-/** The pencil beside a tab's title: it turns on editing for the whole tab; while editing it turns into a check. */
+/** "Editar" at the top of a tab: it turns on editing for the whole tab; while editing it reads "Concluir". */
 function EditToggle({ label, editing, onToggle }: { label: string; editing: boolean; onToggle: () => void }) {
-  const text = editing ? strings.petPage.doneEditing : strings.petPage.editTab(label);
   return (
-    <button type="button" className="icon-btn" aria-label={text} title={text} aria-pressed={editing} onClick={onToggle}>
-      {editing ? <CheckIcon /> : <PencilIcon />}
+    <button type="button" className="text-link" aria-label={editing ? strings.petPage.doneEditing : strings.petPage.editTab(label)} aria-pressed={editing} onClick={onToggle}>
+      {editing ? strings.petPage.doneEditing : strings.petPage.edit}
     </button>
   );
 }
 
 /** Data, allergies, Alimentação and Tutoria. The tab's pencil opens the profile form, the photo and the retirement. */
-function ProfilePanel({ pet, myId, editing, onDone }: { pet: PetView; myId: string; editing: boolean; onDone: () => void }) {
+function ProfilePanel({ pet, myId, editing, onEdit, onDone }: { pet: PetView; myId: string; editing: boolean; onEdit: () => void; onDone: () => void }) {
   const missing = missingFields(pet.profile, pet.allergiesAnswered);
+  const percent = Math.round(((PROFILE_FIELDS - missing.length) / PROFILE_FIELDS) * 100);
 
   return (
     <>
-      <div className="stack">
-        {missing.length > 0 && (
-          <p className="notice">
-            {t.missingTitle} {missing.map((m) => t.missing[m]).join(', ')}.
-          </p>
+      <div className="group">
+        {missing.length > 0 && !editing && (
+          <div className="progress">
+            <div className="spread">
+              <b>{t.progress(percent)}</b>
+              <button type="button" className="text-link" onClick={onEdit}>
+                {t.complete}
+              </button>
+            </div>
+            <div className="progress-track" role="progressbar" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100} aria-label={t.progress(percent)}>
+              <span style={{ width: `${percent}%` }} />
+            </div>
+            <p className="support">{t.missingLine(missing.map((m) => t.missing[m]).join(', '))}</p>
+          </div>
         )}
         {editing ? (
           <>
@@ -244,8 +268,8 @@ function ProfilePanel({ pet, myId, editing, onDone }: { pet: PetView; myId: stri
         )}
       </div>
       <Food pet={pet} removable={editing} />
-      <section id="tutoria" className="stack">
-        <h3>{strings.petPage.sections.tutoria}</h3>
+      <section id="tutoria" className="group">
+        <SectionHead title={strings.petPage.sections.tutoria} />
         <Tutoria pet={pet} myId={myId} />
       </section>
     </>
@@ -314,17 +338,14 @@ function ProfileSummary({ pet }: { pet: PetView }) {
     [strings.petPage.sections.allergies, allergies],
   ];
   return (
-    <>
-      <p className="muted">{t.species[pet.species]}</p>
-      <dl>
-        {rows.map(([label, value]) => (
-          <div key={label}>
-            <dt className="muted">{label}</dt>
-            <dd>{value ?? t.profile.notInformed}</dd>
-          </div>
-        ))}
-      </dl>
-    </>
+    <dl className="pairs">
+      {rows.map(([label, value]) => (
+        <div key={label}>
+          <dt>{label}</dt>
+          <dd className={value ? undefined : 'support'}>{value ?? t.profile.notInformed}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -653,7 +674,7 @@ function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
     <>
       <p>{latest ? t.currentWeight(formatKilos(latest.grams)) : t.noWeight}</p>
       {alert && (
-        <p className="notice" role="status">
+        <p className="support state-line soon" role="status">
           {t.weight.alert(alert.percent, `${formatKilos(alert.fromGrams)} em ${formatDate(alert.fromDate)}`, `${formatKilos(alert.toGrams)} em ${formatDate(alert.toDate)}`)}
         </p>
       )}
@@ -668,7 +689,7 @@ function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
           <summary>{strings.petPage.history}</summary>
           <ul className="list">
             {[...pet.weights].reverse().map((w) => (
-              <li key={w.id} className="card row">
+              <li key={w.id} className="row">
                 <span className="grow">
                   {formatKilos(w.grams)} · {formatDate(w.onDate)} <span className="muted">{t.weight.by(w.byName)}</span>
                 </span>
@@ -682,7 +703,7 @@ function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
           </ul>
         </details>
       )}
-      <p className="muted">{t.weight.limit(pet.weightAlertPercent, ALERT_WINDOW_DAYS)}</p>
+      <p className="support">{t.weight.limit(pet.weightAlertPercent, ALERT_WINDOW_DAYS)}</p>
     </>
   );
 }

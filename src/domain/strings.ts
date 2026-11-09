@@ -56,7 +56,8 @@ export const strings = {
   petPage: {
     requires: 'Exige',
     noPortrait: 'Ainda sem retrato',
-    weightAlert: 'Advertência',
+    weightAlert: 'Peso mudou',
+    tabsLabel: 'Assuntos do pet',
     tabs: { agendamentos: 'Agendamentos', ficha: 'Ficha Médica', perfil: 'Perfil' },
     sections: {
       vaccines: 'Vacinas',
@@ -71,7 +72,10 @@ export const strings = {
       tutoria: 'Tutoria',
     },
     editTab: (tab: string) => `Editar ${tab}`,
+    edit: 'Editar',
     doneEditing: 'Concluir',
+    add: '+ Adicionar',
+    addTo: (section: string) => `Adicionar em ${section}`,
     history: 'Histórico',
     deadline: {
       return: (title: string) => `Retorno: ${title}`,
@@ -140,6 +144,9 @@ export const strings = {
     currentWeight: (weight: string) => `Peso atual: ${weight}`,
     noWeight: 'Sem peso registrado',
     missingTitle: 'Falta completar:',
+    complete: 'Completar',
+    progress: (percent: number) => (percent >= 80 ? 'Quase completo' : `Perfil ${percent}% completo`),
+    missingLine: (fields: string) => `Falta: ${fields}.`,
     missing: {
       breed: 'raça',
       birthDate: 'nascimento',
@@ -293,7 +300,7 @@ export const strings = {
     resolve: 'Marcar como resolvida',
     reopen: 'Reabrir',
     removeConditionConfirm: 'Apagar essa condição?',
-    addCondition: '+ Nova condição',
+    addCondition: 'Adicionar uma condição',
     conditionForm: {
       name: 'Condição (ex.: doença renal, sopro cardíaco)',
       grave: 'É grave (aparece no Cartão de Saúde e para o pet sitter)',
@@ -325,7 +332,7 @@ export const strings = {
   routine: {
     food: 'Ração',
     mealsEmpty: 'Nenhum horário de refeição cadastrado.',
-    addMeal: '+ Novo horário',
+    addMeal: 'Adicionar um horário',
     mealForm: {
       at: 'Horário',
       amount: 'Quantidade (ex.: 40 g, 1 sachê)',
@@ -334,7 +341,8 @@ export const strings = {
       invalid: 'Esse horário não parece certo.',
     },
     removeMealConfirm: 'Apagar esse horário de refeição?',
-    diaryEmpty: 'Nada anotado ainda. Vômito, apetite, xixi fora do lugar: tudo cabe aqui, pelo +.',
+    diaryEmpty: 'Nada anotado ainda.',
+    diaryAdd: 'Anotar algo estranho',
     olderDiary: 'Anotações antigas',
     diaryForm: {
       text: 'O que aconteceu?',
@@ -416,7 +424,10 @@ export const strings = {
     every: (days: number) => intervalLabel(days),
     last: (date: string) => `Último: ${date}`,
     never: 'Ainda não aconteceu',
-    plan: { vaccine: '+ Planejar vacina', parasite: '+ Planejar medicação', hygiene: '+ Planejar higiene', visit: '+ Planejar consulta' },
+    plan: { vaccine: 'Planejar uma vacina', parasite: 'Planejar uma medicação', hygiene: 'Planejar banho ou unhas', visit: 'Planejar uma consulta' },
+    nothingPlanned: 'Nada planejado ainda.',
+    nextIn: (when: string, every: string) => `Próxima ${when} · ${every}`,
+    open: (item: string) => `Ver ${item}`,
     replan: 'Mudar data',
     removePlan: 'Apagar planejamento',
     removePlanConfirm: 'Apagar esse planejamento? Se já houver registro, o próximo prazo volta a contar dele.',
@@ -496,20 +507,29 @@ export const strings = {
     empty: 'Nenhum pet cadastrado.',
     addFirst: 'Cadastrar o primeiro pet',
     loading: 'Carregando as Próximas Ações',
-    pendingTitle: 'Pendências',
-    nothingPending: 'Nada pendente.',
-    doneTitle: 'Feito hoje',
-    doneBy: (what: string, name: string, hour: number) => `${what} · ${name}, ${hour}h`,
-    tutorTitle: (name: string) => `Pets de ${firstName(name)}`,
-    noTutor: 'Sem tutor no app',
+    greeting: (hello: string, name: string) => `${hello}, ${firstName(name)}`,
+    calm: 'Nada pendente hoje. Pode só fazer carinho.',
+    stateLine: (late: number, soon: number) => {
+      const lateText = late === 1 ? '1 cuidado atrasado' : `${late} cuidados atrasados`;
+      const soonText = soon === 1 ? '1 cuidado chegando' : `${soon} cuidados chegando`;
+      if (late > 0 && soon > 0) return `${lateText} e ${soon} chegando.`;
+      return `${late > 0 ? lateText : soonText}.`;
+    },
+    ring: { ok: 'em dia', soon: 'chegando', late: 'atrasado', none: 'sem planos' },
+    petsTitle: 'Os pets',
+    doneTitle: 'Hoje',
+    upcomingTitle: 'Próximos cuidados',
+    nothingUpcoming: 'Nada planejado ainda.',
+    of: (what: string, pet: string, female: boolean) => `${what} ${female ? 'da' : 'do'} ${pet}`,
+    by: (name: string, hour: number) => `${name} · ${hour}h`,
+    tutorOf: (when: string, tutor: string | null) => (tutor ? `${when} · ${firstName(tutor)}` : when),
     allergiesPill: 'Alergias em branco',
     fillAllergies: 'Informar alergias',
     snooze: 'Lembrar amanhã',
     snoozeLabel: (name: string) => `Lembrar amanhã das pendências de ${name}`,
     weightPill: (percent: number) => `Peso mudou ${Math.abs(percent).toFixed(1).replace('.', ',')}%`,
-    noWeight: 'Sem peso',
-    noPrazo: 'Sem prazos',
-    noRecord: 'Nada registrado',
+    weightWhat: 'Peso',
+    allergiesWhat: 'Alergias',
   },
 
   invites: {

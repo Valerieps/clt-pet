@@ -8,6 +8,8 @@ import type { PetView } from '../../application/api-contract';
 import { CARE_TEMPLATES } from '../../domain/care/care';
 import { FREQUENCIES, type Frequency } from '../../domain/medications/medication';
 import { formatDate, TEXT_MAX } from '../../domain/pets/pet';
+import { dueLabel } from '../../domain/due-text';
+import { daysBetween } from '../../domain/reminders/reminders';
 import {
   careOccurrences,
   currentPrazos,
@@ -25,6 +27,7 @@ import { todayLocal, type PetSummary } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
+import { SectionHead } from '../parts';
 import { VisitList } from './Health';
 import { TreatmentList } from './Medications';
 
@@ -108,53 +111,88 @@ function PrazoSection({ id, kind, title, occurrences, summary, editing, extra = 
     setError(result.ok ? null : strings.genericError);
   }
 
-  const row = (p: Prazo) => (
-    <li key={p.id} className="card row">
-      <span className="grow">
-        <strong>{p.item}</strong>
-        {p.dose && ` · ${p.dose}`} · <span data-status={p.state}>{status[p.state]}</span>
-        <br />
-        {t.next(formatDate(p.due))} · {t.every(p.intervalDays)}
-        <br />
-        <span className="meta">{p.lastOn ? t.last(formatDate(p.lastOn)) : t.never}</span>
-      </span>
-      {editing && p.planId ? (
-        <button type="button" className="secondary danger" onClick={() => void removePlan(p.planId!)}>
-          {t.removePlan}
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="secondary"
-          onClick={() => setDraft({ item: p.item, dueOn: p.due, intervalDays: p.intervalDays, dose: p.dose ?? '', replanning: true })}
-        >
-          {t.replan}
-        </button>
-      )}
-    </li>
-  );
+  const empty = prazos.length === 0 && extra === 0;
+  const add = () => setDraft({ item: '', dueOn: today, intervalDays: DEFAULT_INTERVALS[kind], dose: '', replanning: false });
 
   return (
-    <section id={id} className="stack">
-      <h3>{title}</h3>
-      {prazos.length === 0 && extra === 0 && <p className="muted">{t.empty[kind]}</p>}
-      <ul className="list">{prazos.map(row)}</ul>
+    <section id={id} className="group">
+      <SectionHead title={title}>
+        {!empty && !draft && (
+          <button type="button" className="text-link" aria-label={strings.petPage.addTo(title)} onClick={add}>
+            {strings.petPage.add}
+          </button>
+        )}
+      </SectionHead>
+      {empty && !draft && (
+        <p className="support">
+          {t.nothingPlanned}{' '}
+          <button type="button" className="text-link inline" onClick={add}>
+            {t.plan[kind]}
+          </button>
+        </p>
+      )}
+      <ul className="rows">
+        {prazos.map((p) => (
+          <PrazoRow
+            key={p.id}
+            prazo={p}
+            today={today}
+            editing={editing}
+            onReplan={() => setDraft({ item: p.item, dueOn: p.due, intervalDays: p.intervalDays, dose: p.dose ?? '', replanning: true })}
+            onRemovePlan={() => void removePlan(p.planId!)}
+          />
+        ))}
+      </ul>
       {children}
       {error && (
         <p className="notice" role="alert">
           {error}
         </p>
       )}
-      {draft ? (
-        <PlanForm key={draft.item} kind={kind} pet={summary.pet} draft={draft} onDone={() => setDraft(null)} />
-      ) : (
-        <div>
-          <button type="button" onClick={() => setDraft({ item: '', dueOn: today, intervalDays: DEFAULT_INTERVALS[kind], dose: '', replanning: false })}>
-            {t.plan[kind]}
-          </button>
+      {draft && <PlanForm key={draft.item} kind={kind} pet={summary.pet} draft={draft} onDone={() => setDraft(null)} />}
+    </section>
+  );
+}
+
+const STATE_CLASS: Record<Prazo['state'], string> = { ok: 'ok', soon: 'soon', overdue: 'late' };
+
+/**
+ * One item: its name, when it comes next ("Próxima em 12 meses · anual") and its state as a dot and a word.
+ * Tapping it opens the detail, with the full dates and "Mudar data" (docs/spec/prazos.md).
+ */
+function PrazoRow({ prazo: p, today, editing, onReplan, onRemovePlan }: { prazo: Prazo; today: string; editing: boolean; onReplan: () => void; onRemovePlan: () => void }) {
+  const [open, setOpen] = useState(false);
+  const days = daysBetween(today, p.due);
+  return (
+    <li>
+      <button type="button" className="item" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        <span>
+          <p>
+            {p.item}
+            {p.dose && <span className="support"> · {p.dose}</span>}
+          </p>
+          <span className="support">{t.nextIn(dueLabel(days < 0, Math.abs(days)), t.every(p.intervalDays))}</span>
+        </span>
+        <span className={`state ${STATE_CLASS[p.state]}`}>{status[p.state]}</span>
+      </button>
+      {open && (
+        <div className="detail">
+          <p className="support">
+            {t.next(formatDate(p.due))} · {p.lastOn ? t.last(formatDate(p.lastOn)) : t.never}
+          </p>
+          <div className="links">
+            <button type="button" className="text-link" onClick={onReplan}>
+              {t.replan}
+            </button>
+            {editing && p.planId && (
+              <button type="button" className="text-link danger" onClick={onRemovePlan}>
+                {t.removePlan}
+              </button>
+            )}
+          </div>
         </div>
       )}
-    </section>
+    </li>
   );
 }
 

@@ -25,7 +25,7 @@ export function TreatmentList({ treatments, removable }: { treatments: readonly 
   }
 
   const row = (m: MedicationView) => (
-    <li key={m.id} className="card row">
+    <li key={m.id} className="row">
       <span className="grow">
         <strong>{m.name}</strong> · {m.dose}
         <br />
@@ -45,7 +45,7 @@ export function TreatmentList({ treatments, removable }: { treatments: readonly 
 
   return (
     <>
-      <ul className="list">{current.map(row)}</ul>
+      <ul className="rows">{current.map(row)}</ul>
       {error && (
         <p className="notice" role="alert">
           {error}
@@ -54,7 +54,7 @@ export function TreatmentList({ treatments, removable }: { treatments: readonly 
       {ended.length > 0 && (
         <details className="fold" open={removable || undefined}>
           <summary>{t.ended}</summary>
-          <ul className="list">{ended.map(row)}</ul>
+          <ul className="rows">{ended.map(row)}</ul>
         </details>
       )}
     </>

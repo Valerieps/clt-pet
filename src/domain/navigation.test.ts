@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { auraClass, currentPath, dateLabel, initialOf, nameSize, NAME_SIZE_MAX, NAME_SIZE_MIN, swipeTarget, tabOfHash } from './navigation';
+import { auraClass, currentPath, dateLabel, initialOf, swipeTarget, tabOfHash } from './navigation';
 
 describe('tabOfHash', () => {
   it('opens the new tabs by their own hash', () => {
@@ -30,25 +30,6 @@ describe('initialOf', () => {
   });
   it('falls back to a question mark', () => {
     expect(initialOf('   ')).toBe('?');
-  });
-});
-
-describe('nameSize', () => {
-  it('shrinks long names and caps short ones', () => {
-    expect(nameSize('Berenice')).toBe(NAME_SIZE_MAX);
-    expect(nameSize('Bia')).toBe(NAME_SIZE_MAX);
-    expect(nameSize('Sebastiana')).toBeLessThan(NAME_SIZE_MAX);
-  });
-  it('gives Berenice, Panda and Paçoca the same size', () => {
-    expect(nameSize('Panda')).toBe(nameSize('Berenice'));
-    expect(nameSize('Paçoca')).toBe(nameSize('Berenice'));
-  });
-  it('keeps a 20-letter name narrower than a small phone', () => {
-    // Anton capitals are about 0.42em wide; 343px is a 375px screen minus the hero gutters.
-    expect(nameSize('A'.repeat(20)) * 0.42 * 20).toBeLessThanOrEqual(343);
-  });
-  it('never goes below the minimum', () => {
-    expect(nameSize('Sebastiana da Silva Pereira Souza')).toBe(NAME_SIZE_MIN);
   });
 });
 

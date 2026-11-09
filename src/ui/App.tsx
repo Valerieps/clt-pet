@@ -5,8 +5,8 @@ import { swipeTarget } from '../domain/navigation';
 import { strings } from '../domain/strings';
 import { useLiveStatus, useServices } from './backend-context';
 import { usePets } from './use-pets';
-import { BackBar, ManualHandle } from './parts';
-import { SpeedDial } from './SpeedDial';
+import { BackBar } from './parts';
+import { BottomBar } from './SpeedDial';
 import { navigate, usePath } from './router';
 import { Invites } from './screens/Invites';
 import { Members } from './screens/Members';
@@ -46,14 +46,14 @@ function MemberApp() {
 
   if (me.loading && !me.data) {
     return (
-      <header className="home-header">
+      <main className="home">
         <p className="lbl">{strings.appName}</p>
-        <h1 className="monument" style={{ fontSize: 40, marginTop: 4 }}>
-          {strings.home.title}
-        </h1>
-        <div className="skeleton" role="status" aria-label={strings.home.loading} />
-        <div className="skeleton" />
-      </header>
+        <div className="portraits" role="status" aria-label={strings.home.loading}>
+          <span className="skeleton round" />
+          <span className="skeleton round" />
+          <span className="skeleton round" />
+        </div>
+      </main>
     );
   }
   if (!me.data && me.error && me.error !== 'unauthenticated') {
@@ -118,6 +118,9 @@ function Shell({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
   };
 
   const manualPetId = currentPetId ?? summaries[0]?.pet.id ?? null;
+  // On a pet's page the footer wears the pet's tones; anywhere else it is neutral.
+  const onPetPage = Boolean(PET_PATH.exec(path));
+  const aura = onPetPage ? (summaries.find((c) => c.pet.id === currentPetId)?.aura ?? null) : null;
 
   return (
     <div className="shell" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
@@ -125,8 +128,7 @@ function Shell({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
       <Screen me={me} onSignOut={onSignOut} />
       {register && <RegisterDrawer petId={decodeURIComponent(register[1]!)} />}
       {manual && <Manual petId={manual[1] ? decodeURIComponent(manual[1]) : null} />}
-      {!manual && !register && manualPetId && <SpeedDial petId={manualPetId} />}
-      {!manual && <ManualHandle to={manualPetId ? `/sos/${manualPetId}` : '/sos'} />}
+      {!manual && !register && <BottomBar manualTo={manualPetId ? `/sos/${manualPetId}` : '/sos'} petId={manualPetId} aura={aura} />}
     </div>
   );
 }

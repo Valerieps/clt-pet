@@ -2,6 +2,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { petPhotoPath, type MeView, type PetView } from '../application/api-contract';
 import { initialOf } from '../domain/navigation';
+import { careRing } from '../domain/portrait';
 import { strings } from '../domain/strings';
 import type { PetSummary } from './use-pets';
 import { focusableIn, nextFocusIndex } from './focus-trap';
@@ -47,23 +48,31 @@ export const DogIcon = () => (
   <Icon path="M8 6C6 5 3.5 6 3.5 10c0 2 .5 4 2.5 4.5M16 6c2-1 4.5 0 4.5 4 0 2-.5 4-2.5 4.5M8 6c1-1 2.5-1.5 4-1.5S15 5 16 6v7c0 3.5-2 6-4 6s-4-2.5-4-6zM10 11h.01M14 11h.01M11 15h2l-1 1.2z" />
 );
 
-/** The main navigation: Próximas Ações, then one round face per pet. A sun dot marks what needs attention. */
-export function Faces({ summaries, current, onDark = false }: { summaries: readonly PetSummary[]; current: 'home' | string; onDark?: boolean }) {
+/**
+ * The main navigation: Próximas Ações, then one round face per pet, ringed in the color of its state
+ * (docs/spec/navegacao.md). The state is also said to screen readers.
+ */
+export function Faces({ summaries, current }: { summaries: readonly PetSummary[]; current: 'home' | string }) {
   return (
-    <nav className={`faces${onDark ? ' on-dark' : ''}`} aria-label={strings.nav.main}>
+    <nav className="faces" aria-label={strings.nav.main}>
       <Link to="/" className="face" aria-current={current === 'home' ? 'page' : undefined}>
         <span className="dot sun">
           <SunIcon />
         </span>
         {strings.nav.home}
       </Link>
-      {summaries.map(({ pet, aura, status }) => (
-        <Link key={pet.id} to={`/pets/${pet.id}`} className={`face ${aura}`} aria-current={current === pet.id ? 'page' : undefined}>
-          <PetFace pet={pet} className="dot" />
-          {status.needsAttention && <span className="pend" role="img" aria-label={strings.nav.pending} />}
-          <span className="name">{pet.profile.name}</span>
-        </Link>
-      ))}
+      {summaries.map(({ pet, aura, status }) => {
+        const ring = careRing(status);
+        return (
+          <Link key={pet.id} to={`/pets/${pet.id}`} className={`face ${aura}`} aria-current={current === pet.id ? 'page' : undefined}>
+            <span className={`ring ${ring}`}>
+              <PetFace pet={pet} className="dot" />
+            </span>
+            <span className="name">{pet.profile.name}</span>
+            <span className="sr-only">{strings.home.ring[ring]}</span>
+          </Link>
+        );
+      })}
     </nav>
   );
 }
@@ -97,16 +106,13 @@ export function BackBar({ to, label = strings.nav.back }: { to: string; label?: 
   );
 }
 
-/** Fixed on the bottom edge of every screen: the Cartão de Saúde is a gesture away. */
-export function ManualHandle({ to }: { to: string }) {
+/** A section's title and, on the right, its one action as a text link ("+ Adicionar", "Editar"). */
+export function SectionHead({ id, title, children }: { id?: string; title: string; children?: ReactNode }) {
   return (
-    <Link to={to} className="handle">
-      <Icon path="M6 15l6-6 6 6" className="chevron" />
-      <span className="handle-row">
-        <HeartbeatIcon />
-        {strings.nav.manual}
-      </span>
-    </Link>
+    <div className="sec">
+      <h3 id={id}>{title}</h3>
+      {children}
+    </div>
   );
 }
 
