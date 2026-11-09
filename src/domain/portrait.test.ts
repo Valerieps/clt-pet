@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { careRing, homeState, petSubtitle, shortAge } from './portrait';
+import { careRing, homeState } from './portrait';
 import { petStatus, upcomingCare } from './next-actions';
 
 const today = '2026-11-08';
@@ -30,30 +30,6 @@ describe('homeState', () => {
   it('counts the late and the soon rings', () => {
     expect(homeState(['ok', 'none', 'ok'])).toEqual({ late: 0, soon: 0 });
     expect(homeState(['late', 'soon', 'soon', 'ok'])).toEqual({ late: 1, soon: 2 });
-  });
-});
-
-describe('shortAge', () => {
-  it('says whole years, or months under a year, with "uns" when estimated', () => {
-    expect(shortAge('2016-09-01', true, today)).toBe('uns 10 anos');
-    expect(shortAge('2025-11-01', false, today)).toBe('1 ano');
-    expect(shortAge('2026-03-01', false, today)).toBe('8 meses');
-    expect(shortAge('2026-11-01', false, today)).toBe('menos de 1 mês');
-    expect(shortAge(null, false, today)).toBeNull();
-  });
-});
-
-describe('petSubtitle', () => {
-  const profile = { breed: 'SRD', birthDate: '2016-09-01', birthEstimated: true, sex: 'female' as const };
-
-  it('reads species, breed, age and tutor', () => {
-    expect(petSubtitle({ species: 'cat', profile, tutorName: 'valéria souza' }, today)).toBe('Gata · SRD · uns 10 anos · com Valéria');
-  });
-
-  it('names the species by sex, and leaves the unknown parts out', () => {
-    expect(petSubtitle({ species: 'dog', profile, tutorName: null }, today)).toBe('Cadela · SRD · uns 10 anos');
-    expect(petSubtitle({ species: 'dog', profile: { breed: null, birthDate: null, birthEstimated: false, sex: null }, tutorName: null }, today)).toBe('Cachorro');
-    expect(petSubtitle({ species: 'cat', profile: { ...profile, sex: 'male' }, tutorName: null }, today)).toBe('Gato · SRD · uns 10 anos');
   });
 });
 

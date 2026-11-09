@@ -545,13 +545,13 @@ p.support {
   object-position: 50% 30%;
 }
 
-/* The photo dissolves into the pet's tone; the name sits where the tone is already solid, so its contrast is
-   the ink's on the tone (AA). */
+/* The photo dissolves into a translucent veil of the pet's tone; the name sits on the veil. */
 .photo-hero::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 30%, var(--t) 78%);
+  /* Only to a translucent tone: the photo stays faintly visible behind the name. */
+  background: linear-gradient(180deg, transparent 30%, color-mix(in srgb, var(--t) 72%, transparent) 100%);
   pointer-events: none;
 }
 
@@ -589,7 +589,7 @@ p.support {
   position: absolute;
   z-index: 1;
   right: 0;
-  bottom: var(--space-2);
+  bottom: 0;
   left: 0;
   padding: 0 var(--space-4);
 }
@@ -604,10 +604,6 @@ p.support {
   line-height: 1.05;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.hero-caption .support {
-  color: var(--color-text);
 }
 
 /* Once the name scrolls away: a thin fixed bar with the back arrow, the small photo and the name. */
