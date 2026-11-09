@@ -42,7 +42,7 @@ export function listVaccinations(ctx: Context): VaccinationView[] {
   return ctx.sql.all<VaccinationRow>(`${SELECT} ${ORDER}`).map(toView);
 }
 
-/** The next date of each chefe's vaccines, recorded or planned (docs/spec/prazos.md), for the push reminders (docs/spec/lembretes.md). */
+/** The next date of each pet's vaccines, recorded or planned (docs/spec/prazos.md), for the push reminders (docs/spec/lembretes.md). */
 export const vaccineReminders: ReminderSource = (ctx) => {
   const all = listVaccinations(ctx);
   const plans = listPlans(ctx).filter((p) => p.kind === 'vaccine');
@@ -57,7 +57,7 @@ export const vaccineReminders: ReminderSource = (ctx) => {
   );
 };
 
-/** Registers the same dose for several chefes at once; all of them must exist, or nothing is saved. */
+/** Registers the same dose for several pets at once; all of them must exist, or nothing is saved. */
 export function addVaccination(ctx: Context, actor: Member, input: Record<string, unknown>): CommandResult<VaccinationView[]> {
   const dose = normalizeDose(input, todayInBrasilia(ctx));
   const { petIds } = input;

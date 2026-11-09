@@ -1,5 +1,5 @@
-// The base phrase library (docs/spec/voz-dos-chefes.md, "Biblioteca base"): a few phrases per chefe and
-// per event, shared by both tutors, always in the chefe's own voice (first person).
+// The base phrase library (docs/spec/voz-dos-pets.md, "Biblioteca base"): a few phrases per pet and
+// per event, shared by both tutors, always in the pet's own voice (first person).
 // Variables: {nome}, {item}, {dias}, {funcionario}. Reminders fill only {nome}, {item} and {dias},
 // so {funcionario} stays out of dueSoon, overdue and allGood.
 
@@ -9,7 +9,7 @@ export const VOICE_EVENTS: readonly VoiceEvent[] = ['dueSoon', 'overdue', 'daily
 
 export type PhraseSet = Readonly<Record<VoiceEvent, readonly string[]>>;
 
-/** Keyed by the chefe's id: the three chefes that start registered (docs/spec/chefes.md). */
+/** Keyed by the pet's id: the three pets that start registered (docs/spec/pets.md). */
 export const BASE_PHRASES: Readonly<Record<string, PhraseSet>> = {
   'pet-berenice': {
     dueSoon: [
@@ -106,7 +106,7 @@ export const NEUTRAL_PHRASES: PhraseSet = {
   allGood: ['Estou com tudo em dia.'],
 };
 
-/** A chefe with a serious or chronic condition: present, but with no dramatic nagging. */
+/** A pet with a serious or chronic condition: present, but with no dramatic nagging. */
 export const GENTLE_PHRASES: PhraseSet = {
   ...NEUTRAL_PHRASES,
   dailyDose: ['Agradeço o cuidado com o meu remédio de hoje.'],

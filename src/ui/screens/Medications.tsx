@@ -4,7 +4,7 @@ import { FREQUENCIES, isEnded, type Frequency } from '../../domain/medications/m
 import { formatDate, TEXT_MAX } from '../../domain/pets/pet';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
-import { todayLocal } from '../chefia';
+import { todayLocal } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
@@ -12,7 +12,7 @@ import { useQuery } from '../use-query';
 const t = strings.medications;
 
 /**
- * A chefe's treatments, a ficha in the Saúde tab (docs/spec/medicacoes.md): the ones in use first, the
+ * A pet's treatments, a ficha in the Saúde tab (docs/spec/medicacoes.md): the ones in use first, the
  * ended ones folded below, and "+ Novo tratamento" at the end. Until phase 3 they never come from the +.
  */
 export function Treatments({ pet, removable }: { pet: PetView; removable: boolean }) {
@@ -51,7 +51,7 @@ export function Treatments({ pet, removable }: { pet: PetView; removable: boolea
 
   return (
     <section id="tratamentos" className="stack">
-      <h3>{strings.chefe.sections.treatments}</h3>
+      <h3>{strings.petPage.sections.treatments}</h3>
       {mine.length === 0 && <p className="muted">{t.empty}</p>}
       <ul className="list">{current.map(row)}</ul>
       {error && (

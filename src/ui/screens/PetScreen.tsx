@@ -8,10 +8,8 @@ import {
   birthDateFromAge,
   formatAge,
   formatDate,
-  MAX_TAGS,
   missingFields,
   PET_NAME_MAX,
-  TAG_MAX,
   TEXT_MAX,
   type Allergy,
   type AllergyKind,
@@ -23,7 +21,7 @@ import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
-import { todayLocal, useChefia, type Chefe } from '../chefia';
+import { todayLocal, usePets, type PetSummary } from '../use-pets';
 import { BackBar, CalendarIcon, CameraIcon, CatIcon, CheckIcon, DogIcon, Faces, MeLink, PencilIcon, ScaleIcon, StethoscopeIcon } from '../parts';
 import { HealthPanel } from './Health';
 import { PrazosPanel } from './Prazos';
@@ -36,14 +34,14 @@ import { WeightChart } from './WeightChart';
 
 const t = strings.pets;
 const home = strings.home;
-const tabsT = strings.chefe.tabs;
+const tabsT = strings.petPage.tabs;
 
-/** A chefe's page (docs/spec/navegacao.md): the portrait in an arch under the aura, then what the chefe demands. */
+/** A pet's page (docs/spec/navegacao.md): the portrait in an arch under the aura, then what the pet demands. */
 export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
-  const { chefes, loading, failed } = useChefia();
-  const chefe = chefes.find((c) => c.pet.id === petId);
+  const { summaries, loading, failed } = usePets();
+  const summary = summaries.find((c) => c.pet.id === petId);
 
-  if (!chefe) {
+  if (!summary) {
     return (
       <>
         <header className="page-header">
@@ -56,13 +54,13 @@ export function PetScreen({ petId, me }: { petId: string; me: MeView }) {
       </>
     );
   }
-  return <PetPage chefe={chefe} chefes={chefes} me={me} />;
+  return <PetPage summary={summary} summaries={summaries} me={me} />;
 }
 
 const NOT_EDITING: Record<PetTab, boolean> = { prazos: false, saude: false, peso: false, perfil: false };
 
-function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]; me: MeView }) {
-  const { pet, aura } = chefe;
+function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: readonly PetSummary[]; me: MeView }) {
+  const { pet, aura } = summary;
   const name = pet.profile.name;
   const path = usePath();
   const hash = useHash();
@@ -71,7 +69,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
   const [editing, setEditing] = useState(NOT_EDITING);
   const setTabEditing = (key: PetTab, value: boolean) => setEditing((all) => ({ ...all, [key]: value }));
 
-  // Arriving at /chefes/<id>#vacinas (from a push, Próximas Ações or an item) opens the tab that holds it.
+  // Arriving at /pets/<id>#vacinas (from a push, Próximas Ações or an item) opens the tab that holds it.
   useEffect(() => {
     const key = window.location.hash.slice(1);
     const target = tabOfHash(key);
@@ -91,7 +89,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
     <>
       <section className={`hero sunbg ${aura}`}>
         <div className="hero-top">
-          <Faces chefes={chefes} current={pet.id} onDark />
+          <Faces summaries={summaries} current={pet.id} onDark />
           <MeLink me={me} />
         </div>
         <div className="arch">
@@ -100,7 +98,7 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
           ) : (
             <span className="ph">
               <CameraIcon />
-              {strings.chefe.noPortrait}
+              {strings.petPage.noPortrait}
             </span>
           )}
         </div>
@@ -108,7 +106,6 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
           <h1 className="monument" style={{ fontSize: nameSize(name) }}>
             {name}
           </h1>
-          {pet.tags.length > 0 && <p className="meta">{pet.tags.join(' · ')}</p>}
           <p className="meta">{pet.tutorName ? t.tutor(pet.tutorName) : t.tutorPending(pet.tutorEmail)}</p>
         </div>
       </section>
@@ -134,19 +131,19 @@ function PetPage({ chefe, chefes, me }: { chefe: Chefe; chefes: readonly Chefe[]
               <h2>{tabsT[tab]}</h2>
               <EditToggle label={tabsT[tab]} editing={editing[tab]} onToggle={() => setTabEditing(tab, !editing[tab])} />
             </div>
-            {tab === 'prazos' && <PrazosPanel chefe={chefe} editing={editing.prazos} />}
+            {tab === 'prazos' && <PrazosPanel summary={summary} editing={editing.prazos} />}
             {tab === 'saude' && <HealthPanel pet={pet} editing={editing.saude} />}
             {tab === 'peso' && <Weight pet={pet} removable={editing.peso} />}
             {tab === 'perfil' && <ProfilePanel pet={pet} myId={me.id} editing={editing.perfil} onDone={() => setTabEditing('perfil', false)} />}
           </div>
         )}
-        <Summary chefe={chefe} />
+        <Summary summary={summary} />
       </main>
     </>
   );
 }
 
-/** The section a deadline lives in, as a hash of the chefe's page. */
+/** The section a deadline lives in, as a hash of the pet's page. */
 const HASH_OF_DEADLINE: Record<Deadline['kind'], string> = {
   vaccine: 'vacinas',
   parasite: 'antiparasitarios',
@@ -156,14 +153,14 @@ const HASH_OF_DEADLINE: Record<Deadline['kind'], string> = {
 };
 
 function deadlineLabel(d: Deadline): string {
-  if (d.kind === 'return') return strings.chefe.deadline.return(d.name);
-  if (d.kind === 'treatmentEnd') return strings.chefe.deadline.treatmentEnd(d.name);
+  if (d.kind === 'return') return strings.petPage.deadline.return(d.name);
+  if (d.kind === 'treatmentEnd') return strings.petPage.deadline.treatmentEnd(d.name);
   return d.name;
 }
 
-/** Under the name: what the chefe demands (Exige) and what is next (A seguir), from every deadline (docs/spec/navegacao.md). */
-function Summary({ chefe }: { chefe: Chefe }) {
-  const { pet, status, doses, care, plans } = chefe;
+/** Under the name: what the pet demands (Exige) and what is next (A seguir), from every deadline (docs/spec/navegacao.md). */
+function Summary({ summary }: { summary: PetSummary }) {
+  const { pet, status, doses, care, plans } = summary;
   const today = todayLocal();
   const visits = useQuery('visits', {}, ['visits', 'pets']);
   const medications = useQuery('medications', {}, ['medications', 'pets']);
@@ -185,18 +182,18 @@ function Summary({ chefe }: { chefe: Chefe }) {
     <>
       {!nothingDemanded && (
         <div>
-          <p className="lbl">{strings.chefe.requires}</p>
+          <p className="lbl">{strings.petPage.requires}</p>
           {alert && (
-            <Link to={`/chefes/${pet.id}#peso`} className="item">
+            <Link to={`/pets/${pet.id}#peso`} className="item">
               <span>
                 <p>{strings.register.weight}</p>
                 <span className="meta">{t.weight.alert(alert.percent, `${formatKilos(alert.fromGrams)} em ${formatDate(alert.fromDate)}`, `${formatKilos(alert.toGrams)} em ${formatDate(alert.toDate)}`)}</span>
               </span>
-              <span className="when late">{strings.chefe.weightAlert}</span>
+              <span className="when late">{strings.petPage.weightAlert}</span>
             </Link>
           )}
           {demanded.map((d) => (
-            <Link key={`${d.kind}:${d.id}`} to={`/chefes/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
+            <Link key={`${d.kind}:${d.id}`} to={`/pets/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
               <span>
                 <p>{deadlineLabel(d)}</p>
                 <span className="meta">{formatDate(d.due)}</span>
@@ -205,7 +202,7 @@ function Summary({ chefe }: { chefe: Chefe }) {
             </Link>
           ))}
           {status.allergiesMissing && (
-            <Link to={`/chefes/${pet.id}#perfil`} className="item">
+            <Link to={`/pets/${pet.id}#perfil`} className="item">
               <p>{t.allergiesTitle}</p>
               <span className="when">{home.allergiesPill}</span>
             </Link>
@@ -214,12 +211,12 @@ function Summary({ chefe }: { chefe: Chefe }) {
       )}
       {next.length > 0 && (
         <div>
-          <p className="lbl">{strings.chefe.next}</p>
+          <p className="lbl">{strings.petPage.next}</p>
           {next.map((d) => (
-            <Link key={`${d.kind}:${d.id}`} to={`/chefes/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
+            <Link key={`${d.kind}:${d.id}`} to={`/pets/${pet.id}#${HASH_OF_DEADLINE[d.kind]}`} className="item">
               <span>
                 <p>{deadlineLabel(d)}</p>
-                <span className="meta">{d.kind === 'treatmentEnd' ? strings.chefe.endsOn(formatDate(d.due)) : strings.chefe.dueOn(formatDate(d.due))}</span>
+                <span className="meta">{d.kind === 'treatmentEnd' ? strings.petPage.endsOn(formatDate(d.due)) : strings.petPage.dueOn(formatDate(d.due))}</span>
               </span>
               <span className="when ok">{d.kind === 'return' || d.kind === 'treatmentEnd' ? dueLabel(false, days(d)) : strings.care.status.ok}</span>
             </Link>
@@ -238,7 +235,7 @@ function birthText(birthDate: string, estimated: boolean): string {
 
 /** The pencil beside a tab's title: it turns on editing for the whole tab; while editing it turns into a check. */
 function EditToggle({ label, editing, onToggle }: { label: string; editing: boolean; onToggle: () => void }) {
-  const text = editing ? strings.chefe.doneEditing : strings.chefe.editTab(label);
+  const text = editing ? strings.petPage.doneEditing : strings.petPage.editTab(label);
   return (
     <button type="button" className="icon-btn" aria-label={text} title={text} aria-pressed={editing} onClick={onToggle}>
       {editing ? <CheckIcon /> : <PencilIcon />}
@@ -246,7 +243,7 @@ function EditToggle({ label, editing, onToggle }: { label: string; editing: bool
   );
 }
 
-/** Data, allergies, Alimentação and Tutoria. The tab's pencil opens the profile form, the photo, the tags and the retirement. */
+/** Data, allergies, Alimentação and Tutoria. The tab's pencil opens the profile form, the photo and the retirement. */
 function ProfilePanel({ pet, myId, editing, onDone }: { pet: PetView; myId: string; editing: boolean; onDone: () => void }) {
   const missing = missingFields(pet.profile, pet.allergiesAnswered);
 
@@ -261,7 +258,6 @@ function ProfilePanel({ pet, myId, editing, onDone }: { pet: PetView; myId: stri
         {editing ? (
           <>
             <PhotoControls pet={pet} />
-            <Tags pet={pet} />
             <ProfileForm pet={pet} onDone={onDone} />
             <Retire pet={pet} />
           </>
@@ -271,7 +267,7 @@ function ProfilePanel({ pet, myId, editing, onDone }: { pet: PetView; myId: stri
       </div>
       <Food pet={pet} removable={editing} />
       <section id="tutoria" className="stack">
-        <h3>{strings.chefe.sections.tutoria}</h3>
+        <h3>{strings.petPage.sections.tutoria}</h3>
         <Tutoria pet={pet} myId={myId} />
       </section>
     </>
@@ -324,77 +320,6 @@ function PhotoControls({ pet }: { pet: PetView }) {
   );
 }
 
-function Tags({ pet }: { pet: PetView }) {
-  const toast = useToast();
-  const { backend } = useServices();
-  const [draft, setDraft] = useState<string[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  async function save(event: FormEvent) {
-    event.preventDefault();
-    const result = await backend.command('pet.setTags', { petId: pet.id, tags: draft ?? [] });
-    if (result.ok) {
-      toast(strings.toast.tags(pet.profile.name));
-      setDraft(null);
-      setError(null);
-    } else {
-      setError(result.error === 'invalid' ? t.tags.invalid(MAX_TAGS) : strings.genericError);
-    }
-  }
-
-  if (!draft) {
-    return (
-      <>
-        {pet.tags.length === 0 ? (
-          <p className="muted">{t.tags.empty}</p>
-        ) : (
-          <ul className="tags">
-            {pet.tags.map((tag) => (
-              <li key={tag}>{tag}</li>
-            ))}
-          </ul>
-        )}
-        <button type="button" className="secondary" onClick={() => setDraft([...pet.tags])}>
-          {t.tags.edit}
-        </button>
-      </>
-    );
-  }
-
-  const setTag = (index: number, value: string) => setDraft((list) => (list ?? []).map((tag, i) => (i === index ? value : tag)));
-  return (
-    <form className="stack" onSubmit={save}>
-      <h2>{t.tags.title}</h2>
-      {draft.map((tag, index) => (
-        <div key={index} className="row wrap">
-          <input className="grow" aria-label={t.tags.label} maxLength={TAG_MAX} value={tag} onChange={(e) => setTag(index, e.target.value)} />
-          <button type="button" className="secondary danger" onClick={() => setDraft((list) => (list ?? []).filter((_, i) => i !== index))}>
-            {t.tags.remove}
-          </button>
-        </div>
-      ))}
-      {draft.length < MAX_TAGS && (
-        <div>
-          <button type="button" className="secondary" onClick={() => setDraft((list) => [...(list ?? []), ''])}>
-            {t.tags.add}
-          </button>
-        </div>
-      )}
-      {error && (
-        <p className="notice" role="alert">
-          {error}
-        </p>
-      )}
-      <div className="row">
-        <button type="submit">{t.tags.save}</button>
-        <button type="button" className="secondary" onClick={() => setDraft(null)}>
-          {t.tags.cancel}
-        </button>
-      </div>
-    </form>
-  );
-}
-
 function ProfileSummary({ pet }: { pet: PetView }) {
   const { profile } = pet;
   const allergies = !pet.allergiesAnswered
@@ -408,7 +333,7 @@ function ProfileSummary({ pet }: { pet: PetView }) {
     [t.profile.sex, profile.sex ? t.profile.sexOptions[profile.sex] : null],
     [t.profile.neutered, profile.neutered === null ? null : profile.neutered ? t.profile.neuteredOptions.yes : t.profile.neuteredOptions.no],
     [t.profile.microchip, profile.microchip],
-    [strings.chefe.sections.allergies, allergies],
+    [strings.petPage.sections.allergies, allergies],
   ];
   return (
     <>
@@ -640,7 +565,7 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
   );
 }
 
-/** Passes the tutoria for a period; it comes back on its own on the chosen day (docs/spec/chefes.md). */
+/** Passes the tutoria for a period; it comes back on its own on the chosen day (docs/spec/pets.md). */
 function LendTutoria({ pet, candidates, myId }: { pet: PetView; candidates: readonly { id: string; name: string }[]; myId: string }) {
   const { backend } = useServices();
   const [open, setOpen] = useState(false);
@@ -699,7 +624,7 @@ function LendTutoria({ pet, candidates, myId }: { pet: PetView; candidates: read
   );
 }
 
-/** Aposentadoria: the chefe leaves Próximas Ações; the history stays. */
+/** Aposentadoria: the pet leaves Próximas Ações; the history stays. */
 function Retire({ pet }: { pet: PetView }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -762,7 +687,7 @@ function Weight({ pet, removable }: { pet: PetView; removable: boolean }) {
       )}
       {pet.weights.length > 0 && (
         <details className="fold" open={removable || undefined}>
-          <summary>{strings.chefe.history}</summary>
+          <summary>{strings.petPage.history}</summary>
           <ul className="list">
             {[...pet.weights].reverse().map((w) => (
               <li key={w.id} className="card row">

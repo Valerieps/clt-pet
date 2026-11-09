@@ -11,8 +11,7 @@ O que ainda não está pronto.
 
 | Feature | Fase | Spec | Observação |
 | --- | --- | --- | --- |
-| Modo sério: o interruptor por chefe na tela do chefe | 1 | `spec/voz-dos-chefes.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase neutra nos lembretes |
-| Tags novas com frases próprias | 2 | `spec/voz-dos-chefes.md`, "Tags e frases" | As frases ainda são fixas por chefe (`src/domain/voice/phrases.ts`); falta guardar tags e frases criadas por nós no banco e sorteá-las |
+| Modo sério: o interruptor por pet na tela do pet | 1 | `spec/voz-dos-pets.md` | A coluna `serious_mode` e a regra de tom (`src/domain/voice`) já existem; falta o comando, o interruptor e usar a frase neutra nos lembretes |
 | "Desfazer" depois de resolver no card | 3 | `spec/navegacao.md`, "Fora da fase 2" | Depende de o card ganhar um "Feito" |
 | Fases 3 e 4 | 3 e 4 | `SPEC.md` | Cada uma ganha seus arquivos em `spec/` na vez dela |
 
@@ -26,24 +25,28 @@ Nada por enquanto.
 
 - Foto do selo da vacina (`spec/vacinas.md`, "Registro"): o registro já guarda lote, fabricante e
   veterinário; falta anexar a foto.
-- "Atrasada" como "Advertência" na voz do chefe (`spec/vacinas.md`, "Status"): entra com a voz nos
+- "Atrasada" como "Advertência" na voz do pet (`spec/vacinas.md`, "Status"): entra com a voz nos
   lembretes.
 - Anexar PDF ou foto a exames e laudos (`spec/saude.md`, "Em aberto"): hoje o resultado é texto;
   junto com a leitura por foto (fase 4) ou antes, se a Valéria quiser.
 
 ## Revisar as lacunas que o agente decidiu
 
+- [ ] `spec/pets.md` e `spec/navegacao.md`: com "chefe" virando "pet", os endereços `/chefes/...`
+  viraram `/pets/...` (os antigos, de avisos já no celular, abrem a página nova); o aposentado
+  aparece como "{nome} — com a gente de {ano de chegada} a {ano}"; o Exame Admissional termina com
+  "Bem-vindo(a) à família!"; o subtítulo do app fala do carinho e do cuidado com os pets da casa.
 - [ ] Fase 2, `spec/prazos.md`: a data planejada pode ser passada; qualquer registro do item apaga o
   planejamento, mesmo um registro antigo lançado depois; cada item tem "Mudar data"; dá para
-  planejar para vários chefes de uma vez; o planejamento é por item, uma dose por vez.
+  planejar para vários pets de uma vez; o planejamento é por item, uma dose por vez.
 - [ ] Fase 2, `spec/cuidados.md`: os modelos e intervalos de parasitas e higiene por espécie; "Vence
   logo" a um quarto do intervalo (de 1 a 30 dias); só parasitas exigem atenção nas Próximas Ações e geram
   aviso, higiene não; a coleira repelente fica em Cuidados.
 - [ ] Fase 2, `spec/saude.md`: só o nome é obrigatório numa condição; as graves vão para o Cartão de
   Saúde em vermelho e para o pet sitter; consulta pode ter data futura, exame e laudo não; o retorno
   gera aviso como uma vacina; resultado de exame em texto, sem anexo por enquanto.
-- [ ] Fase 2, `spec/chefes.md` e `spec/saude.md`: refeições só com horário obrigatório e sem
-  lembrete; "algo estranho hoje" até 500 letras, só na página do chefe (não nas Próximas Ações).
+- [ ] Fase 2, `spec/pets.md` e `spec/saude.md`: refeições só com horário obrigatório e sem
+  lembrete; "algo estranho hoje" até 500 letras, só na página do pet (não nas Próximas Ações).
 - [ ] Fase 2, `spec/navegacao.md`, as quatro abas: o retorno de uma consulta vence logo 7 dias antes
   e sai do "Exige" quando há uma consulta registrada a partir de 7 dias antes dele; o fim de um
   tratamento entra no "A seguir" nos 7 dias antes do último dia; o "A seguir" mostra os dois próximos
@@ -56,8 +59,8 @@ Nada por enquanto.
 - [ ] Fase 2, `spec/manual-temporario.md`: qualquer funcionário cria o link; prazo de 1 a 90 dias
   (7 por padrão); a página mostra só o nome dos tutores (sem telefone nem e-mail) e só lê; o token
   fica guardado para copiar o link de novo (ADR-010).
-- [ ] Fase 2, `spec/chefes.md`: tutoria emprestada a partir de amanhã, volta sozinha no dia;
-  aposentar fica no editar perfil; o ano de chegada é o ano em que o chefe entrou no app; o Exame
+- [ ] Fase 2, `spec/pets.md`: tutoria emprestada a partir de amanhã, volta sozinha no dia;
+  aposentar fica no editar perfil; o ano de chegada é o ano em que o pet entrou no app; o Exame
   Admissional pede só nome e espécie e quem cadastra vira o tutor.
 - [ ] Fase 2, `spec/navegacao.md`: "Lembrar amanhã" vale só no aparelho e até o fim do dia; o aviso
   abre a aba do item.
@@ -67,24 +70,24 @@ Nada por enquanto.
   sugestão.
 
 - [ ] `spec/lembretes.md`: o aviso chega às 9h, no fuso de Brasília.
-- [ ] `spec/chefes.md`: só nome e espécie são obrigatórios no cadastro; os tutores são ligados pelos
+- [ ] `spec/pets.md`: só nome e espécie são obrigatórios no cadastro; os tutores são ligados pelos
   e-mails `souza.pereira.valeria@gmail.com` e `csrgamboa@gmail.com`.
 - [ ] `spec/proximas-acoes.md`: "Exige atenção" quando há vacina atrasada ou a vencer em 30 dias, ou alergia em
-  branco; os dois funcionários veem os próprios chefes primeiro; o formulário do nome e o aviso no
+  branco; os dois funcionários veem os próprios pets primeiro; o formulário do nome e o aviso no
   celular ficam nas Configurações.
 - [ ] `spec/proximas-acoes.md` (troca do Mural): uma linha de Pendência por item, cada vacina e cada
   parasita pendentes à parte; a ordem atrasado, depois peso e alergia, depois o que vence; "Lembrar
-  amanhã" tira todas as linhas do chefe; Feito hoje mostra só quem fez o último registro, não o quê;
-  os chefes sem tutor no app ficam num card próprio; a linha do card mostra peso, próximo prazo e
+  amanhã" tira todas as linhas do pet; Feito hoje mostra só quem fez o último registro, não o quê;
+  os pets sem tutor no app ficam num card próprio; a linha do card mostra peso, próximo prazo e
   último registro.
 - [ ] `spec/navegacao.md`: as três auras (Berenice, Panda, Paçoca no desenho) são dadas na ordem em
-  que os chefes aparecem, não pelas tags; o modo escuro continua, com as auras iguais; os formulários
+  que os pets aparecem; o modo escuro continua, com as auras iguais; os formulários
   de vacina e peso ficam dentro da gaveta de Registrar (decidido pela Valéria).
 - [ ] `spec/vacinas.md`: só a vacina e a data são obrigatórias no registro.
 - [ ] `spec/acesso-e-membros.md`: eu e o Cesar somos os dois admins.
-- [ ] `spec/chefes.md`: o peso aceita de 100 g a 150 kg, nunca com data futura (no horário de
+- [ ] `spec/pets.md`: o peso aceita de 100 g a 150 kg, nunca com data futura (no horário de
   Brasília); o aviso de variação compara o peso mais recente com os dos 60 dias anteriores e o
-  limite vai de 1% a 50% por chefe; as alergias contam como preenchidas depois do primeiro
+  limite vai de 1% a 50% por pet; as alergias contam como preenchidas depois do primeiro
   salvamento do perfil; qualquer funcionário pode apagar um registro de peso.
-- [ ] `spec/chefes.md`: a foto é encolhida pelo app (640 px) e guardada no próprio banco do grupo
-  (ADR-009); as tags têm no máximo 6 por chefe e 40 letras cada.
+- [ ] `spec/pets.md`: a foto é encolhida pelo app (640 px) e guardada no próprio banco do grupo
+  (ADR-009).

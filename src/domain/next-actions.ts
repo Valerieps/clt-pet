@@ -1,5 +1,5 @@
-// Próximas Ações, the home screen (docs/spec/proximas-acoes.md): each chefe's status, the pending
-// actions of every chefe, what was done today and the chefes grouped by tutor.
+// Próximas Ações, the home screen (docs/spec/proximas-acoes.md): each pet's status, the pending
+// actions of every pet, what was done today and the pets grouped by tutor.
 // Pure: the caller passes today's date and the records.
 import { type CareRecord } from './care/care';
 import { careOccurrences, currentPrazos, doseOccurrences, type Plan } from './prazos';
@@ -18,11 +18,11 @@ export interface PrazoSummary {
   readonly days: number;
 }
 
-export interface ChefeStatus {
+export interface PetStatus {
   /** "Exige atenção" when a vaccine or parasite is late or due soon, the allergies are blank or the weight alert fired. */
   readonly needsAttention: boolean;
   readonly allergiesMissing: boolean;
-  /** The weight alert (docs/spec/chefes.md): the percent the newest weight moved, or null. */
+  /** The weight alert (docs/spec/pets.md): the percent the newest weight moved, or null. */
   readonly weightChange: { readonly percent: number } | null;
   /** The most urgent pending vaccine or parasite care: the one whose due date is earliest. */
   readonly vaccine: PrazoSummary | null;
@@ -34,17 +34,17 @@ export interface ChefeStatus {
 
 /**
  * `parasites` are the parasite care records (docs/spec/cuidados.md): late or due soon, they demand
- * attention like a vaccine. Hygiene stays on the chefe's page only. `plans` are the chefe's planned
+ * attention like a vaccine. Hygiene stays on the pet's page only. `plans` are the pet's planned
  * prazos (docs/spec/prazos.md): a planned vaccine or parasite counts even before its first record.
  */
-export function chefeStatus(
+export function petStatus(
   pet: StatusPet,
   doses: readonly Dose[],
   today: string,
   weightAlertPercent: number | null = null,
   parasites: readonly CareRecord[] = [],
   plans: readonly Plan[] = [],
-): ChefeStatus {
+): PetStatus {
   const withIds = <T>(list: readonly T[]) => list.map((x, i) => ({ ...x, id: String(i) }));
   const all = [
     ...currentPrazos('vaccine', doseOccurrences(withIds(doses)), plans, today).map((p) => ({ item: `Vacina ${p.item}`, state: p.state, due: p.due })),
@@ -76,11 +76,11 @@ function rank(action: PendingAction): number {
 }
 
 /**
- * The Pendências (docs/spec/proximas-acoes.md): one line per thing to do, of every chefe together.
- * Chefes in `snoozed` ("Lembrar amanhã") are left out. Ties keep the chefes' order.
+ * The Pendências (docs/spec/proximas-acoes.md): one line per thing to do, of every pet together.
+ * Pets in `snoozed` ("Lembrar amanhã") are left out. Ties keep the pets' order.
  */
-export function pendingActions(chefes: readonly { readonly petId: string; readonly status: ChefeStatus }[], snoozed: ReadonlySet<string> = new Set()): PendingAction[] {
-  const actions = chefes
+export function pendingActions(summaries: readonly { readonly petId: string; readonly status: PetStatus }[], snoozed: ReadonlySet<string> = new Set()): PendingAction[] {
+  const actions = summaries
     .filter((c) => !snoozed.has(c.petId))
     .flatMap(({ petId, status }): PendingAction[] => [
       ...status.pending.map((prazo) => ({ petId, kind: 'prazo' as const, prazo })),
@@ -90,11 +90,11 @@ export function pendingActions(chefes: readonly { readonly petId: string; readon
   return actions.map((a, i) => ({ a, i })).sort((x, y) => rank(x.a) - rank(y.a) || x.i - y.i).map(({ a }) => a);
 }
 
-/** "Lembrar amanhã": a chefe snoozed on `snoozedOn` leaves the Pendências for the rest of that day only. */
+/** "Lembrar amanhã": a pet snoozed on `snoozedOn` leaves the Pendências for the rest of that day only. */
 export const isSnoozed = (snoozedOn: string | null, today: string): boolean => snoozedOn === today;
 
 export interface TutorGroup<T> {
-  /** Null for the chefes without a tutor in the app. */
+  /** Null for the pets without a tutor in the app. */
   readonly memberId: string | null;
   readonly name: string | null;
   readonly pets: readonly T[];
@@ -102,7 +102,7 @@ export interface TutorGroup<T> {
 
 /**
  * One card per tutor (docs/spec/proximas-acoes.md): the member's own card first, the others in the
- * order their first chefe appears, and the chefes without a tutor in the app last.
+ * order their first pet appears, and the pets without a tutor in the app last.
  */
 export function tutorGroups<T extends { readonly tutorMemberId: string | null; readonly tutorName: string | null }>(pets: readonly T[], memberId: string): TutorGroup<T>[] {
   const groups = new Map<string | null, { memberId: string | null; name: string | null; pets: T[] }>();
@@ -121,7 +121,7 @@ const firstName = (name: string): string => name.trim().split(/\s+/)[0] || name;
 
 /**
  * Feito hoje (docs/spec/proximas-acoes.md): the first name of whoever registered something for the
- * chefe today, or null. `at` is when it was saved (ISO); `localDay` turns it into the device's
+ * pet today, or null. `at` is when it was saved (ISO); `localDay` turns it into the device's
  * YYYY-MM-DD, so "today" ends at the tutor's midnight.
  */
 export function doneToday(last: { readonly byName: string; readonly at: string } | null, today: string, localDay: (at: Date) => string): string | null {

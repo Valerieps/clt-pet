@@ -1,6 +1,6 @@
 # CLT Pet - Claude Code Context & Instructions
 
-CLT Pet (Consolidação das Leis do Tutor) is a private PWA for one couple, Valéria and Cesar, to manage the health and routine of their three pets, with humor as the engagement: each pet "talks" to its tutors in its own voice. The loop each of them repeats: open the Mural da Chefia, see which pet needs attention (vaccines, weight), register what was done, and answer the push reminders. Phase 1 is profile, weight, SOS card, vaccines, push reminders and the Mural; see `docs/SPEC.md`.
+CLT Pet (Consolidação das Leis do Tutor) is a private PWA for one couple, Valéria and Cesar, to take care of their three pets. The identity is the tutors' affection for their pets: every record is an act of care, and the app helps them remember everything the pets need, without nagging. The loop each of them repeats: open Próximas Ações, see which pet needs attention (vaccines, weight), register what was done, and answer the push reminders, which may carry a phrase in the pet's own voice. Phase 1 is profile, weight, SOS card, vaccines, push reminders and Próximas Ações; see `docs/SPEC.md`.
 
 ## Docs
 

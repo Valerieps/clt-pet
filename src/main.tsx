@@ -5,8 +5,11 @@ import { liveSocket } from './infrastructure/live-socket';
 import { pushDevice } from './infrastructure/push-device';
 import { App } from './ui/App';
 import { ServicesProvider } from './ui/backend-context';
+import { upgradeOldAddress } from './ui/router';
 import './ui/theme/tokens.css';
 import './ui/theme/global.css';
+
+upgradeOldAddress();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

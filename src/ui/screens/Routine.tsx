@@ -1,11 +1,11 @@
-// Alimentação (in the Perfil tab) and "algo estranho hoje" (in the Saúde tab): docs/spec/chefes.md and docs/spec/saude.md.
+// Alimentação (in the Perfil tab) and "algo estranho hoje" (in the Saúde tab): docs/spec/pets.md and docs/spec/saude.md.
 import { useState, type FormEvent } from 'react';
 import type { DiaryEntryView, PetView } from '../../application/api-contract';
 import { formatDate, TEXT_MAX } from '../../domain/pets/pet';
 import { DIARY_MAX } from '../../domain/routine/routine';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
-import { todayLocal } from '../chefia';
+import { todayLocal } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
@@ -45,7 +45,7 @@ export function Food({ pet, removable }: { pet: PetView; removable: boolean }) {
 
   return (
     <section id="alimentacao" className="stack">
-      <h3>{strings.chefe.sections.food}</h3>
+      <h3>{strings.petPage.sections.food}</h3>
       <p>
         {t.food}: {food ?? strings.pets.profile.notInformed}
       </p>
@@ -156,7 +156,7 @@ export function Diary({ pet, removable }: { pet: PetView; removable: boolean }) 
 
   return (
     <section id="diario" className="stack">
-      <h3>{strings.chefe.sections.diary}</h3>
+      <h3>{strings.petPage.sections.diary}</h3>
       {entries.length === 0 && <p className="muted">{t.diaryEmpty}</p>}
       <ul className="list">{entries.slice(0, DIARY_SHOWN).map(card)}</ul>
       {older.length > 0 && (

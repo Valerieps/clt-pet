@@ -6,7 +6,7 @@ import { NOTES_MAX, VISIT_KINDS, type VisitKind } from '../../domain/health/heal
 import { formatDate, TEXT_MAX } from '../../domain/pets/pet';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
-import { todayLocal } from '../chefia';
+import { todayLocal } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
@@ -58,7 +58,7 @@ function Conditions({ pet, removable }: { pet: PetView; removable: boolean }) {
 
   return (
     <section id="condicoes" className="stack">
-      <h3>{strings.chefe.sections.conditions}</h3>
+      <h3>{strings.petPage.sections.conditions}</h3>
       {mine.length === 0 && <p className="muted">{t.conditionsEmpty}</p>}
       <ul className="list">
         {active.map((c) => (
@@ -203,13 +203,13 @@ function Visits({ pet, removable }: { pet: PetView; removable: boolean }) {
 
   return (
     <section id="consultas" className="stack">
-      <h3>{strings.chefe.sections.visits}</h3>
+      <h3>{strings.petPage.sections.visits}</h3>
       {mine.length === 0 && <p className="muted">{t.visitsEmpty}</p>}
       <ul className="list">{current.map(card)}</ul>
       <ErrorLine error={error} />
       {mine.length > 0 && (
         <details className="fold" open={removable || undefined}>
-          <summary>{strings.chefe.history}</summary>
+          <summary>{strings.petPage.history}</summary>
           <ul className="list">{[...mine].reverse().map(card)}</ul>
         </details>
       )}

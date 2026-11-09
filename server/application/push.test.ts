@@ -92,7 +92,7 @@ describe('tick reminders', () => {
     subscribe('h-ces', 'https://updates.push.services.mozilla.com/cesar');
   });
 
-  it('tells the responsável 7 days ahead, in the chefe’s voice with the item and the days', () => {
+  it('tells the responsável 7 days ahead, in the pet’s voice with the item and the days', () => {
     items = [{ petId: 'pet-pacoca', item: 'Vacina V10', dueOn: '2026-11-11', tab: 'vacinas' }];
     const { pushes } = service.tick();
     expect(pushes).toHaveLength(1);

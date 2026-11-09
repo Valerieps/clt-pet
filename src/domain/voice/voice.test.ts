@@ -25,7 +25,7 @@ describe('toneFor', () => {
 });
 
 describe('base library', () => {
-  it('has a phrase for every chefe and every event', () => {
+  it('has a phrase for every pet and every event', () => {
     for (const set of Object.values(BASE_PHRASES)) {
       for (const event of VOICE_EVENTS) expect(set[event].length).toBeGreaterThan(0);
     }
@@ -46,7 +46,7 @@ describe('base library', () => {
     for (const phrase of mural) expect(phrase).not.toContain('{funcionario}');
   });
 
-  it('gives every chefe more than one phrase for the reminder events', () => {
+  it('gives every pet more than one phrase for the reminder events', () => {
     for (const set of Object.values(BASE_PHRASES)) {
       for (const event of ['dueSoon', 'overdue', 'allGood'] as const) expect(set[event].length).toBeGreaterThan(1);
     }
@@ -62,14 +62,14 @@ describe('fillPhrase', () => {
 });
 
 describe('pickTemplate', () => {
-  it('draws from the chefe, and from the neutral set when serious', () => {
+  it('draws from the pet, and from the neutral set when serious', () => {
     const humor = pickTemplate({ petId: 'pet-panda', event: 'allGood', tone: 'humor', random: () => 0 });
     expect(humor).toBe(BASE_PHRASES['pet-panda'].allGood[0]);
     const serious = pickTemplate({ petId: 'pet-panda', event: 'allGood', tone: 'neutral', random: () => 0 });
     expect(serious).toBe(NEUTRAL_PHRASES.allGood[0]);
   });
 
-  it('falls back to the neutral phrase for a chefe with no phrases', () => {
+  it('falls back to the neutral phrase for a pet with no phrases', () => {
     expect(pickTemplate({ petId: 'novo', event: 'overdue', tone: 'humor', random: () => 0.9 })).toBe(NEUTRAL_PHRASES.overdue[0]);
   });
 

@@ -15,7 +15,7 @@ beforeEach(() => {
 const list = (): VaccinationView[] => (service.query('h-v', 'vaccinations', {}) as { value: VaccinationView[] }).value;
 
 describe('vaccine.add', () => {
-  it('registers one dose for several chefes at once', () => {
+  it('registers one dose for several pets at once', () => {
     const result = service.command('h-v', 'vaccine.add', {
       petIds: ['pet-berenice', 'pet-panda'],
       vaccine: 'V4',
@@ -34,7 +34,7 @@ describe('vaccine.add', () => {
     expect(list()[0].intervalDays).toBe(180);
   });
 
-  it('saves nothing when a chefe does not exist or the input is invalid', () => {
+  it('saves nothing when a pet does not exist or the input is invalid', () => {
     const base = { vaccine: 'V4', appliedOn: '2026-10-01' };
     expect(service.command('h-v', 'vaccine.add', { ...base, petIds: ['pet-panda', 'nope'] })).toEqual({ ok: false, error: 'not_found' });
     expect(service.command('h-v', 'vaccine.add', { ...base, petIds: [] })).toEqual({ ok: false, error: 'invalid' });

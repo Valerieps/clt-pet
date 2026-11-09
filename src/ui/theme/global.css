@@ -30,7 +30,7 @@ body {
   padding: var(--space-6) var(--space-4);
 }
 
-/* A plain page (settings and its sub-pages, the chefe list): white sheet under a small header. */
+/* A plain page (settings and its sub-pages, the pet list): white sheet under a small header. */
 .page-header {
   display: flex;
   flex-direction: column;
@@ -124,7 +124,7 @@ a:hover {
   vertical-align: 1px;
 }
 
-/* ---------- Auras: each chefe's background and sunlight ---------- */
+/* ---------- Auras: each pet's background and sunlight ---------- */
 
 :root,
 .aura-ber {
@@ -188,7 +188,7 @@ a:hover {
   font-size: 18px;
 }
 
-/* A chefe's photo fills its round face (the faces row and the home screen).
+/* A pet's photo fills its round face (the faces row and the home screen).
    Absolute fill: in an auto-sized grid, height: 100% fell back to the photo's own
    ratio and a portrait photo came out oval. The crop sits a little above the
    center, where a pet's face usually is. */
@@ -276,7 +276,7 @@ a:hover {
 
 /* ---------- Próximas Ações, the home screen ---------- */
 
-/* The same row as the top of a chefe's page: the faces on the left, the member's face on the right. */
+/* The same row as the top of a pet's page: the faces on the left, the member's face on the right. */
 .home-header {
   display: flex;
   align-items: flex-start;
@@ -408,7 +408,7 @@ a:hover {
   stroke-linejoin: round;
 }
 
-/* One card per tutor: a line per chefe, the whole line a link to the chefe's page. */
+/* One card per tutor: a line per pet, the whole line a link to the pet's page. */
 .home-card {
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-border);
@@ -420,7 +420,7 @@ a:hover {
   border-top: 1px solid var(--color-border);
 }
 
-.home-chefe {
+.home-pet {
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -452,7 +452,7 @@ a:hover {
   flex-wrap: wrap;
 }
 
-/* ---------- A chefe's page: the portrait in an arch, the name in lettering ---------- */
+/* ---------- A pet's page: the portrait in an arch, the name in lettering ---------- */
 
 .hero {
   position: relative;
@@ -1330,22 +1330,6 @@ label:has(> input[type='checkbox'], > input[type='radio']) {
 .chart text {
   fill: var(--color-text-muted);
   font-size: 12px;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin: 0 0 var(--space-3);
-  padding: 0;
-  list-style: none;
-}
-
-.tags li {
-  padding: 0 var(--space-3);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-pill);
-  font-size: 0.85rem;
 }
 
 [data-status='overdue'] {

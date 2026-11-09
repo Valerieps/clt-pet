@@ -16,7 +16,7 @@ export interface SitterLinkInput {
   readonly expiresOn: string;
 }
 
-/** The label and at least one chefe are required; the link lasts 1 to 90 days, counting today. Null when invalid. */
+/** The label and at least one pet are required; the link lasts 1 to 90 days, counting today. Null when invalid. */
 export function normalizeSitterLink(raw: Record<string, unknown>, today: string): SitterLinkInput | null {
   if (typeof raw.label !== 'string') return null;
   const label = raw.label.trim();

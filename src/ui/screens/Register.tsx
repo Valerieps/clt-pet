@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { dueLabel } from '../../domain/navigation';
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
-import { useChefia } from '../chefia';
+import { usePets } from '../use-pets';
 import { ChevronLeftIcon, CloseIcon, Layer, useEscape } from '../parts';
 import { REGISTER_OPTIONS, stepOfHash, type RegisterStep } from '../register-options';
 import { goBack } from '../router';
@@ -18,16 +18,16 @@ const t = strings.register;
  * the fallback for a link without a form, and lists the same options as the +.
  */
 export function RegisterDrawer({ petId }: { petId: string }) {
-  const { chefes } = useChefia();
+  const { summaries } = usePets();
   const [step, setStep] = useState<RegisterStep | null>(() => stepOfHash(window.location.hash));
-  const chefe = chefes.find((c) => c.pet.id === petId);
-  const close = () => goBack(`/chefes/${petId}`);
+  const summary = summaries.find((c) => c.pet.id === petId);
+  const close = () => goBack(`/pets/${petId}`);
   useEscape(close);
-  if (!chefe) return null;
+  if (!summary) return null;
 
-  const { pet, status } = chefe;
+  const { pet, status } = summary;
   const latest = latestWeight(pet.weights);
-  const allPets = chefes.map((c) => c.pet);
+  const allPets = summaries.map((c) => c.pet);
   const option = REGISTER_OPTIONS.find((o) => o.step === step);
   const meta: Partial<Record<RegisterStep, string>> = {
     vaccine: status.vaccine ? `${status.vaccine.item} · ${dueLabel(status.vaccine.overdue, status.vaccine.days)}` : '',

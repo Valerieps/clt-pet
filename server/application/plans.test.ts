@@ -25,7 +25,7 @@ const plan = (input: Record<string, unknown>) =>
   service.command('h-v', 'plan.add', { petIds: ['pet-pacoca'], kind: 'parasite', item: 'Vermífugo', dueOn: '2026-12-01', intervalDays: 90, ...input });
 
 describe('plans', () => {
-  it('plans an item that never happened, for several chefes, and reminds it', () => {
+  it('plans an item that never happened, for several pets, and reminds it', () => {
     expect(plan({ petIds: ['pet-pacoca', 'pet-panda'] })).toMatchObject({ ok: true, changed: ['plans'] });
     expect(plans().map((p) => [p.petId, p.kind, p.item, p.dueOn, p.intervalDays, p.byName])).toEqual([
       ['pet-pacoca', 'parasite', 'Vermífugo', '2026-12-01', 90, 'Valéria'],
@@ -61,7 +61,7 @@ describe('plans', () => {
     expect(plans()).toEqual([]);
   });
 
-  it('keeps a plan of another chefe or another kind', () => {
+  it('keeps a plan of another pet or another kind', () => {
     plan({ petIds: ['pet-panda'] });
     service.command('h-v', 'care.add', { petIds: ['pet-pacoca'], category: 'parasite', item: 'Vermífugo', doneOn: '2026-11-04', intervalDays: 90 });
     expect(plans().map((p) => p.petId)).toEqual(['pet-panda']);
@@ -74,7 +74,7 @@ describe('plans', () => {
     expect(service.command('h-v', 'plan.remove', { planId: 'nope' })).toEqual({ ok: false, error: 'not_found' });
   });
 
-  it('saves nothing for an unknown chefe or invalid input', () => {
+  it('saves nothing for an unknown pet or invalid input', () => {
     expect(plan({ petIds: ['pet-pacoca', 'nope'] })).toEqual({ ok: false, error: 'not_found' });
     expect(plan({ petIds: [] })).toEqual({ ok: false, error: 'invalid' });
     expect(plan({ kind: 'diet' })).toEqual({ ok: false, error: 'invalid' });
@@ -83,7 +83,7 @@ describe('plans', () => {
     expect(plans()).toEqual([]);
   });
 
-  it('hides the plans of a retired chefe', () => {
+  it('hides the plans of a retired pet', () => {
     plan({});
     service.command('h-v', 'pet.retire', { petId: 'pet-pacoca' });
     expect(plans()).toEqual([]);

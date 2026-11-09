@@ -8,7 +8,7 @@ import { sameItem } from '../../domain/prazos';
 import { strings } from '../../domain/strings';
 import { MAX_INTERVAL_DAYS } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
-import { todayLocal } from '../chefia';
+import { todayLocal } from '../use-pets';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
 
@@ -24,7 +24,7 @@ export function CareForm({ category, pet, allPets, onSaved }: { category: CareCa
   const [doneOn, setDoneOn] = useState(today);
   const [interval, setInterval] = useState('30');
   const [note, setNote] = useState('');
-  // Only chefes of the same species share the templates; any chefe may still be added.
+  // Only pets of the same species share the templates; any pet may still be added.
   const [together, setTogether] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const others = allPets.filter((p) => p.id !== pet.id);

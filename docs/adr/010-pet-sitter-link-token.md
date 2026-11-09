@@ -9,7 +9,7 @@ is, not hashed, so members can copy the link again later. The Worker serves
 `GET /api/temporario/<token>` and `GET /api/temporario/<token>/foto/<petId>` without a session and
 without the `Origin` check; the `Group` answers only while the link is not revoked and
 `expires_on` (Brasília date) has not passed, and returns only `SitterManualView`: names, species,
-tags, photo, microchip, allergies, grave active conditions, food and meals, emergency contacts and
+photo, microchip, allergies, grave active conditions, food and meals, emergency contacts and
 the tutors' names. Responses carry `Cache-Control: no-store` and `X-Robots-Tag: noindex`.
 **Why:** the sitter is not a member and has no Google invite (spec: "sem login"). A capability link
 is the only practical credential. Keeping the token readable lets the owners re-share the same link

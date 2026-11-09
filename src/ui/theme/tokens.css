@@ -1,8 +1,8 @@
 /*
  * Design tokens: every color, font and spacing value used by the UI lives here.
  * Change the look of the app by editing this file only. The dark theme, below, redefines every color.
- * "Trabalho nas palavras, animal na imagem": a neutral, cool ground; each chefe has an aura
- * (background + sunlight); the monumental lettering is only for the chefes.
+ * "Trabalho nas palavras, animal na imagem": a neutral, cool ground; each pet has an aura
+ * (background + sunlight); the monumental lettering is only for the pets.
  */
 @font-face {
   font-family: 'Anton';
@@ -64,7 +64,7 @@
   --radius-card: 24px;
   --radius-pill: 999px;
 
-  /* the auras never change with the theme: they are the chefes' own colors */
+  /* the auras never change with the theme: they are the pets' own colors */
   --aura-ber: #262145;
   --aura-pan: #141c28;
   --aura-pac: #6b3f1a;

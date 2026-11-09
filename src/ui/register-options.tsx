@@ -8,7 +8,7 @@ export type RegisterStep = 'vaccine' | 'weight' | 'parasite' | 'hygiene' | 'visi
 
 export interface RegisterOption {
   readonly step: RegisterStep;
-  /** The drawer's hash: /chefes/<id>/registrar#<hash>. */
+  /** The drawer's hash: /pets/<id>/registrar#<hash>. */
   readonly hash: string;
   readonly label: string;
   readonly icon: ReactNode;

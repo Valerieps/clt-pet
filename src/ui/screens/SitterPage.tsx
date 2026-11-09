@@ -77,7 +77,6 @@ function PetCard({ token, pet }: { token: string; pet: SitterPetView }) {
           <h2 style={{ margin: 0 }}>{pet.name}</h2>
           <p className="meta">
             {strings.pets.species[pet.species]}
-            {pet.tags.length > 0 && ` · ${pet.tags.join(' · ')}`}
           </p>
           {pet.microchip && (
             <p className="meta">

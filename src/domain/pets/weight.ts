@@ -1,4 +1,4 @@
-// A chefe's weight (docs/spec/chefes.md, "Peso"). Weights are whole grams.
+// A pet's weight (docs/spec/pets.md, "Peso"). Weights are whole grams.
 import { isIsoDate } from './pet';
 
 export const MIN_GRAMS = 100;
@@ -15,7 +15,7 @@ export interface WeightPoint {
 }
 
 export interface WeightAlert {
-  /** Signed: negative means the chefe lost weight. */
+  /** Signed: negative means the pet lost weight. */
   readonly percent: number;
   readonly fromGrams: number;
   readonly fromDate: string;

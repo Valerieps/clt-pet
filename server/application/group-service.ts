@@ -44,7 +44,6 @@ import {
   returnTutorias,
   setEmergency,
   setPhoto,
-  setTags,
   setTutor,
   updatePet,
 } from './pets';
@@ -94,7 +93,6 @@ const COMMANDS: { [N in CommandName]: Handler<CommandResult<Commands[N]['output'
   'pet.retire': retirePet,
   'pet.lendTutoria': lendTutoria,
   'pet.setPhoto': setPhoto,
-  'pet.setTags': setTags,
   'push.subscribe': subscribe,
   'push.unsubscribe': unsubscribe,
   'weight.add': addWeight,
@@ -162,7 +160,7 @@ export class GroupService {
     return value === null ? failure('forbidden') : { ok: true, value };
   }
 
-  /** A chefe's photo (base64 JPEG) for a signed-in member; null when there is none. */
+  /** A pet's photo (base64 JPEG) for a signed-in member; null when there is none. */
   photo(sessionHash: string, petId: string): string | null {
     return this.memberForSession(sessionHash) ? photoOf(this.ctx, petId) : null;
   }

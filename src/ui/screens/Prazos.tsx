@@ -9,12 +9,12 @@ import { careOccurrences, currentPrazos, doseOccurrences, type Prazo, type Prazo
 import { strings } from '../../domain/strings';
 import { DEFAULT_INTERVAL_DAYS, MAX_INTERVAL_DAYS, PROTOCOLS } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
-import { todayLocal, type Chefe } from '../chefia';
+import { todayLocal, type PetSummary } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
 
-const s = strings.chefe.sections;
+const s = strings.petPage.sections;
 const status = strings.care.status;
 const t = strings.prazos;
 
@@ -24,13 +24,13 @@ const SECTIONS: readonly { id: string; kind: PrazoKind; title: string }[] = [
   { id: 'higiene', kind: 'hygiene', title: s.hygiene },
 ];
 
-export function PrazosPanel({ chefe, editing }: { chefe: Chefe; editing: boolean }) {
+export function PrazosPanel({ summary, editing }: { summary: PetSummary; editing: boolean }) {
   return (
     <>
       {SECTIONS.map((section) => (
-        <PrazoSection key={section.kind} {...section} chefe={chefe} editing={editing} />
+        <PrazoSection key={section.kind} {...section} summary={summary} editing={editing} />
       ))}
-      <PrazosHistory chefe={chefe} editing={editing} />
+      <PrazosHistory summary={summary} editing={editing} />
     </>
   );
 }
@@ -42,15 +42,15 @@ interface Draft {
   readonly intervalDays: number;
 }
 
-function PrazoSection({ id, kind, title, chefe, editing }: { id: string; kind: PrazoKind; title: string; chefe: Chefe; editing: boolean }) {
+function PrazoSection({ id, kind, title, summary, editing }: { id: string; kind: PrazoKind; title: string; summary: PetSummary; editing: boolean }) {
   const today = todayLocal();
   const confirm = useConfirm();
   const { backend } = useServices();
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
   const occurrences =
-    kind === 'vaccine' ? doseOccurrences(chefe.doses) : careOccurrences(chefe.care.filter((c) => c.category === kind));
-  const prazos = currentPrazos(kind, occurrences, chefe.plans, today).sort((a, b) => a.due.localeCompare(b.due));
+    kind === 'vaccine' ? doseOccurrences(summary.doses) : careOccurrences(summary.care.filter((c) => c.category === kind));
+  const prazos = currentPrazos(kind, occurrences, summary.plans, today).sort((a, b) => a.due.localeCompare(b.due));
 
   async function removePlan(planId: string) {
     if (!(await confirm(t.removePlanConfirm))) return;
@@ -90,7 +90,7 @@ function PrazoSection({ id, kind, title, chefe, editing }: { id: string; kind: P
         </p>
       )}
       {draft ? (
-        <PlanForm key={draft.item} kind={kind} pet={chefe.pet} draft={draft} onDone={() => setDraft(null)} />
+        <PlanForm key={draft.item} kind={kind} pet={summary.pet} draft={draft} onDone={() => setDraft(null)} />
       ) : (
         <div>
           <button type="button" onClick={() => setDraft({ item: '', dueOn: today, intervalDays: kind === 'vaccine' ? DEFAULT_INTERVAL_DAYS : 30 })}>
@@ -210,20 +210,20 @@ interface HistoryRow {
 }
 
 /** Every vaccine dose and care record, newest first, folded and small; the remove buttons show only while editing. */
-function PrazosHistory({ chefe, editing }: { chefe: Chefe; editing: boolean }) {
+function PrazosHistory({ summary, editing }: { summary: PetSummary; editing: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const [error, setError] = useState<string | null>(null);
   const v = strings.vaccines;
   const rows: HistoryRow[] = [
-    ...chefe.doses.map((d): HistoryRow => ({
+    ...summary.doses.map((d): HistoryRow => ({
       id: d.id,
       kind: 'vaccine',
       name: d.vaccine,
       on: d.appliedOn,
       detail: [d.lot && `lote ${d.lot}`, d.maker, d.vet, v.by(d.byName)].filter(Boolean).join(' · '),
     })),
-    ...chefe.care.map((c): HistoryRow => ({ id: c.id, kind: 'care', name: c.item, on: c.doneOn, detail: [c.note, strings.care.by(c.byName)].filter(Boolean).join(' · ') })),
+    ...summary.care.map((c): HistoryRow => ({ id: c.id, kind: 'care', name: c.item, on: c.doneOn, detail: [c.note, strings.care.by(c.byName)].filter(Boolean).join(' · ') })),
   ].sort((a, b) => b.on.localeCompare(a.on));
   if (rows.length === 0) return null;
 
@@ -236,7 +236,7 @@ function PrazosHistory({ chefe, editing }: { chefe: Chefe; editing: boolean }) {
 
   return (
     <details className="fold meta" open={editing || undefined}>
-      <summary>{strings.chefe.history}</summary>
+      <summary>{strings.petPage.history}</summary>
       {error && (
         <p className="notice" role="alert">
           {error}

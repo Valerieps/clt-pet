@@ -1,4 +1,4 @@
-// A chefe's emergency contacts and health plan (docs/spec/cartao-sos.md). All optional.
+// A pet's emergency contacts and health plan (docs/spec/cartao-sos.md). All optional.
 export interface Emergency {
   readonly vetName: string | null;
   readonly vetPhone: string | null;

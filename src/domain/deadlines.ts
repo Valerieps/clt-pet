@@ -1,4 +1,4 @@
-// What has a deadline on a chefe's page (docs/spec/navegacao.md, "Exige" and "A seguir"): vaccines,
+// What has a deadline on a pet's page (docs/spec/navegacao.md, "Exige" and "A seguir"): vaccines,
 // parasites, hygiene, the return of a consulta and the end of a treatment. Pure: the UI passes the records.
 import { type CareCategory, type CareRecord } from './care/care';
 import { careOccurrences, currentPrazos, doseOccurrences, type Plan } from './prazos';
@@ -52,7 +52,7 @@ export function returnStatus(returnOn: string, today: string): VaccineStatus {
 }
 
 /**
- * The returns still open: a return is kept by a consulta registered for the same chefe from 7 days before
+ * The returns still open: a return is kept by a consulta registered for the same pet from 7 days before
  * it on. Without that consulta it stays, overdue, until someone registers it or deletes the visit.
  */
 export function openReturns<T extends DeadlineVisit>(visits: readonly T[]): T[] {

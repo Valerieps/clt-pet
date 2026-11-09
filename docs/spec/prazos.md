@@ -7,7 +7,7 @@ antes de ele ter acontecido alguma vez.
   cada item.
 - **Não entra aqui:** o registro de uma vacina (`vacinas.md`) ou de um cuidado (`cuidados.md`), o
   status de cada tipo (também lá), os avisos no celular (`lembretes.md`) e o lugar da aba na página
-  do chefe (`navegacao.md`).
+  do pet (`navegacao.md`).
 
 ## Em aberto
 
@@ -20,8 +20,8 @@ antes de ele ter acontecido alguma vez.
   de quanto em quanto tempo ele se repete. Os quatro são obrigatórios; a data pode ser passada ou
   futura. *(2)*
   Por quê: antes só dava para começar um prazo a partir de algo já feito, e eu quero montar o
-  esquema dos chefes antes da primeira dose.
-- Eu posso planejar o mesmo item para vários chefes de uma vez. *(2)*
+  esquema dos pets antes da primeira dose.
+- Eu posso planejar o mesmo item para vários pets de uma vez. *(2)*
 - O planejamento é uma ficha: entra pelo botão no fim de cada seção da aba Prazos ("+ Planejar
   vacina", "+ Planejar medicação", "+ Planejar higiene"), nunca pelo +. *(2)*
 - Cada item da aba tem "Mudar data", que abre o planejamento já preenchido: assim eu mudo a próxima
@@ -43,7 +43,7 @@ antes de ele ter acontecido alguma vez.
 - Um item planejado tem o mesmo status de um registrado (Em dia, Vence logo ou Atrasado), pelas
   regras do seu tipo (`vacinas.md`, `cuidados.md`). *(2)*
 - Ele entra no "Exige" e no "A seguir", nas Próximas Ações e nos avisos do celular exatamente como um item
-  registrado: vacinas e medicações em tudo, higiene só na página do chefe. *(2)*
+  registrado: vacinas e medicações em tudo, higiene só na página do pet. *(2)*
 
 ## A aba Prazos
 

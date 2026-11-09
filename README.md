@@ -1,6 +1,6 @@
 # CLT Pet
 
-Consolidação das Leis do Tutor: o app privado do casal para cuidar da saúde e da rotina de três pets, com a voz de cada chefe. Em produção em https://clt-pet.souza-pereira-valeria.workers.dev
+Consolidação das Leis do Tutor: o app privado do casal para cuidar, com carinho, da saúde e da rotina dos seus três pets. Em produção em https://clt-pet.souza-pereira-valeria.workers.dev
 
 ## Rodar
 

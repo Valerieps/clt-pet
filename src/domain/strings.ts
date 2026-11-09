@@ -8,7 +8,7 @@ export const strings = {
   offline: 'Sem conexão. Mostrando o último estado carregado.',
 
   signIn: {
-    tagline: 'Consolidação das Leis do Tutor: a saúde e a rotina dos chefes da casa.',
+    tagline: 'Consolidação das Leis do Tutor: o carinho e o cuidado com os pets da casa.',
     button: 'Entrar com Google',
     noInvite: 'Não há convite para esse e-mail. Peça a um admin para te convidar.',
     failed: 'O login não deu certo. Tenta de novo?',
@@ -21,7 +21,7 @@ export const strings = {
   },
 
   nav: {
-    main: 'Chefes',
+    main: 'Pets',
     home: 'Ações',
     pending: 'Tem exigência',
     settings: 'Configurações',
@@ -49,8 +49,8 @@ export const strings = {
     noWeight: 'sem registro',
   },
 
-  // A chefe's page: four tabs, each with sections (docs/spec/navegacao.md).
-  chefe: {
+  // A pet's page: four tabs, each with sections (docs/spec/navegacao.md).
+  petPage: {
     requires: 'Exige',
     next: 'A seguir',
     noPortrait: 'Ainda sem retrato',
@@ -81,9 +81,9 @@ export const strings = {
 
   settings: {
     title: 'Configurações',
-    chefes: 'Chefes',
-    allChefes: 'Todos os chefes',
-    chefesHint: 'tutoria e perfil',
+    pets: 'Pets',
+    allPets: 'Todos os pets',
+    petsHint: 'tutoria e perfil',
     access: 'Avisos e acesso',
     members: 'Membros',
     invites: 'Convites',
@@ -96,11 +96,11 @@ export const strings = {
     save: 'Salvar',
   },
 
-  // Neutral tone, no jokes (docs/spec/voz-dos-chefes.md).
+  // Neutral tone, no jokes (docs/spec/voz-dos-pets.md).
   sos: {
     title: 'Cartão SOS',
-    pick: 'De qual chefe?',
-    back: 'Voltar para os chefes do SOS',
+    pick: 'De qual pet?',
+    back: 'Voltar para os pets do SOS',
     allergies: 'Alergias',
     noAllergies: 'Nenhuma alergia informada',
     allergy: (kind: string, description: string) => `${kind}: ${description}`,
@@ -130,10 +130,10 @@ export const strings = {
   },
 
   pets: {
-    title: 'Chefes',
-    empty: 'Nenhum chefe cadastrado.',
-    notFound: 'Não achei esse chefe.',
-    back: 'Voltar para os chefes',
+    title: 'Pets',
+    empty: 'Nenhum pet cadastrado.',
+    notFound: 'Não achei esse pet.',
+    back: 'Voltar para os pets',
     species: { cat: 'Gato', dog: 'Cachorro' },
     tutor: (name: string) => `Tutor responsável: ${name}`,
     tutorPending: (email: string) => `Tutor responsável: ${email} (ainda não entrou)`,
@@ -189,17 +189,6 @@ export const strings = {
       removeConfirm: 'Tirar a foto?',
       invalid: 'Não consegui usar essa imagem. Tente outra foto.',
     },
-    tags: {
-      title: 'Tags de personalidade',
-      edit: 'Editar tags',
-      label: 'Tag',
-      add: 'Adicionar tag',
-      remove: 'Tirar',
-      save: 'Salvar tags',
-      cancel: 'Cancelar',
-      empty: 'Nenhuma tag ainda.',
-      invalid: (max: number) => `Confira as tags: até ${max}, sem repetir.`,
-    },
     tutoria: {
       title: 'Tutoria',
       change: 'Trocar o responsável',
@@ -214,12 +203,12 @@ export const strings = {
     },
     admission: {
       title: 'Exame Admissional',
-      explain: 'Um chefe novo na casa. Só o nome e a espécie; o resto se completa no perfil.',
+      explain: 'Um pet novo na casa. Só o nome e a espécie; o resto se completa no perfil.',
       name: 'Nome',
       species: 'Espécie',
       save: 'Admitir',
       invalid: 'Informe o nome (até 40 letras) e a espécie.',
-      done: (name: string) => `${name} foi admitido(a). Bem-vindo(a) à chefia!`,
+      done: (name: string) => `${name} foi admitido(a). Bem-vindo(a) à família!`,
     },
     retire: {
       button: 'Aposentar',
@@ -227,8 +216,8 @@ export const strings = {
       confirm: (name: string) => `Aposentar ${name}? Sai das Próximas Ações e dos lembretes; o histórico fica guardado.`,
       done: (name: string) => `${name} foi aposentado(a).`,
       listTitle: 'Aposentados',
-      // Affectionate, never funny (docs/spec/voz-dos-chefes.md).
-      line: (name: string, from: string, to: string) => `${name} — chefe de ${from} a ${to}`,
+      // Affectionate, never funny (docs/spec/voz-dos-pets.md).
+      line: (name: string, from: string, to: string) => `${name} — com a gente de ${from} a ${to}`,
     },
     weight: {
       kilos: 'Peso (kg)',
@@ -255,7 +244,6 @@ export const strings = {
     vaccine: (name: string) => `Vacina dada: registrada para ${name}.`,
     treatment: (name: string) => `Tratamento de ${name} adicionado.`,
     profile: (name: string) => `Perfil de ${name} atualizado.`,
-    tags: (name: string) => `Etiquetas de ${name} salvas.`,
     photo: (name: string) => `Foto de ${name} salva.`,
     photoRemoved: (name: string) => `Foto de ${name} removida.`,
     name: 'Nome atualizado.',
@@ -334,7 +322,7 @@ export const strings = {
     cancel: 'Cancelar',
   },
 
-  // "Algo estranho hoje" (docs/spec/saude.md) and the meals (docs/spec/chefes.md, "Alimentação").
+  // "Algo estranho hoje" (docs/spec/saude.md) and the meals (docs/spec/pets.md, "Alimentação").
   routine: {
     food: 'Ração',
     mealsEmpty: 'Nenhum horário de refeição cadastrado.',
@@ -364,16 +352,16 @@ export const strings = {
   // The Manual do Funcionário Temporário (docs/spec/manual-temporario.md).
   sitter: {
     title: 'Manual do Funcionário Temporário',
-    explain: 'Um link de uma página só para quem cuida dos chefes quando a gente viaja. Abre sem login e para de funcionar no fim do prazo.',
+    explain: 'Um link de uma página só para quem cuida dos pets quando a gente viaja. Abre sem login e para de funcionar no fim do prazo.',
     empty: 'Nenhum link ativo.',
     create: 'Criar link',
     form: {
       label: 'Para quem? (ex.: Ana, pet sitter)',
-      pets: 'Quais chefes',
+      pets: 'Quais pets',
       days: 'Vale por quantos dias',
       note: 'Recados (rotina da casa, onde fica a ração, chave...)',
       save: 'Criar link',
-      invalid: 'Preencha para quem é, escolha pelo menos um chefe e um prazo de 1 a 90 dias.',
+      invalid: 'Preencha para quem é, escolha pelo menos um pet e um prazo de 1 a 90 dias.',
     },
     until: (date: string) => `vale até ${date}`,
     expired: 'Vencido',
@@ -385,7 +373,7 @@ export const strings = {
     // The public page. Neutral, clear: the reader is not part of the household.
     page: {
       hello: (label: string) => `Olá, ${label}!`,
-      intro: 'Aqui está tudo o que você precisa para cuidar dos chefes. Obrigado!',
+      intro: 'Aqui está tudo o que você precisa para cuidar dos pets. Obrigado!',
       loading: 'Carregando o manual',
       gone: 'Este link não está mais ativo. Peça um novo aos tutores.',
       until: (date: string) => `Este manual vale até ${date}.`,
@@ -407,7 +395,7 @@ export const strings = {
 
   push: {
     title: 'Avisos no celular',
-    explain: 'Receba os lembretes dos chefes neste aparelho. Cada aparelho precisa ser ativado.',
+    explain: 'Receba os lembretes dos pets neste aparelho. Cada aparelho precisa ser ativado.',
     enable: 'Ativar avisos neste aparelho',
     disable: 'Desativar avisos neste aparelho',
     on: 'Os avisos estão ligados neste aparelho.',
@@ -501,14 +489,14 @@ export const strings = {
   // Próximas Ações, the home screen (docs/spec/proximas-acoes.md): plain information, no phrases.
   home: {
     title: 'Próximas Ações',
-    empty: 'Nenhum chefe cadastrado.',
-    addFirst: 'Cadastrar o primeiro chefe',
+    empty: 'Nenhum pet cadastrado.',
+    addFirst: 'Cadastrar o primeiro pet',
     loading: 'Carregando as Próximas Ações',
     pendingTitle: 'Pendências',
     nothingPending: 'Nada pendente.',
     doneTitle: 'Feito hoje',
     doneBy: (name: string) => `Registrado por ${name}`,
-    tutorTitle: (name: string) => `Chefes de ${name}`,
+    tutorTitle: (name: string) => `Pets de ${name}`,
     noTutor: 'Sem tutor no app',
     allergiesPill: 'Alergias em branco',
     fillAllergies: 'Informar alergias',

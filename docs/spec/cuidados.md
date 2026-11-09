@@ -9,7 +9,7 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
 
 ## Em aberto
 
-- [ ] Quais produtos e intervalos cada chefe usa hoje (vermífugo, antipulgas, coleira da Paçoca)?
+- [ ] Quais produtos e intervalos cada pet usa hoje (vermífugo, antipulgas, coleira da Paçoca)?
   Os intervalos dos modelos abaixo são um ponto de partida.
 
 ## Registro
@@ -17,10 +17,10 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
 - Eu registro o cuidado (parasita ou higiene), a data em que foi feito, de quanto em quanto tempo
   ele se repete e, se quiser, o produto ou uma observação. *(2)*
 - Só o cuidado e a data são obrigatórios; a data não pode ser futura. *(2)*
-- Eu posso registrar o mesmo cuidado para vários chefes de uma vez. *(2)*
+- Eu posso registrar o mesmo cuidado para vários pets de uma vez. *(2)*
 - Eu chego ao formulário pelo +: "Medicação dada" abre o formulário já em parasitas e
   "Higiene feita", já em higiene. *(2)*
-- Na página do chefe, a aba Prazos mostra o estado de cada medicação e de cada cuidado de
+- Na página do pet, a aba Prazos mostra o estado de cada medicação e de cada cuidado de
   higiene, junto das vacinas, e o histórico dobrado embaixo (`navegacao.md`). *(2)*
 - Eu posso planejar um cuidado antes de ele ter acontecido (`prazos.md`). *(2)*
 
@@ -43,8 +43,8 @@ ouvidos, dentes): os cuidados que se repetem de tempos em tempos.
 - "Vence logo" começa a um quarto do intervalo antes do prazo, entre 1 e 30 dias (antipulgas de 30
   dias: 7 dias antes). *(2)*
   Por quê: com a janela de 30 dias das vacinas, um antipulgas mensal ficaria sempre "vencendo".
-- Parasitas atrasados ou vencendo exigem atenção nas Próximas Ações e na página do chefe, como as vacinas, e
+- Parasitas atrasados ou vencendo exigem atenção nas Próximas Ações e na página do pet, como as vacinas, e
   geram aviso no celular. *(2)*
-- Higiene atrasada ou vencendo exige atenção na página do chefe ("Exige"), como os parasitas. *(2)*
+- Higiene atrasada ou vencendo exige atenção na página do pet ("Exige"), como os parasitas. *(2)*
 - Higiene não exige atenção nas Próximas Ações nem gera aviso no celular. *(2)*
   Por quê: escovar os dentes a cada 7 dias viraria um aviso por semana.

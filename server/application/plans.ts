@@ -38,10 +38,10 @@ export function listPlans(ctx: Context): PlanView[] {
     .map(toView);
 }
 
-/** One chefe's plans, for the reminders: the domain shape. */
+/** One pet's plans, for the reminders: the domain shape. */
 export const plansOf = (all: readonly PlanView[], petId: string): Plan[] => all.filter((p) => p.petId === petId);
 
-/** Removes the plans of `item` for these chefes; true when one was removed. Comparison ignores case, like the records. */
+/** Removes the plans of `item` for these pets; true when one was removed. Comparison ignores case, like the records. */
 export function dropPlans(ctx: Context, petIds: readonly string[], kind: PrazoKind, item: string): boolean {
   let dropped = false;
   for (const petId of petIds) {
@@ -54,7 +54,7 @@ export function dropPlans(ctx: Context, petIds: readonly string[], kind: PrazoKi
   return dropped;
 }
 
-/** Plans the same item for several chefes at once, replacing each one's earlier plan of that item; all must exist, or nothing is saved. */
+/** Plans the same item for several pets at once, replacing each one's earlier plan of that item; all must exist, or nothing is saved. */
 export function addPlan(ctx: Context, actor: Member, input: Record<string, unknown>): CommandResult<PlanView[]> {
   const plan = normalizePlan(input);
   const { petIds } = input;

@@ -1,9 +1,9 @@
-# Voz dos chefes
+# Voz dos pets
 
-Cada chefe "fala" comigo pelo app, com humor, mas nunca onde a informação é clínica ou urgente.
+Nos avisos do celular, cada pet pode falar comigo na própria voz, com afeto e bom humor, mas nunca
+onde a informação é clínica ou urgente. As telas do app não usam frases: são informação direta.
 
-- **Entra aqui:** o tom de voz por contexto, as tags de personalidade, a biblioteca de frases e o
-  modo sério.
+- **Entra aqui:** o tom de voz por contexto, a biblioteca de frases de cada pet e o modo sério.
 - **Não entra aqui:** quando uma notificação é enviada (`lembretes.md`). A tela inicial não usa
   frases (`proximas-acoes.md`).
 
@@ -14,30 +14,32 @@ Cada chefe "fala" comigo pelo app, com humor, mas nunca onde a informação é c
 
 ## Tom
 
-- Humor nos avisos do celular (lembretes e cobranças) e nas conquistas, na voz do chefe. A tela
+- Afeto e bom humor nos avisos do celular (lembretes) e nas conquistas, na voz do pet. A tela
   inicial é só informativa, sem frases (`proximas-acoes.md`). *(1)*
-- O chefe sempre fala na primeira pessoa, comigo, inclusive no modo sério e no tom sem cobrança
+- O pet sempre fala na primeira pessoa, comigo, inclusive no modo sério e no tom sem cobrança
   ("Estou com tudo em dia"). *(1)*
-  *Por quê:* cada aviso é uma mensagem do chefe; na terceira pessoa a frase não parecia dita por ele.
+  *Por quê:* cada aviso é uma mensagem do pet; na terceira pessoa a frase não parecia dita por ele.
 - Tom neutro e objetivo no Cartão SOS, nos contatos de emergência, nos diagnósticos, nas condições,
-  nos exames e no relatório PDF. Essa regra vale acima de qualquer tag. *(1)*
-- Condição grave ou crônica ativa: o chefe pode aparecer, mas sem cobrança dramática ("Agradeço o
+  nos exames e no relatório PDF. Essa regra vale acima de qualquer frase. *(1)*
+- Condição grave ou crônica ativa: o pet pode aparecer, mas sem cobrança dramática ("Agradeço o
   cuidado com o meu remédio de hoje"). *(1)*
-- Chefe aposentado: tom afetuoso, nunca engraçado ("{nome} — chefe de {ano de chegada} a {ano}"). *(2)*
-- O modo sério é um interruptor por chefe que desliga o humor, por exemplo numa internação. *(1)*
+- Pet aposentado: tom afetuoso, nunca engraçado ("{nome} — com a gente de {ano de chegada} a {ano}"). *(2)*
+- O modo sério é um interruptor por pet que desliga o humor, por exemplo numa internação. *(1)*
 
-## Tags e frases
+## Frases
 
-- Cada tag tem frases para cada tipo de evento: vence em breve, atrasado, dose do dia, peso
-  desatualizado e tudo em dia. *(1)*
-- O app sorteia uma frase das tags do chefe e não repete a mesma em sequência. *(1)*
+- Cada pet tem as próprias frases, escritas à mão com as piadas da casa, para cada tipo de evento:
+  vence em breve, atrasado, dose do dia, peso desatualizado e tudo em dia. *(1)*
+- O app sorteia uma frase do pet e não repete a mesma em sequência. *(1)*
 - As frases usam `{nome}`, `{item}`, `{dias}` e `{funcionario}`. *(1)*
-- Eu e o Cesar podemos criar tags novas, com as próprias frases. *(2)*
-- As frases escritas à mão para cada chefe, com piadas da casa, valem mais do que frases genéricas. *(1)*
+- As frases ficam guardadas para os avisos do celular: hoje os lembretes de vencimento
+  (`lembretes.md`) já as usam, e os próximos avisos podem usá-las também. *(1)*
+  *Por quê:* as tags de personalidade saíram do app; as frases ficam, porque são o que dá carinho
+  aos avisos.
 
 ## Biblioteca base
 
-Algumas frases por chefe e por evento, compartilhadas pelos dois, sempre na primeira pessoa. O app
+Algumas frases por pet e por evento, compartilhadas pelos dois, sempre na primeira pessoa. O app
 preenche as variáveis. `{funcionario}` só aparece na dose do dia. *(1)*
 
 ### Berenice
