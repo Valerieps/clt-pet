@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { petStatus, doneToday, lastRecordLabel, pendingActions, tutorGroups, type StatusPet } from './next-actions';
+import { petStatus, doneToday, pendingActions, type StatusPet } from './next-actions';
 
 const utcDay = (at: Date) => at.toISOString().slice(0, 10);
 
@@ -21,20 +21,6 @@ describe('doneToday', () => {
     // 01:00 UTC on the 5th is still 22h of the 4th in Brasília.
     expect(doneToday({ byName: 'Cesar', what: 'Peso', at: '2026-11-05T01:00:00Z' }, day, brasilia)).toMatchObject({ by: 'Cesar' });
     expect(doneToday({ byName: 'Cesar', what: 'Peso', at: '2026-11-05T01:00:00Z' }, day, utcDay)).toBeNull();
-  });
-});
-
-describe('lastRecordLabel', () => {
-  const day = '2026-11-04';
-
-  it('says today, yesterday or the date', () => {
-    expect(lastRecordLabel({ byName: 'Cesar Gamboa', at: '2026-11-04T09:00:00Z' }, day, utcDay)).toBe('Cesar · hoje');
-    expect(lastRecordLabel({ byName: 'Cesar', at: '2026-11-03T09:00:00Z' }, day, utcDay)).toBe('Cesar · ontem');
-    expect(lastRecordLabel({ byName: 'Valéria', at: '2026-10-28T09:00:00Z' }, day, utcDay)).toBe('Valéria · 28/10');
-  });
-
-  it('is null without a record', () => {
-    expect(lastRecordLabel(null, day, utcDay)).toBeNull();
   });
 });
 
@@ -104,22 +90,5 @@ describe('pendingActions', () => {
 
   it('leaves the snoozed pets out', () => {
     expect(pendingActions([{ petId: 'late', status: late }], new Set(['late']))).toEqual([]);
-  });
-});
-
-describe('tutorGroups', () => {
-  it("puts the member's card first, then the others, and the pets without a tutor last", () => {
-    const pets = [
-      { id: 'a', tutorMemberId: null, tutorName: null },
-      { id: 'b', tutorMemberId: 'cesar', tutorName: 'Cesar' },
-      { id: 'c', tutorMemberId: 'me', tutorName: 'Valéria' },
-      { id: 'd', tutorMemberId: 'cesar', tutorName: 'Cesar' },
-    ];
-    const groups = tutorGroups(pets, 'me');
-    expect(groups.map((g) => [g.name, g.pets.map((p) => p.id)])).toEqual([
-      ['Valéria', ['c']],
-      ['Cesar', ['b', 'd']],
-      [null, ['a']],
-    ]);
   });
 });

@@ -1,16 +1,9 @@
 /*
  * Design tokens: every color, font and spacing value used by the UI lives here.
  * Change the look of the app by editing this file only. The dark theme, below, redefines every color.
- * "Trabalho nas palavras, animal na imagem": a neutral, cool ground; each pet has an aura
- * (background + sunlight); the monumental lettering is only for the pets.
+ * "Retrato": the pet's photo is the protagonist; each pet has soft tones of its own; organization comes from
+ * space, thin lines and circles, never from bordered boxes.
  */
-@font-face {
-  font-family: 'Anton';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('./fonts/Anton.woff2') format('woff2');
-}
 
 /* Figtree is a variable font: one file serves every weight. */
 @font-face {
@@ -21,8 +14,8 @@
   src: url('./fonts/Figtree.woff2') format('woff2');
 }
 
-/* Baloo 2 (SIL Open Font License, fonts/Baloo2-OFL.txt): the round face of the "Retrato" look. A variable
-   font, subset to Latin and Latin-1 (all of Portuguese), bundled like the others: no CDN. */
+/* Baloo 2 (SIL Open Font License, fonts/Baloo2-OFL.txt): the round face, only for the pet's name and the
+   greeting. A variable font, subset to Latin and Latin-1 (all of Portuguese), bundled like the others: no CDN. */
 @font-face {
   font-family: 'Baloo 2';
   font-style: normal;
@@ -35,35 +28,48 @@
   color-scheme: light;
 
   --color-bg: #eceef1;
+  /* the app's own color: the icon, the manifest and the browser bar (src/app-identity.test.ts) */
+  --color-brand: #b4532a;
   --color-surface: #ffffff;
   --color-text: #15141a;
-  /* 5.5:1 on --color-bg, above WCAG AA's 4.5:1 for small text */
+  /* 5.5:1 on white and on every pet's light tone, above WCAG AA's 4.5:1 for small text */
   --color-text-muted: #5b5f69;
-  --color-border: #dfe2e7;
+  --color-border: #e6e2ec;
   --color-border-strong: #c4c8d0;
-  --color-brand: #b4532a;
-  --color-on-brand: #ffffff;
   --color-danger: #b42318;
   --color-danger-soft: #fde8e6;
-  --color-ok: #1d6b43;
-  --color-ok-soft: #e3f3ea;
-  /* the sun: pending dots, the Próximas Ações face, the toast link. The sun alone is ~1.7:1 on --color-bg, so a pending dot
-     is ringed in --color-text: about 16:1 on --color-bg in the light theme, 15:1 in the dark one. */
   --color-sol: #f4b43a;
-  --color-sol-soft: #fdf1d6;
   --color-sol-ink: #7a4a00;
-  /* text on --color-text (buttons, the SOS call, the toast) */
+  /* text on --color-text (buttons, the toast) */
   --color-on-text: #ffffff;
   --color-scrim: rgba(10, 10, 16, 0.58);
+  --color-shadow: rgba(0, 0, 0, 0.14);
+  /* the heart beside "Cartão de Saúde": decorative, the words carry the meaning */
+  --color-heart: #d9506b;
 
-  --font-display: Anton, Impact, 'Arial Narrow', sans-serif;
+  /* State: a dot and a word (and the ring around a pet's photo). Each is AA as text on white and on every
+     pet's light tone: ok 6.4:1, soon 5.1:1, late 5.9:1 at worst (on Paçoca's tone). */
+  --state-ok: #1d6b43;
+  --state-soon: #8a5a00;
+  --state-late: #b42318;
+  --state-none: #a19dab;
+
   --font-round: 'Baloo 2', Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-sans: Figtree, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-size-base: 15px;
+
+  /* One scale of text: title 22, section 15 bold, body 15, support 13 grey, label 11 in capitals. */
+  --text-title: 22px;
+  --text-section: 15px;
+  --text-body: 15px;
+  --text-support: 13px;
+  --text-label: 11px;
+  /* the pet's name over its photo */
+  --text-name: 36px;
   /* 16px stops iOS from zooming the page when a field gets focus. */
   --font-size-input: 16px;
   --size-touch: 44px;
 
+  /* Spaces only on this scale: 4, 8, 12, 16, 24, 32. */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -71,17 +77,18 @@
   --space-6: 24px;
   --space-8: 32px;
 
+  /* only for fields, the drawers and pills: content never sits in a rounded box */
   --radius: 12px;
   --radius-card: 24px;
   --radius-pill: 999px;
 
-  /* the auras never change with the theme: they are the pets' own colors */
-  --aura-ber: #262145;
-  --aura-pan: #141c28;
-  --aura-pac: #6b3f1a;
+  /* The thin bar that replaces the pet's photo once it scrolls away; the footer. */
+  --bar-top: 56px;
+  --bar-bottom: 64px;
 
-  /* Each pet's soft tones, for the "Retrato" look: --tint-<pet> is the light tone, -mid the stronger one, -ink
-     the text on both (AA on both: 9.7:1 and 6.9:1 for Berenice, 9.9:1 and 7.5:1 for Panda, 6.5:1 and 5.2:1 for Paçoca). */
+  /* Each pet's soft tones: --tint-<pet> is the light tone (the page of the pet), -mid the stronger one (the
+     tab selector, the progress track), -ink the text on both (AA on both: 9.7:1 and 6.9:1 for Berenice,
+     9.9:1 and 7.5:1 for Panda, 6.5:1 and 5.2:1 for Paçoca). */
   --tint-ber: #efebfa;
   --tint-ber-mid: #cfc5f0;
   --tint-ber-ink: #3b3170;
@@ -99,28 +106,32 @@
 
     --color-bg: #17161a;
     --color-surface: #211f25;
+    --color-brand: #f0a27f;
     --color-text: #ecebef;
     --color-text-muted: #a3a0aa;
     --color-border: #34313a;
     --color-border-strong: #4a4652;
-    --color-brand: #f0a27f;
-    --color-on-brand: #17161a;
     --color-danger: #f2b8b5;
     --color-danger-soft: #3a1714;
-    --color-ok: #8fd3ac;
-    --color-ok-soft: #12301f;
-    --color-sol-soft: #3a2f14;
     --color-sol-ink: #f4c46a;
     --color-on-text: #17161a;
+    --color-shadow: rgba(0, 0, 0, 0.5);
+    --color-heart: #f08aa0;
 
-    /* the pets' soft tones turn deep, with a light ink (AA on both: at least 6.9:1) */
+    /* AA as text on the dark surface and on every pet's deep tone */
+    --state-ok: #8fd3ac;
+    --state-soon: #f4c46a;
+    --state-late: #f2b8b5;
+    --state-none: #6d6976;
+
+    /* the pets' tones turn deep, a dark shade of each pet's aura, with a light ink (AA on both: at least 6.9:1) */
     --tint-ber: #2a2548;
     --tint-ber-mid: #3d3568;
     --tint-ber-ink: #d9d0f5;
     --tint-pan: #1c2634;
     --tint-pan-mid: #33445c;
     --tint-pan-ink: #cfdbea;
-    --tint-pac: #4a2c14;
+    --tint-pac: #3a2412;
     --tint-pac-mid: #6b4222;
     --tint-pac-ink: #f0d6b8;
   }

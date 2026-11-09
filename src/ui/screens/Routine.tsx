@@ -9,6 +9,8 @@ import { todayLocal } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
+import { SectionHead } from '../parts';
+import { Link } from '../router';
 
 const t = strings.routine;
 
@@ -44,15 +46,31 @@ export function Food({ pet, removable }: { pet: PetView; removable: boolean }) {
   }
 
   return (
-    <section id="alimentacao" className="stack">
-      <h3>{strings.petPage.sections.food}</h3>
-      <p>
-        {t.food}: {food ?? strings.pets.profile.notInformed}
-      </p>
-      {meals.length === 0 && <p className="muted">{t.mealsEmpty}</p>}
-      <ul className="list">
+    <section id="alimentacao" className="group">
+      <SectionHead title={strings.petPage.sections.food}>
+        {meals.length > 0 && !adding && (
+          <button type="button" className="text-link" aria-label={strings.petPage.addTo(strings.petPage.sections.food)} onClick={() => setAdding(true)}>
+            {strings.petPage.add}
+          </button>
+        )}
+      </SectionHead>
+      <dl className="pairs">
+        <div>
+          <dt>{t.food}</dt>
+          <dd className={food ? undefined : 'support'}>{food ?? strings.pets.profile.notInformed}</dd>
+        </div>
+      </dl>
+      {meals.length === 0 && !adding && (
+        <p className="support">
+          {t.mealsEmpty}{' '}
+          <button type="button" className="text-link inline" onClick={() => setAdding(true)}>
+            {t.addMeal}
+          </button>
+        </p>
+      )}
+      <ul className="rows">
         {meals.map((m) => (
-          <li key={m.id} className="card row">
+          <li key={m.id} className="row">
             <span className="grow">
               <strong>{m.at}</strong> {[m.amount, m.note].filter(Boolean).join(' · ')}
             </span>
@@ -65,15 +83,7 @@ export function Food({ pet, removable }: { pet: PetView; removable: boolean }) {
         ))}
       </ul>
       <ErrorLine error={error} />
-      {adding ? (
-        <MealForm pet={pet} onDone={() => setAdding(false)} />
-      ) : (
-        <div>
-          <button type="button" className="secondary" onClick={() => setAdding(true)}>
-            {t.addMeal}
-          </button>
-        </div>
-      )}
+      {adding && <MealForm pet={pet} onDone={() => setAdding(false)} />}
     </section>
   );
 }
@@ -138,9 +148,9 @@ export function Diary({ pet, removable }: { pet: PetView; removable: boolean }) 
   }
 
   const card = (d: DiaryEntryView) => (
-    <li key={d.id} className="card">
+    <li key={d.id}>
       <div className="row">
-        <span className="grow muted">
+        <span className="grow support">
           {formatDate(d.onDate)} · {t.by(d.byName)}
         </span>
         {removable && (
@@ -155,14 +165,21 @@ export function Diary({ pet, removable }: { pet: PetView; removable: boolean }) 
   const older = entries.slice(DIARY_SHOWN);
 
   return (
-    <section id="diario" className="stack">
-      <h3>{strings.petPage.sections.diary}</h3>
-      {entries.length === 0 && <p className="muted">{t.diaryEmpty}</p>}
-      <ul className="list">{entries.slice(0, DIARY_SHOWN).map(card)}</ul>
+    <section id="diario" className="group">
+      <SectionHead title={strings.petPage.sections.diary} />
+      {entries.length === 0 && (
+        <p className="support">
+          {t.diaryEmpty}{' '}
+          <Link to={`/pets/${pet.id}/registrar#diario`} className="text-link inline">
+            {t.diaryAdd}
+          </Link>
+        </p>
+      )}
+      <ul className="rows">{entries.slice(0, DIARY_SHOWN).map(card)}</ul>
       {older.length > 0 && (
         <details className="fold" open={removable || undefined}>
           <summary>{t.olderDiary}</summary>
-          <ul className="list">{older.map(card)}</ul>
+          <ul className="rows">{older.map(card)}</ul>
         </details>
       )}
       <ErrorLine error={error} />

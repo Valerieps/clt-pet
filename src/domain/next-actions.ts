@@ -1,5 +1,5 @@
 // Próximas Ações, the home screen (docs/spec/proximas-acoes.md): each pet's status, the pending
-// actions of every pet, what was done today and the pets grouped by tutor.
+// actions of every pet, the next care of each one and what was done today.
 // Pure: the caller passes today's date and the records.
 import { type CareRecord } from './care/care';
 import { firstName } from './people';
@@ -91,32 +91,24 @@ export function pendingActions(summaries: readonly { readonly petId: string; rea
   return actions.map((a, i) => ({ a, i })).sort((x, y) => rank(x.a) - rank(y.a) || x.i - y.i).map(({ a }) => a);
 }
 
-/** "Lembrar amanhã": a pet snoozed on `snoozedOn` leaves the Pendências for the rest of that day only. */
-export const isSnoozed = (snoozedOn: string | null, today: string): boolean => snoozedOn === today;
-
-export interface TutorGroup<T> {
-  /** Null for the pets without a tutor in the app. */
-  readonly memberId: string | null;
-  readonly name: string | null;
-  readonly pets: readonly T[];
-}
+/** A line of "Próximos cuidados": a pending action, or the next prazo of a pet that has nothing pending. */
+export type CareLine = PendingAction | { readonly petId: string; readonly kind: 'next'; readonly prazo: PrazoSummary };
 
 /**
- * One card per tutor (docs/spec/proximas-acoes.md): the member's own card first, the others in the
- * order their first pet appears, and the pets without a tutor in the app last.
+ * "Próximos cuidados" (docs/spec/proximas-acoes.md): the Pendências first, in their order, then the next
+ * prazo of each pet with nothing pending, the nearest first. A snoozed pet's pendências leave the list,
+ * as in the Pendências.
  */
-export function tutorGroups<T extends { readonly tutorMemberId: string | null; readonly tutorName: string | null }>(pets: readonly T[], memberId: string): TutorGroup<T>[] {
-  const groups = new Map<string | null, { memberId: string | null; name: string | null; pets: T[] }>();
-  for (const pet of pets) {
-    const key = pet.tutorMemberId;
-    const group = groups.get(key) ?? { memberId: key, name: key === null ? null : pet.tutorName, pets: [] };
-    group.pets.push(pet);
-    groups.set(key, group);
-  }
-  const list = [...groups.values()];
-  const order = (g: TutorGroup<T>) => (g.memberId === memberId ? 0 : g.memberId === null ? 2 : 1);
-  return list.map((g, i) => ({ g, i })).sort((x, y) => order(x.g) - order(y.g) || x.i - y.i).map(({ g }) => g);
+export function upcomingCare(summaries: readonly { readonly petId: string; readonly status: PetStatus }[], snoozed: ReadonlySet<string> = new Set()): CareLine[] {
+  const calm = summaries.flatMap(({ petId, status }) =>
+    status.pending.length === 0 && status.next ? [{ petId, kind: 'next' as const, prazo: status.next }] : [],
+  );
+  calm.sort((a, b) => a.prazo.days - b.prazo.days);
+  return [...pendingActions(summaries, snoozed), ...calm];
 }
+
+/** "Lembrar amanhã": a pet snoozed on `snoozedOn` leaves the Pendências for the rest of that day only. */
+export const isSnoozed = (snoozedOn: string | null, today: string): boolean => snoozedOn === today;
 
 /**
  * Feito hoje (docs/spec/proximas-acoes.md): what was registered for the pet today and the first
@@ -130,13 +122,4 @@ export function doneToday(
 ): { readonly by: string; readonly what: string; readonly at: Date } | null {
   if (!last || localDay(new Date(last.at)) !== today) return null;
   return { by: firstName(last.byName), what: last.what, at: new Date(last.at) };
-}
-
-/** The tutor card's last record: "Cesar · hoje", "Cesar · ontem" or "Cesar · 03/11"; null without one. */
-export function lastRecordLabel(last: { readonly byName: string; readonly at: string } | null, today: string, localDay: (at: Date) => string): string | null {
-  if (!last) return null;
-  const day = localDay(new Date(last.at));
-  const ago = daysBetween(day, today);
-  const when = ago === 0 ? 'hoje' : ago === 1 ? 'ontem' : `${day.slice(8, 10)}/${day.slice(5, 7)}`;
-  return `${firstName(last.byName)} · ${when}`;
 }

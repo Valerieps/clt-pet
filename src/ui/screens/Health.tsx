@@ -12,6 +12,7 @@ import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
 import { Diary } from './Routine';
+import { SectionHead } from '../parts';
 
 const t = strings.health;
 
@@ -55,17 +56,30 @@ function Conditions({ pet, removable }: { pet: PetView; removable: boolean }) {
   }
 
   return (
-    <section id="condicoes" className="stack">
-      <h3>{strings.petPage.sections.conditions}</h3>
-      {mine.length === 0 && <p className="muted">{t.conditionsEmpty}</p>}
-      <ul className="list">
+    <section id="condicoes" className="group">
+      <SectionHead title={strings.petPage.sections.conditions}>
+        {mine.length > 0 && !adding && (
+          <button type="button" className="text-link" aria-label={strings.petPage.addTo(strings.petPage.sections.conditions)} onClick={() => setAdding(true)}>
+            {strings.petPage.add}
+          </button>
+        )}
+      </SectionHead>
+      {mine.length === 0 && !adding && (
+        <p className="support">
+          {t.conditionsEmpty}{' '}
+          <button type="button" className="text-link inline" onClick={() => setAdding(true)}>
+            {t.addCondition}
+          </button>
+        </p>
+      )}
+      <ul className="rows">
         {active.map((c) => (
-          <li key={c.id} className="card">
+          <li key={c.id}>
             <strong>{c.name}</strong>
-            {c.grave && <span data-status="overdue"> · {t.grave}</span>}
+            {c.grave && <span className="state late"> {t.grave}</span>}
             {c.since && <span className="muted"> · {t.since(formatDate(c.since))}</span>}
             {c.notes && <p className="muted pre">{c.notes}</p>}
-            <div className="row wrap">
+            <div className="links">
               <button type="button" className="secondary" onClick={() => void run(backend.command('condition.resolve', { conditionId: c.id }))}>
                 {t.resolve}
               </button>
@@ -81,9 +95,9 @@ function Conditions({ pet, removable }: { pet: PetView; removable: boolean }) {
       {resolved.length > 0 && (
         <details className="fold">
           <summary>{t.resolved}</summary>
-          <ul className="list">
+          <ul className="rows">
             {resolved.map((c) => (
-              <li key={c.id} className="card row">
+              <li key={c.id} className="row">
                 <span className="grow">
                   {c.name} <span className="muted">{t.resolvedOn(formatDate(c.resolvedOn!))}</span>
                 </span>
@@ -105,15 +119,7 @@ function Conditions({ pet, removable }: { pet: PetView; removable: boolean }) {
         </details>
       )}
       <ErrorLine error={error} />
-      {adding ? (
-        <ConditionForm pet={pet} onDone={() => setAdding(false)} />
-      ) : (
-        <div>
-          <button type="button" className="secondary" onClick={() => setAdding(true)}>
-            {t.addCondition}
-          </button>
-        </div>
-      )}
+      {adding && <ConditionForm pet={pet} onDone={() => setAdding(false)} />}
     </section>
   );
 }
@@ -181,7 +187,7 @@ export function VisitList({ visits: mine, removable }: { visits: readonly VisitV
   }
 
   const card = (v: VisitView) => (
-    <li key={v.id} className="card">
+    <li key={v.id}>
       <div className="row">
         <span className="grow">
           <strong>
@@ -203,12 +209,12 @@ export function VisitList({ visits: mine, removable }: { visits: readonly VisitV
 
   return (
     <>
-      <ul className="list">{current.map(card)}</ul>
+      <ul className="rows">{current.map(card)}</ul>
       <ErrorLine error={error} />
       {mine.length > 0 && (
         <details className="fold" open={removable || undefined}>
           <summary>{strings.petPage.history}</summary>
-          <ul className="list">{[...mine].reverse().map(card)}</ul>
+          <ul className="rows">{[...mine].reverse().map(card)}</ul>
         </details>
       )}
     </>
