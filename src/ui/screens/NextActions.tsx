@@ -3,10 +3,10 @@ import type { MeView } from '../../application/api-contract';
 import { doneToday, isSnoozed, upcomingCare, type CareLine } from '../../domain/next-actions';
 import { dueLabel } from '../../domain/due-text';
 import { greetingFor } from '../../domain/greeting';
-import { careRing, homeState, type CareRing } from '../../domain/portrait';
+import { careRing, homeState } from '../../domain/portrait';
 import { strings } from '../../domain/strings';
 import { todayLocal, usePets, type PetSummary } from '../use-pets';
-import { PetFace, Faces, MeLink } from '../parts';
+import { Faces, MeLink } from '../parts';
 import { Link } from '../router';
 
 const t = strings.home;
@@ -64,21 +64,6 @@ export function NextActions({ me }: { me: MeView }) {
         )}
         {summaries.length > 0 && (
           <>
-            <section aria-label={t.petsTitle}>
-              <ul className="portraits">
-                {summaries.map((summary, i) => (
-                  <li key={summary.pet.id}>
-                    <Link to={`/pets/${summary.pet.id}`} className={`portrait ${summary.aura}`}>
-                      <span className={`ring ${rings[i]}`}>
-                        <PetFace pet={summary.pet} className="portrait-face" />
-                      </span>
-                      <b>{summary.pet.profile.name}</b>
-                      <span className={`state ${rings[i]}`}>{t.ring[rings[i] as CareRing]}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
             {done.length > 0 && (
               <section aria-labelledby="home-done">
                 <h2 id="home-done" className="lbl">
@@ -166,13 +151,7 @@ function writeSnoozes(value: Record<string, string>): void {
   }
 }
 
-/** What shows while the pets load: the circles' shape, so the screen is never blank. */
+/** What shows while the pets load, so the screen is never blank. */
 function HomeSkeleton() {
-  return (
-    <div className="portraits" role="status" aria-label={t.loading}>
-      <span className="skeleton round" />
-      <span className="skeleton round" />
-      <span className="skeleton round" />
-    </div>
-  );
+  return <span className="skeleton" role="status" aria-label={t.loading} />;
 }
