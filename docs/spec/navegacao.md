@@ -33,8 +33,10 @@ Como eu me movo pelo app: dois níveis, as abas da página do pet e o + que regi
 ### As abas da página do pet
 
 - A página do pet tem três abas, uma por pergunta, cada uma com um ícone e um rótulo curto
-  embaixo. Tocar abre a aba abaixo delas; tocar de novo fecha. *(2)*
-  *Por quê:* eram sete ícones sem nome, e o mesmo assunto aparecia em dois lugares.
+  embaixo. A página abre em Agendamentos (ou na aba que o link pede) e sempre há uma aba aberta:
+  tocar na que já está aberta não fecha nada. *(2)*
+  *Por quê:* eram sete ícones sem nome, e o mesmo assunto aparecia em dois lugares. E a tela
+  abria vazia, com metade da página em branco, até eu tocar numa aba.
   - **Agendamentos** (calendário): o que vence, planejado ou registrado (`prazos.md`). Vacinas
     (`vacinas.md`), Medicações (as periódicas, de `cuidados.md`, e os tratamentos, de
     `medicacoes.md`), Higiene (`cuidados.md`) e Consultas (`saude.md`), com o mesmo status: Em dia,

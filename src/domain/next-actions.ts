@@ -2,6 +2,7 @@
 // actions of every pet, what was done today and the pets grouped by tutor.
 // Pure: the caller passes today's date and the records.
 import { type CareRecord } from './care/care';
+import { firstName } from './people';
 import { careOccurrences, currentPrazos, doseOccurrences, type Plan } from './prazos';
 import { daysBetween } from './reminders/reminders';
 import { type Dose } from './vaccines/vaccine';
@@ -116,8 +117,6 @@ export function tutorGroups<T extends { readonly tutorMemberId: string | null; r
   const order = (g: TutorGroup<T>) => (g.memberId === memberId ? 0 : g.memberId === null ? 2 : 1);
   return list.map((g, i) => ({ g, i })).sort((x, y) => order(x.g) - order(y.g) || x.i - y.i).map(({ g }) => g);
 }
-
-const firstName = (name: string): string => name.trim().split(/\s+/)[0] || name;
 
 /**
  * Feito hoje (docs/spec/proximas-acoes.md): the first name of whoever registered something for the

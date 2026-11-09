@@ -26,13 +26,6 @@ export function dateLabel(now: Date): string {
   return label.charAt(0).toLocaleUpperCase('pt-BR') + label.slice(1);
 }
 
-/** "6 dias", "hoje", "atrasada há 3 dias". */
-export function dueLabel(overdue: boolean, days: number): string {
-  const unit = days === 1 ? 'dia' : 'dias';
-  if (overdue) return `atrasada há ${days} ${unit}`;
-  return days === 0 ? 'hoje' : `${days} ${unit}`;
-}
-
 export const SWIPE_MIN_DISTANCE = 60;
 export const SWIPE_MAX_DRIFT = 40;
 
@@ -59,13 +52,8 @@ export type PetTab = 'agendamentos' | 'ficha' | 'perfil';
 export const PET_TABS: readonly PetTab[] = ['agendamentos', 'ficha', 'perfil'];
 
 /**
-<<<<<<< HEAD
  * The tab a link's hash opens. The old hashes (of earlier tabs) keep working, because push
  * notifications and the home screen already sent them; a section's hash opens the tab that holds it.
-=======
- * The tab a link's hash opens. The old hashes (before the four tabs) keep working, because push
- * notifications and the home screen already sent them; a section's hash opens the tab that holds it.
->>>>>>> origin/main
  */
 const TAB_OF_HASH: Readonly<Record<string, PetTab>> = {
   agendamentos: 'agendamentos',

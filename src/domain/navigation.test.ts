@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { auraClass, currentPath, dateLabel, dueLabel, initialOf, nameSize, NAME_SIZE_MAX, NAME_SIZE_MIN, swipeTarget, tabOfHash } from './navigation';
+import { auraClass, currentPath, dateLabel, initialOf, nameSize, NAME_SIZE_MAX, NAME_SIZE_MIN, swipeTarget, tabOfHash } from './navigation';
 
 describe('tabOfHash', () => {
   it('opens the new tabs by their own hash', () => {
@@ -58,18 +58,6 @@ describe('dateLabel', () => {
   });
   it('keeps weekends as they are', () => {
     expect(dateLabel(new Date(2026, 10, 7))).toBe('Sábado, 7 de novembro');
-  });
-});
-
-describe('dueLabel', () => {
-  it('counts days ahead', () => {
-    expect(dueLabel(false, 6)).toBe('6 dias');
-    expect(dueLabel(false, 1)).toBe('1 dia');
-    expect(dueLabel(false, 0)).toBe('hoje');
-  });
-  it('counts days late', () => {
-    expect(dueLabel(true, 3)).toBe('atrasada há 3 dias');
-    expect(dueLabel(true, 1)).toBe('atrasada há 1 dia');
   });
 });
 

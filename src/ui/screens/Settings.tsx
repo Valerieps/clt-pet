@@ -3,6 +3,7 @@ import type { MeView } from '../../application/api-contract';
 import { NAME_MAX_LENGTH } from '../../domain/group/profile';
 import { canManageGroup, isAdmin } from '../../domain/group/roles';
 import { initialOf } from '../../domain/navigation';
+import { firstName } from '../../domain/people';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
 import { BackBar } from '../parts';
@@ -23,7 +24,7 @@ export function Settings({ me, onSignOut }: { me: MeView; onSignOut: () => void 
             <span style={{ width: 44, height: 44, fontSize: 16 }}>{initialOf(me.name)}</span>
           </span>
           <div>
-            <p style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>{me.name}</p>
+            <p style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>{firstName(me.name)}</p>
             <p className="meta" style={{ margin: 0 }}>
               {isAdmin(me) ? t.admin : t.member}
             </p>

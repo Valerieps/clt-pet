@@ -60,3 +60,10 @@ Nada por enquanto.
 - O Cartão de Saúde fica na alça de baixo, em toda tela (`navegacao.md`). *(1)*
 - Sem pets cadastrados, a tela mostra o botão "Cadastrar o primeiro pet". Enquanto carrega,
   mostra blocos cinza, nunca uma tela em branco. *(1)*
+- Em toda tela, as pessoas aparecem só pelo primeiro nome, com a inicial maiúscula ("Valéria", "Cesar"),
+  seja qual for a caixa do cadastro do Google. *(1)*
+  *Por quê:* apareciam "valeria souza" e "CESAR GAMBOA MACHADO".
+- Os prazos são ditos como a gente fala: "hoje", "amanhã", "em 12 meses", "há 3 dias"; e o intervalo
+  como "anual" ou "a cada 3 meses". Menos de 60 dias vai em dias, até 23 meses em meses, acima disso
+  em anos. *(1)*
+  *Por quê:* "365 dias" obrigava a fazer a conta de cabeça.

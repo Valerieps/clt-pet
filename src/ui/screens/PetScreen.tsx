@@ -1,7 +1,9 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import type { MeView, PetUpdate, PetView } from '../../application/api-contract';
 import { demandedDeadlines, type Deadline } from '../../domain/deadlines';
-import { nameSize, dueLabel, PET_TABS, tabOfHash, type PetTab } from '../../domain/navigation';
+import { dueLabel } from '../../domain/due-text';
+import { firstName } from '../../domain/people';
+import { nameSize, PET_TABS, tabOfHash, type PetTab } from '../../domain/navigation';
 import { daysBetween } from '../../domain/reminders/reminders';
 import {
   ageParts,
@@ -64,7 +66,7 @@ function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: r
   const name = pet.profile.name;
   const path = usePath();
   const hash = useHash();
-  const [tab, setTab] = useState<PetTab | null>(null);
+  const [tab, setTab] = useState<PetTab>('agendamentos');
   // Each tab has its own pencil: editing one never turns on another.
   const [editing, setEditing] = useState(NOT_EDITING);
   const setTabEditing = (key: PetTab, value: boolean) => setEditing((all) => ({ ...all, [key]: value }));
@@ -117,32 +119,30 @@ function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: r
               role="tab"
               className={`tab${tab === key ? ' on' : ''}`}
               aria-selected={tab === key}
-              onClick={() => setTab(tab === key ? null : key)}
+              onClick={() => setTab(key)}
             >
               <span className="tab-icon">{icons[key]}</span>
               {tabsT[key]}
             </button>
           ))}
         </div>
-        {tab && (
-          <div id={tab} className="tab-panel" role="tabpanel" aria-label={tabsT[tab]}>
-            <div className="spread">
-              <h2>{tabsT[tab]}</h2>
-              <EditToggle label={tabsT[tab]} editing={editing[tab]} onToggle={() => setTabEditing(tab, !editing[tab])} />
-            </div>
-            {tab === 'agendamentos' && <AgendamentosPanel summary={summary} editing={editing.agendamentos} />}
-            {tab === 'ficha' && (
-              <>
-                <section id="peso" className="stack">
-                  <h3>{strings.petPage.sections.weight}</h3>
-                  <Weight pet={pet} removable={editing.ficha} />
-                </section>
-                <HealthPanel pet={pet} editing={editing.ficha} />
-              </>
-            )}
-            {tab === 'perfil' && <ProfilePanel pet={pet} myId={me.id} editing={editing.perfil} onDone={() => setTabEditing('perfil', false)} />}
+        <div id={tab} className="tab-panel" role="tabpanel" aria-label={tabsT[tab]}>
+          <div className="spread">
+            <h2>{tabsT[tab]}</h2>
+            <EditToggle label={tabsT[tab]} editing={editing[tab]} onToggle={() => setTabEditing(tab, !editing[tab])} />
           </div>
-        )}
+          {tab === 'agendamentos' && <AgendamentosPanel summary={summary} editing={editing.agendamentos} />}
+          {tab === 'ficha' && (
+            <>
+              <section id="peso" className="stack">
+                <h3>{strings.petPage.sections.weight}</h3>
+                <Weight pet={pet} removable={editing.ficha} />
+              </section>
+              <HealthPanel pet={pet} editing={editing.ficha} />
+            </>
+          )}
+          {tab === 'perfil' && <ProfilePanel pet={pet} myId={me.id} editing={editing.perfil} onDone={() => setTabEditing('perfil', false)} />}
+        </div>
         <Summary summary={summary} />
       </main>
     </>
@@ -523,7 +523,7 @@ function Tutoria({ pet, myId }: { pet: PetView; myId: string }) {
             <option value="">{t.tutoria.change}</option>
             {others.map((m) => (
               <option key={m.id} value={m.id}>
-                {m.name}
+                {firstName(m.name)}
                 {m.id === myId ? ` ${strings.members.you}` : ''}
               </option>
             ))}
@@ -577,7 +577,7 @@ function LendTutoria({ pet, candidates, myId }: { pet: PetView; candidates: read
         <select value={memberId} onChange={(e) => setMemberId(e.target.value)}>
           {candidates.map((m) => (
             <option key={m.id} value={m.id}>
-              {m.name}
+              {firstName(m.name)}
               {m.id === myId ? ` ${strings.members.you}` : ''}
             </option>
           ))}
