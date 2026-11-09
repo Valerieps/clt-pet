@@ -25,12 +25,12 @@ As medicações de cada chefe: o que toma, quanto, com que frequência e por qua
 
 ## Onde aparece
 
-- Na página do chefe, a medicação se chama **Tratamento** e fica na aba Saúde, na seção
-  Tratamentos: os em uso primeiro e, dobrados embaixo, os encerrados (a data de fim já passou). *(2)*
-- Eu cadastro um tratamento pelo botão "+ Novo tratamento", no fim da seção. Até a fase 3, ele não
-  entra pelo + (`navegacao.md`, "Acontecimento e ficha"). *(2)*
+- Na página do chefe, a medicação se chama **Tratamento** e fica na aba Agendamentos, na seção
+  Medicações, depois das medicações periódicas: os em uso primeiro e, dobrados embaixo, os
+  encerrados (a data de fim já passou). *(2)*
+- Eu cadastro um tratamento pelo botão "+ Planejar medicação", no fim da seção, escolhendo uma
+  frequência diária (`prazos.md`, "Planejamento"). Até a fase 3, ele não entra pelo +
+  (`navegacao.md`, "Acontecimento e ficha"). *(2)*
   *Por quê:* um tratamento é uma ficha, que vale até mudar; a "dose dada" da fase 3 é que será o
   acontecimento.
 - O botão Apagar só aparece depois de tocar no lápis da aba. *(1)*
-- O fim de um tratamento com data de fim aparece no "A seguir" da página do chefe nos 7 dias antes
-  do último dia (`navegacao.md`, "Exige e A seguir"). *(2)*

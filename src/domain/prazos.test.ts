@@ -1,11 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { pageDeadlines } from './deadlines';
+import { demandedDeadlines } from './deadlines';
 import { chefeStatus } from './next-actions';
-import { currentPrazos, normalizePlan, prazoStatus, type Occurrence, type Plan } from './prazos';
+import { currentPrazos, normalizePlan, prazoStatus, routineDueAfter, visitOccurrences, type Occurrence, type Plan } from './prazos';
 
 const today = '2026-11-04';
 const record = (item: string, on: string, intervalDays: number): Occurrence => ({ id: `${item}-${on}`, item, on, intervalDays });
-const plan = (item: string, dueOn: string, intervalDays = 90, kind: Plan['kind'] = 'parasite'): Plan => ({ id: `plan-${item}`, kind, item, dueOn, intervalDays });
+const plan = (item: string, dueOn: string, intervalDays = 90, kind: Plan['kind'] = 'parasite'): Plan => ({
+  id: `plan-${item}`,
+  kind,
+  item,
+  dueOn,
+  intervalDays,
+});
 
 describe('currentPrazos', () => {
   it('counts from the latest record when nothing is planned', () => {
@@ -47,10 +53,50 @@ describe('normalizePlan', () => {
       item: 'Banho',
       dueOn: '2025-01-01',
       intervalDays: 15,
+      dose: null,
     });
     expect(normalizePlan({ kind: 'hygiene', item: 'Banho', dueOn: '2027-01-01' })).toBeNull();
     expect(normalizePlan({ kind: 'hygiene', item: '', dueOn: '2027-01-01', intervalDays: 15 })).toBeNull();
     expect(normalizePlan({ kind: 'diet', item: 'Banho', dueOn: '2027-01-01', intervalDays: 15 })).toBeNull();
+  });
+
+  it('keeps a dose only on a medication', () => {
+    expect(normalizePlan({ kind: 'parasite', item: 'Vermífugo', dueOn: '2027-01-01', intervalDays: 90, dose: ' 1 comprimido ' })).toMatchObject({
+      dose: '1 comprimido',
+    });
+    expect(normalizePlan({ kind: 'parasite', item: 'Vermífugo', dueOn: '2027-01-01', intervalDays: 90, dose: '' })).toMatchObject({ dose: null });
+    expect(normalizePlan({ kind: 'hygiene', item: 'Banho', dueOn: '2027-01-01', intervalDays: 15, dose: '1' })).toBeNull();
+    expect(normalizePlan({ kind: 'parasite', item: 'Vermífugo', dueOn: '2027-01-01', intervalDays: 90, dose: 3 })).toBeNull();
+  });
+
+  it('accepts a routine consulta', () => {
+    expect(normalizePlan({ kind: 'visit', item: 'Check-up', dueOn: '2027-01-01', intervalDays: 365 })).toMatchObject({ kind: 'visit' });
+  });
+});
+
+describe('routine consultas', () => {
+  const checkup = plan('Check-up', '2027-01-10', 365, 'visit');
+  const visit = (id: string, onDate: string, title = 'check-up', kind = 'consulta') => ({ id, kind, onDate, title });
+
+  it('counts only consultas already done whose subject is the planned item', () => {
+    const list = visitOccurrences(
+      [visit('a', '2026-01-10'), visit('b', '2026-12-01'), visit('c', '2026-02-01', 'Check-up', 'exame'), visit('d', '2026-03-01', 'Vacina')],
+      [checkup],
+      today,
+    );
+    expect(list).toEqual([{ id: 'a', item: 'Check-up', on: '2026-01-10', intervalDays: 365 }]);
+    const [p] = currentPrazos('visit', list, [checkup], today);
+    expect(p).toMatchObject({ item: 'Check-up', due: '2027-01-10', lastOn: '2026-01-10', planId: checkup.id, state: 'ok' });
+  });
+
+  it('a consulta done moves the plan forward, never back', () => {
+    expect(routineDueAfter(checkup, '2026-11-04')).toBe('2027-11-04');
+    expect(routineDueAfter(checkup, '2025-06-01')).toBeNull();
+  });
+
+  it('a routine consulta late or close demands attention on the page', () => {
+    const demanded = demandedDeadlines({ doses: [], care: [], visits: [], plans: [plan('Check-up', '2026-11-01', 365, 'visit')] }, today);
+    expect(demanded.map((d) => [d.kind, d.name, d.state])).toEqual([['visit', 'Check-up', 'overdue']]);
   });
 });
 
@@ -65,8 +111,7 @@ describe('plans on the page and the home screen', () => {
   it('planned hygiene stays off the home screen but shows on the page', () => {
     const plans = [plan('Banho', '2026-11-05', 15, 'hygiene'), plan('Vermífugo', '2027-03-01')];
     expect(chefeStatus(pet, [], today, null, [], plans).needsAttention).toBe(false);
-    const { demanded, next } = pageDeadlines({ doses: [], care: [], visits: [], treatments: [], plans }, today);
+    const demanded = demandedDeadlines({ doses: [], care: [], visits: [], plans }, today);
     expect(demanded.map((d) => [d.kind, d.name])).toEqual([['hygiene', 'Banho']]);
-    expect(next.map((d) => [d.kind, d.name])).toEqual([['parasite', 'Vermífugo']]);
   });
 });

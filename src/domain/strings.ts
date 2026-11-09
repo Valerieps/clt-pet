@@ -49,20 +49,19 @@ export const strings = {
     noWeight: 'sem registro',
   },
 
-  // A chefe's page: four tabs, each with sections (docs/spec/navegacao.md).
+  // A chefe's page: three tabs, each with sections (docs/spec/navegacao.md).
   chefe: {
     requires: 'Exige',
-    next: 'A seguir',
     noPortrait: 'Ainda sem retrato',
     weightAlert: 'Advertência',
-    tabs: { prazos: 'Prazos', saude: 'Saúde', peso: 'Peso', perfil: 'Perfil' },
+    tabs: { agendamentos: 'Agendamentos', ficha: 'Ficha Médica', perfil: 'Perfil' },
     sections: {
       vaccines: 'Vacinas',
       parasites: 'Medicações',
       hygiene: 'Higiene',
+      visits: 'Consultas',
+      weight: 'Peso',
       conditions: 'Condições',
-      treatments: 'Tratamentos',
-      visits: 'Consultas e exames',
       diary: 'Algo estranho hoje',
       allergies: 'Alergias e restrições',
       food: 'Alimentação',
@@ -71,11 +70,9 @@ export const strings = {
     editTab: (tab: string) => `Editar ${tab}`,
     doneEditing: 'Concluir',
     history: 'Histórico',
-    dueOn: (date: string) => `vence em ${date}`,
-    endsOn: (date: string) => `termina em ${date}`,
     deadline: {
       return: (title: string) => `Retorno: ${title}`,
-      treatmentEnd: (name: string) => `Fim do tratamento: ${name}`,
+      visit: (name: string) => `Consulta: ${name}`,
     },
   },
 
@@ -314,7 +311,6 @@ export const strings = {
       save: 'Salvar condição',
       invalid: 'Esse nome ou essa data não parecem certos.',
     },
-    visitsEmpty: 'Nenhuma consulta, exame ou laudo registrado.',
     kinds: { consulta: 'Consulta', exame: 'Exame', laudo: 'Laudo' },
     scheduled: 'Agendada',
     returnOn: (date: string) => `retorno em ${date}`,
@@ -417,22 +413,29 @@ export const strings = {
     failed: 'Não consegui ativar os avisos. Tenta de novo?',
   },
 
-  // The Prazos tab (docs/spec/prazos.md): each item's next date, planned or from its last record.
+  // The Agendamentos tab (docs/spec/prazos.md): each item's next date, planned or from its last record.
   prazos: {
-    empty: { vaccine: 'Nenhuma vacina planejada.', parasite: 'Nenhuma medicação planejada.', hygiene: 'Nenhum cuidado de higiene planejado.' },
+    empty: {
+      vaccine: 'Nenhuma vacina planejada.',
+      parasite: 'Nenhuma medicação planejada.',
+      hygiene: 'Nenhum cuidado de higiene planejado.',
+      visit: 'Nenhuma consulta planejada.',
+    },
     next: (date: string) => `Próximo: ${date}`,
     every: (days: number) => (days === 1 ? 'todo dia' : `a cada ${days} dias`),
     last: (date: string) => `Último: ${date}`,
     never: 'Ainda não aconteceu',
-    plan: { vaccine: '+ Planejar vacina', parasite: '+ Planejar medicação', hygiene: '+ Planejar higiene' },
+    plan: { vaccine: '+ Planejar vacina', parasite: '+ Planejar medicação', hygiene: '+ Planejar higiene', visit: '+ Planejar consulta' },
     replan: 'Mudar data',
     removePlan: 'Apagar planejamento',
     removePlanConfirm: 'Apagar esse planejamento? Se já houver registro, o próximo prazo volta a contar dele.',
     form: {
-      item: { vaccine: 'Qual vacina?', parasite: 'Qual medicação?', hygiene: 'Qual cuidado?' },
+      item: { vaccine: 'Qual vacina?', parasite: 'Qual medicação?', hygiene: 'Qual cuidado?', visit: 'Qual consulta?' },
       other: 'Outro',
       otherName: 'Nome',
       pick: 'Escolha o que planejar.',
+      dose: 'Dose (opcional)',
+      periodic: 'Periódica (a cada X dias)',
       dueOn: 'Próxima data',
       interval: 'Repetir a cada (dias)',
       together: 'Planejar também para',
@@ -468,8 +471,6 @@ export const strings = {
   },
 
   medications: {
-    empty: 'Nenhum tratamento registrado.',
-    add: '+ Novo tratamento',
     ended: 'Encerradas',
     continuous: 'uso contínuo',
     since: (date: string) => `desde ${date}`,
