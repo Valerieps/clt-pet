@@ -27,8 +27,8 @@ Nada por enquanto.
 
 - Pode haver mais de um admin. O app não deixa tirar o papel do último. *(1)*
 - Eu e o Cesar somos os dois admins desde o começo. *(1)*
-- "Tutor responsável" e "funcionário reserva" não são papéis da pessoa: são por chefe (`chefes.md`).
-  Os dois têm acesso total a todos os chefes. *(1)*
+- "Tutor responsável" e "funcionário reserva" não são papéis da pessoa: são por pet (`pets.md`).
+  Os dois têm acesso total a todos os pets. *(1)*
 - O funcionário temporário (pet sitter) entra por um link somente leitura, sem login, e não é um
   membro. Qualquer funcionário cria e desativa os links (`manual-temporario.md`). *(2)*
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { auraClass, dateLabel, dueLabel, initialOf, nameSize, NAME_SIZE_MAX, NAME_SIZE_MIN, swipeTarget, tabOfHash } from './navigation';
+import { auraClass, currentPath, dateLabel, dueLabel, initialOf, nameSize, NAME_SIZE_MAX, NAME_SIZE_MIN, swipeTarget, tabOfHash } from './navigation';
 
 describe('tabOfHash', () => {
   it('opens the new tabs by their own hash', () => {
@@ -74,18 +74,29 @@ describe('dueLabel', () => {
 });
 
 describe('swipeTarget', () => {
-  const order = ['/', '/chefes/a', '/chefes/b'];
+  const order = ['/', '/pets/a', '/pets/b'];
   it('goes to the next screen on a swipe left and the previous on a swipe right', () => {
-    expect(swipeTarget(order, '/chefes/a', -80, 0)).toBe('/chefes/b');
-    expect(swipeTarget(order, '/chefes/a', 80, 0)).toBe('/');
+    expect(swipeTarget(order, '/pets/a', -80, 0)).toBe('/pets/b');
+    expect(swipeTarget(order, '/pets/a', 80, 0)).toBe('/');
   });
   it('stops at the ends', () => {
     expect(swipeTarget(order, '/', 80, 0)).toBeNull();
-    expect(swipeTarget(order, '/chefes/b', -80, 0)).toBeNull();
+    expect(swipeTarget(order, '/pets/b', -80, 0)).toBeNull();
   });
   it('ignores short or diagonal swipes and screens outside the order', () => {
-    expect(swipeTarget(order, '/chefes/a', -30, 0)).toBeNull();
-    expect(swipeTarget(order, '/chefes/a', -80, 70)).toBeNull();
+    expect(swipeTarget(order, '/pets/a', -30, 0)).toBeNull();
+    expect(swipeTarget(order, '/pets/a', -80, 70)).toBeNull();
     expect(swipeTarget(order, '/membros', -80, 0)).toBeNull();
+  });
+});
+
+describe('currentPath', () => {
+  it('moves the old /chefes addresses to /pets', () => {
+    expect(currentPath('/chefes')).toBe('/pets');
+    expect(currentPath('/chefes/abc')).toBe('/pets/abc');
+    expect(currentPath('/chefes/abc/registrar')).toBe('/pets/abc/registrar');
+  });
+  it('leaves every other path alone', () => {
+    expect(['/', '/pets/abc', '/chefesx', '/sos/abc'].map(currentPath)).toEqual(['/', '/pets/abc', '/chefesx', '/sos/abc']);
   });
 });

@@ -1,24 +1,24 @@
 # Cartão SOS
 
-O Cartão de Saúde: o que eu preciso saber de um chefe numa emergência.
+O Cartão de Saúde: o que eu preciso saber de um pet numa emergência.
 
 - **Entra aqui:** o conteúdo do Cartão SOS e como chego nele.
-- **Não entra aqui:** o cadastro dos dados em si (`chefes.md`) e das condições de saúde (`saude.md`).
+- **Não entra aqui:** o cadastro dos dados em si (`pets.md`) e das condições de saúde (`saude.md`).
 
 ## Em aberto
 
-- [ ] Quem é o veterinário principal e qual é a clínica 24 h de cada chefe? (Os botões de ligar
+- [ ] Quem é o veterinário principal e qual é a clínica 24 h de cada pet? (Os botões de ligar
   ficam escondidos até eu preencher o telefone, no próprio cartão.)
-- [ ] Algum dos chefes tem plano de saúde ou convênio? (Idem: preencho no cartão.)
+- [ ] Algum dos pets tem plano de saúde ou convênio? (Idem: preencho no cartão.)
 
 ## Regras
 
 - O veterinário principal, a clínica 24 h (nome, telefone e endereço) e o plano (nome e número da carteirinha)
-  são de cada chefe, opcionais, e eu os edito no próprio cartão. *(1)*
-- O botão SOS fica no cabeçalho de todas as telas: um toque abre a lista dos chefes, o segundo abre
+  são de cada pet, opcionais, e eu os edito no próprio cartão. *(1)*
+- O botão SOS fica no cabeçalho de todas as telas: um toque abre a lista dos pets, o segundo abre
   o cartão. *(1)*
 
-- O Cartão SOS mostra a foto do chefe, o peso atual, as alergias em vermelho, as condições ativas e
+- O Cartão SOS mostra a foto do pet, o peso atual, as alergias em vermelho, as condições ativas e
   os remédios em uso. *(1)*
   Por quê: os remédios dependem da fase 3; até lá o cartão mostra só o que já existe.
 - As condições ativas aparecem logo abaixo das alergias: as graves em vermelho, com o aviso, e as

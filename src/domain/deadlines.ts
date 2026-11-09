@@ -1,4 +1,4 @@
-// What a chefe demands on its page (docs/spec/navegacao.md, "Exige"): vaccines, medications, hygiene,
+// What a pet demands on its page (docs/spec/navegacao.md, "Exige"): vaccines, medications, hygiene,
 // routine consultas and the return of a consulta. Pure: the UI passes the records.
 import { type CareCategory, type CareRecord } from './care/care';
 import { careOccurrences, currentPrazos, doseOccurrences, visitOccurrences, type Plan } from './prazos';
@@ -41,7 +41,7 @@ export function returnStatus(returnOn: string, today: string): VaccineStatus {
 }
 
 /**
- * The returns still open: a return is kept by a consulta registered for the same chefe from 7 days before
+ * The returns still open: a return is kept by a consulta registered for the same pet from 7 days before
  * it on. Without that consulta it stays, overdue, until someone registers it or deletes the visit.
  */
 export function openReturns<T extends DeadlineVisit>(visits: readonly T[]): T[] {

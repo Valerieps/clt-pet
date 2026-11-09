@@ -6,7 +6,7 @@ import { EMERGENCY_ADDRESS_MAX, EMERGENCY_TEXT_MAX, formatPhone, mapsDirectionsH
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
-import { useChefia } from '../chefia';
+import { usePets } from '../use-pets';
 import { CloseIcon, Layer, PhoneIcon, WarningIcon, useEscape } from '../parts';
 import { PetPhoto } from '../PetPhoto';
 import { goBack, navigate } from '../router';
@@ -14,11 +14,11 @@ import { useQuery } from '../use-query';
 
 const t = strings.sos;
 
-/** `petId` is the chefe of the screen below; without it, the first chefe. */
+/** `petId` is the pet of the screen below; without it, the first pet. */
 export function Manual({ petId }: { petId: string | null }) {
-  const { chefes, loading, failed } = useChefia();
-  const chefe = chefes.find((c) => c.pet.id === petId) ?? (petId ? undefined : chefes[0]);
-  const close = () => goBack(chefe ? `/chefes/${chefe.pet.id}` : '/');
+  const { summaries, loading, failed } = usePets();
+  const summary = summaries.find((c) => c.pet.id === petId) ?? (petId ? undefined : summaries[0]);
+  const close = () => goBack(summary ? `/pets/${summary.pet.id}` : '/');
   useEscape(close);
 
   return (
@@ -33,15 +33,15 @@ export function Manual({ petId }: { petId: string | null }) {
           </button>
         </div>
         {failed && <p className="notice">{strings.genericError}</p>}
-        {!loading && !failed && chefes.length === 0 && <p className="muted">{strings.pets.empty}</p>}
-        {chefes.length > 1 && (
+        {!loading && !failed && summaries.length === 0 && <p className="muted">{strings.pets.empty}</p>}
+        {summaries.length > 1 && (
           <div className="chips">
-            {chefes.map((c) => (
+            {summaries.map((c) => (
               <button
                 key={c.pet.id}
                 type="button"
                 className="chip"
-                aria-pressed={c.pet.id === chefe?.pet.id}
+                aria-pressed={c.pet.id === summary?.pet.id}
                 onClick={() => navigate(`/sos/${c.pet.id}`, { replace: true })}
               >
                 {c.pet.profile.name}
@@ -49,8 +49,8 @@ export function Manual({ petId }: { petId: string | null }) {
             ))}
           </div>
         )}
-        {petId && !chefe && !loading && <p className="notice">{strings.pets.notFound}</p>}
-        {chefe && <Card key={chefe.pet.id} pet={chefe.pet} />}
+        {petId && !summary && !loading && <p className="notice">{strings.pets.notFound}</p>}
+        {summary && <Card key={summary.pet.id} pet={summary.pet} />}
       </div>
     </Layer>
   );

@@ -4,7 +4,7 @@ import { PlusIcon, useEscape } from './parts';
 import { REGISTER_OPTIONS } from './register-options';
 import { Link, useHash, usePath } from './router';
 
-/** The floating + on every screen: opens a speed dial with the acontecimentos that can be registered for the chefe. */
+/** The floating + on every screen: opens a speed dial with the acontecimentos that can be registered for the pet. */
 export function SpeedDial({ petId }: { petId: string }) {
   const [open, setOpen] = useState(false);
   const path = usePath();
@@ -22,7 +22,7 @@ export function SpeedDial({ petId }: { petId: string }) {
           <ul className="dial-actions">
             {REGISTER_OPTIONS.map((a) => (
               <li key={a.step}>
-                <Link to={`/chefes/${petId}/registrar#${a.hash}`} className="dial-action">
+                <Link to={`/pets/${petId}/registrar#${a.hash}`} className="dial-action">
                   <span className="dial-label">{a.label}</span>
                   <span className="dial-icon">{a.icon}</span>
                 </Link>

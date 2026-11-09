@@ -27,14 +27,13 @@ function pets(session = 'h-v'): PetView[] {
 }
 const pet = (name: string) => pets().find((p) => p.profile.name === name) as PetView;
 
-describe('the chefes that start registered', () => {
-  it('are Berenice, Panda and Paçoca, with tags and the tutor tied by e-mail', () => {
+describe('the pets that start registered', () => {
+  it('are Berenice, Panda and Paçoca, with the tutor tied by e-mail', () => {
     expect(pets().map((p) => [p.profile.name, p.species, p.tutorName])).toEqual([
       ['Berenice', 'cat', 'Valéria'],
       ['Panda', 'cat', 'Valéria'],
       ['Paçoca', 'dog', 'Cesar'],
     ]);
-    expect(pet('Paçoca').tags).toEqual(['Diretora de Festas', 'Auditora de Petiscos', 'Carisma em Grau de Urgência']);
     expect(pet('Berenice').profile).toMatchObject({ breed: null, birthDate: null, allergies: [] });
     expect(pet('Berenice').allergiesAnswered).toBe(false);
   });
@@ -69,7 +68,7 @@ describe('pet.update', () => {
     allergies: [{ kind: 'drug', description: 'Dipirona' }],
   });
 
-  it('lets either tutor edit any chefe and keeps the species', () => {
+  it('lets either tutor edit any pet and keeps the species', () => {
     const panda = pet('Panda');
     const result = service.command('h-c', 'pet.update', full(panda.id));
     expect(result).toMatchObject({ ok: true, changed: ['pets'], value: { species: 'cat', weightAlertPercent: 8, allergiesAnswered: true } });
@@ -84,7 +83,7 @@ describe('pet.update', () => {
     expect(pet('Panda').allergiesAnswered).toBe(true);
   });
 
-  it('refuses bad input and unknown chefes', () => {
+  it('refuses bad input and unknown pets', () => {
     const { id } = pet('Panda');
     expect(service.command('h-v', 'pet.update', { ...full(id), name: ' ' })).toEqual({ ok: false, error: 'invalid' });
     expect(service.command('h-v', 'pet.update', { ...full(id), weightAlertPercent: 0 })).toEqual({ ok: false, error: 'invalid' });
@@ -106,7 +105,7 @@ describe('pet.setEmergency', () => {
     planNumber: '99887',
   });
 
-  it('is per chefe and starts blank', () => {
+  it('is per pet and starts blank', () => {
     expect(pet('Panda').emergency).toEqual({ vetName: null, vetPhone: null, clinicName: null, clinicPhone: null, clinicAddress: null, planName: null, planNumber: null });
     const result = service.command('h-c', 'pet.setEmergency', contacts(pet('Panda').id));
     expect(result).toMatchObject({ ok: true, changed: ['pets'], value: { emergency: { vetName: 'Dra. Ana', planNumber: '99887' } } });
@@ -122,7 +121,7 @@ describe('pet.setEmergency', () => {
     expect(pet('Panda').emergency).toMatchObject({ vetName: 'Dra. Ana', vetPhone: null, clinicPhone: null, planName: null });
   });
 
-  it('refuses bad phones, unknown chefes and strangers', () => {
+  it('refuses bad phones, unknown pets and strangers', () => {
     const { id } = pet('Panda');
     expect(service.command('h-v', 'pet.setEmergency', { ...contacts(id), vetPhone: 'abc' })).toEqual({ ok: false, error: 'invalid' });
     expect(service.command('h-v', 'pet.setEmergency', contacts('nope'))).toEqual({ ok: false, error: 'not_found' });
@@ -131,7 +130,7 @@ describe('pet.setEmergency', () => {
 });
 
 describe('pet.setTutor', () => {
-  it('hands the chefe to another active member', () => {
+  it('hands the pet to another active member', () => {
     const cesar = (service.query('h-c', 'me', {}) as { value: { id: string } }).value;
     const { id } = pet('Panda');
     expect(service.command('h-v', 'pet.setTutor', { petId: id, memberId: cesar.id })).toMatchObject({
@@ -184,24 +183,6 @@ describe('weights', () => {
     const weightId = (added as { value: PetView }).value.weights[0].id;
     expect(service.command('h-v', 'weight.remove', { weightId })).toMatchObject({ ok: true, value: { weights: [] } });
     expect(service.command('h-v', 'weight.remove', { weightId })).toEqual({ ok: false, error: 'not_found' });
-  });
-});
-
-describe('pet.setTags', () => {
-  it('replaces the tags, keeping the order', () => {
-    const { id } = pet('Panda');
-    const result = service.command('h-c', 'pet.setTags', { petId: id, tags: ['  Dorminhoco ', 'Fofo'] });
-    expect(result).toMatchObject({ ok: true, changed: ['pets'], value: { tags: ['Dorminhoco', 'Fofo'] } });
-    expect(pet('Panda').tags).toEqual(['Dorminhoco', 'Fofo']);
-  });
-
-  it('refuses repeats beyond the limit, wrong types and unknown chefes', () => {
-    const { id } = pet('Panda');
-    expect(service.command('h-v', 'pet.setTags', { petId: id, tags: ['a', 'b', 'c', 'd', 'e', 'f', 'g'] })).toEqual({ ok: false, error: 'invalid' });
-    expect(service.command('h-v', 'pet.setTags', { petId: id, tags: [1] })).toEqual({ ok: false, error: 'invalid' });
-    expect(service.command('h-v', 'pet.setTags', { petId: id, tags: 'a' })).toEqual({ ok: false, error: 'invalid' });
-    expect(service.command('h-v', 'pet.setTags', { petId: 'nope', tags: [] })).toEqual({ ok: false, error: 'not_found' });
-    expect(pet('Panda').tags).toHaveLength(3);
   });
 });
 

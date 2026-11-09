@@ -109,7 +109,7 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
 
   const hash = await sessionHash(request);
 
-  // A chefe's photo: an <img> sends no Origin, so this read is checked by the session alone.
+  // A pet's photo: an <img> sends no Origin, so this read is checked by the session alone.
   const photo = /^\/api\/pets\/([\w-]+)\/photo$/.exec(path);
   if (photo && request.method === 'GET') {
     const image = hash ? await group(env).photo(hash, photo[1]) : null;

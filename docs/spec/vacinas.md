@@ -1,6 +1,6 @@
 # Vacinas
 
-A carteirinha de vacinação de cada chefe, com protocolo, reforço e status.
+A carteirinha de vacinação de cada pet, com protocolo, reforço e status.
 
 - **Entra aqui:** registro de vacina, protocolos por espécie, cálculo do reforço, status e registro
   em grupo.
@@ -17,7 +17,7 @@ A carteirinha de vacinação de cada chefe, com protocolo, reforço e status.
 - Eu registro vacina, data de aplicação, lote, fabricante, veterinário ou clínica e, se quiser, a
   foto do selo. *(1)*
 - Só a vacina e a data são obrigatórias. *(1)*
-- Eu posso registrar a mesma vacina para vários chefes de uma vez. *(1)*
+- Eu posso registrar a mesma vacina para vários pets de uma vez. *(1)*
 - Eu posso planejar uma vacina antes da primeira dose (`prazos.md`). *(2)*
 
 ## Protocolos
@@ -37,4 +37,4 @@ A carteirinha de vacinação de cada chefe, com protocolo, reforço e status.
 
 - Em dia, Vence em até 30 dias, ou Atrasada. O status vem da data do reforço ou do prazo planejado
   (`prazos.md`). *(1)*
-- Atrasada é a "Advertência" na voz do chefe, fora das telas clínicas (`voz-dos-chefes.md`). *(1)*
+- Atrasada é a "Advertência" na voz do pet, fora das telas clínicas (`voz-dos-pets.md`). *(1)*

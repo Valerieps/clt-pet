@@ -4,8 +4,8 @@ import { doneToday, isSnoozed, lastRecordLabel, pendingActions, tutorGroups, typ
 import { dueLabel } from '../../domain/navigation';
 import { formatKilos, latestWeight } from '../../domain/pets/weight';
 import { strings } from '../../domain/strings';
-import { todayLocal, useChefia, type Chefe } from '../chefia';
-import { CheckIcon, ChefeFace, Faces, MeLink } from '../parts';
+import { todayLocal, usePets, type PetSummary } from '../use-pets';
+import { CheckIcon, PetFace, Faces, MeLink } from '../parts';
 import { Link } from '../router';
 
 const t = strings.home;
@@ -14,24 +14,24 @@ const localDay = (at: Date) => at.toLocaleDateString('sv-SE'); // YYYY-MM-DD in 
 
 /**
  * The home screen (docs/spec/proximas-acoes.md): plain information, no phrases. The Pendências of
- * every chefe, what was done today, and one card per tutor with each chefe's numbers.
+ * every pet, what was done today, and one card per tutor with each pet's numbers.
  */
 export function NextActions({ me }: { me: MeView }) {
-  const { chefes, failed, loading } = useChefia();
+  const { summaries, failed, loading } = usePets();
   const today = todayLocal();
   const [snoozes, setSnoozes] = useState<Record<string, string>>(readSnoozes);
-  const byId = new Map(chefes.map((c) => [c.pet.id, c]));
-  const snoozed = new Set(chefes.filter((c) => isSnoozed(snoozes[c.pet.id] ?? null, today)).map((c) => c.pet.id));
+  const byId = new Map(summaries.map((c) => [c.pet.id, c]));
+  const snoozed = new Set(summaries.filter((c) => isSnoozed(snoozes[c.pet.id] ?? null, today)).map((c) => c.pet.id));
   const actions = pendingActions(
-    chefes.map((c) => ({ petId: c.pet.id, status: c.status })),
+    summaries.map((c) => ({ petId: c.pet.id, status: c.status })),
     snoozed,
   );
-  const done = chefes.flatMap((chefe) => {
-    const by = doneToday(chefe.pet.lastRecord, today, localDay);
-    return by ? [{ chefe, by }] : [];
+  const done = summaries.flatMap((summary) => {
+    const by = doneToday(summary.pet.lastRecord, today, localDay);
+    return by ? [{ summary, by }] : [];
   });
   const groups = tutorGroups(
-    chefes.map((c) => ({ ...c, tutorMemberId: c.pet.tutorMemberId, tutorName: c.pet.tutorName })),
+    summaries.map((c) => ({ ...c, tutorMemberId: c.pet.tutorMemberId, tutorName: c.pet.tutorName })),
     me.id,
   );
   const snooze = (petId: string) => {
@@ -44,23 +44,23 @@ export function NextActions({ me }: { me: MeView }) {
     <>
       <header className="home-header">
         <h1 className="sr-only">{t.title}</h1>
-        <Faces chefes={chefes} current="home" />
+        <Faces summaries={summaries} current="home" />
         <MeLink me={me} />
       </header>
       <main className="home">
         {failed && <p className="notice">{strings.genericError}</p>}
         {loading && <HomeSkeleton />}
-        {chefes.length === 0 && !failed && !loading && (
+        {summaries.length === 0 && !failed && !loading && (
           <>
             <p className="muted">{t.empty}</p>
             <div className="actions">
-              <Link to="/chefes" className="btn">
+              <Link to="/pets" className="btn">
                 {t.addFirst}
               </Link>
             </div>
           </>
         )}
-        {chefes.length > 0 && (
+        {summaries.length > 0 && (
           <>
             <section aria-labelledby="home-pending">
               <h2 id="home-pending" className="lbl">
@@ -71,8 +71,8 @@ export function NextActions({ me }: { me: MeView }) {
               ) : (
                 <ul className="list home-rows">
                   {actions.map((action, i) => {
-                    const chefe = byId.get(action.petId);
-                    return chefe && <PendingRow key={`${action.petId}-${i}`} chefe={chefe} action={action} onSnooze={() => snooze(action.petId)} />;
+                    const summary = byId.get(action.petId);
+                    return summary && <PendingRow key={`${action.petId}-${i}`} summary={summary} action={action} onSnooze={() => snooze(action.petId)} />;
                   })}
                 </ul>
               )}
@@ -83,11 +83,11 @@ export function NextActions({ me }: { me: MeView }) {
                   {t.doneTitle}
                 </h2>
                 <ul className="list home-rows">
-                  {done.map(({ chefe, by }) => (
-                    <li key={chefe.pet.id} className={`home-row ${chefe.aura}`}>
-                      <ChefeFace pet={chefe.pet} className="home-face" />
-                      <Link to={`/chefes/${chefe.pet.id}`} className="home-what">
-                        <b>{chefe.pet.profile.name}</b>
+                  {done.map(({ summary, by }) => (
+                    <li key={summary.pet.id} className={`home-row ${summary.aura}`}>
+                      <PetFace pet={summary.pet} className="home-face" />
+                      <Link to={`/pets/${summary.pet.id}`} className="home-what">
+                        <b>{summary.pet.profile.name}</b>
                         <span>{t.doneBy(by)}</span>
                       </Link>
                       <span className="home-check" aria-hidden="true">
@@ -102,9 +102,9 @@ export function NextActions({ me }: { me: MeView }) {
               <section key={group.memberId ?? 'none'} className="home-card" aria-label={group.name ? t.tutorTitle(group.name) : t.noTutor}>
                 <h2 className="lbl">{group.name ? t.tutorTitle(group.name) : t.noTutor}</h2>
                 <ul className="list">
-                  {group.pets.map((chefe) => (
-                    <li key={chefe.pet.id}>
-                      <ChefeLine chefe={chefe} today={today} />
+                  {group.pets.map((summary) => (
+                    <li key={summary.pet.id}>
+                      <PetLine summary={summary} today={today} />
                     </li>
                   ))}
                 </ul>
@@ -117,17 +117,17 @@ export function NextActions({ me }: { me: MeView }) {
   );
 }
 
-/** One line of the Pendências: the chefe, what is due and when, and the button. */
-function PendingRow({ chefe, action, onSnooze }: { chefe: Chefe; action: PendingAction; onSnooze: () => void }) {
-  const { pet, aura } = chefe;
+/** One line of the Pendências: the pet, what is due and when, and the button. */
+function PendingRow({ summary, action, onSnooze }: { summary: PetSummary; action: PendingAction; onSnooze: () => void }) {
+  const { pet, aura } = summary;
   const what = action.kind === 'prazo' ? action.prazo.item : action.kind === 'weight' ? t.weightPill(action.percent) : t.allergiesPill;
   const when = action.kind === 'prazo' ? dueLabel(action.prazo.overdue, action.prazo.days) : null;
   const late = action.kind === 'prazo' && action.prazo.overdue;
   return (
     <li className={`home-row ${aura}`}>
-      <ChefeFace pet={pet} className="home-face" />
+      <PetFace pet={pet} className="home-face" />
       <div className="home-what">
-        <Link to={`/chefes/${pet.id}`}>
+        <Link to={`/pets/${pet.id}`}>
           <b>{pet.profile.name}</b>
         </Link>
         <span>
@@ -137,11 +137,11 @@ function PendingRow({ chefe, action, onSnooze }: { chefe: Chefe; action: Pending
       </div>
       <div className="home-buttons">
         {action.kind === 'allergies' ? (
-          <Link to={`/chefes/${pet.id}`} className="btn small">
+          <Link to={`/pets/${pet.id}`} className="btn small">
             {t.fillAllergies}
           </Link>
         ) : (
-          <Link to={`/chefes/${pet.id}/registrar`} className="btn small">
+          <Link to={`/pets/${pet.id}/registrar`} className="btn small">
             {strings.register.button}
           </Link>
         )}
@@ -153,16 +153,16 @@ function PendingRow({ chefe, action, onSnooze }: { chefe: Chefe; action: Pending
   );
 }
 
-/** A chefe in the tutor's card: the newest weight, the next prazo and the last record. The whole line opens the page. */
-function ChefeLine({ chefe, today }: { chefe: Chefe; today: string }) {
-  const { pet, aura, status } = chefe;
+/** A pet in the tutor's card: the newest weight, the next prazo and the last record. The whole line opens the page. */
+function PetLine({ summary, today }: { summary: PetSummary; today: string }) {
+  const { pet, aura, status } = summary;
   const weight = latestWeight(pet.weights);
   const next = status.next;
   const last = lastRecordLabel(pet.lastRecord, today, localDay);
   return (
-    <Link to={`/chefes/${pet.id}`} className={`home-chefe ${aura}`}>
+    <Link to={`/pets/${pet.id}`} className={`home-pet ${aura}`}>
       <span className="home-face-wrap">
-        <ChefeFace pet={pet} className="home-face" />
+        <PetFace pet={pet} className="home-face" />
         {status.needsAttention && <span className="pend" role="img" aria-label={strings.nav.pending} />}
       </span>
       <span className="home-what">
@@ -195,7 +195,7 @@ function writeSnoozes(value: Record<string, string>): void {
   }
 }
 
-/** What shows while the chefes load: the lines' shape, so the screen is never blank. */
+/** What shows while the pets load: the lines' shape, so the screen is never blank. */
 function HomeSkeleton() {
   return (
     <div role="status" aria-label={t.loading}>

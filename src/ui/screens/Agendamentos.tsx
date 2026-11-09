@@ -21,51 +21,51 @@ import {
 import { strings } from '../../domain/strings';
 import { DEFAULT_INTERVAL_DAYS, MAX_INTERVAL_DAYS, PROTOCOLS } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
-import { todayLocal, type Chefe } from '../chefia';
+import { todayLocal, type PetSummary } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
 import { VisitList } from './Health';
 import { TreatmentList } from './Medications';
 
-const s = strings.chefe.sections;
+const s = strings.petPage.sections;
 const status = strings.care.status;
 const t = strings.prazos;
 const m = strings.medications;
 
-export function AgendamentosPanel({ chefe, editing }: { chefe: Chefe; editing: boolean }) {
+export function AgendamentosPanel({ summary, editing }: { summary: PetSummary; editing: boolean }) {
   const today = todayLocal();
-  const petId = chefe.pet.id;
+  const petId = summary.pet.id;
   const visits = (useQuery('visits', {}, ['visits', 'pets']).data ?? []).filter((v) => v.petId === petId);
   const treatments = (useQuery('medications', {}, ['medications', 'pets']).data ?? []).filter((x) => x.petId === petId);
-  const care = (kind: 'parasite' | 'hygiene') => careOccurrences(chefe.care.filter((c) => c.category === kind));
+  const care = (kind: 'parasite' | 'hygiene') => careOccurrences(summary.care.filter((c) => c.category === kind));
   return (
     <>
-      <PrazoSection id="vacinas" kind="vaccine" title={s.vaccines} occurrences={doseOccurrences(chefe.doses)} chefe={chefe} editing={editing} />
+      <PrazoSection id="vacinas" kind="vaccine" title={s.vaccines} occurrences={doseOccurrences(summary.doses)} summary={summary} editing={editing} />
       <PrazoSection
         id="medicacoes"
         kind="parasite"
         title={s.parasites}
         occurrences={care('parasite')}
-        chefe={chefe}
+        summary={summary}
         editing={editing}
         extra={treatments.length}
       >
         <TreatmentList treatments={treatments} removable={editing} />
       </PrazoSection>
-      <PrazoSection id="higiene" kind="hygiene" title={s.hygiene} occurrences={care('hygiene')} chefe={chefe} editing={editing} />
+      <PrazoSection id="higiene" kind="hygiene" title={s.hygiene} occurrences={care('hygiene')} summary={summary} editing={editing} />
       <PrazoSection
         id="consultas"
         kind="visit"
         title={s.visits}
-        occurrences={visitOccurrences(visits, chefe.plans, today)}
-        chefe={chefe}
+        occurrences={visitOccurrences(visits, summary.plans, today)}
+        summary={summary}
         editing={editing}
         extra={visits.length}
       >
         <VisitList visits={visits} removable={editing} />
       </PrazoSection>
-      <PrazosHistory chefe={chefe} editing={editing} />
+      <PrazosHistory summary={summary} editing={editing} />
     </>
   );
 }
@@ -85,7 +85,7 @@ interface SectionProps {
   readonly kind: PrazoKind;
   readonly title: string;
   readonly occurrences: readonly Occurrence[];
-  readonly chefe: Chefe;
+  readonly summary: PetSummary;
   readonly editing: boolean;
   /** How many other things (treatments, visits) the section shows below its prazos. */
   readonly extra?: number;
@@ -94,13 +94,13 @@ interface SectionProps {
 
 const DEFAULT_INTERVALS: Record<PrazoKind, number> = { vaccine: DEFAULT_INTERVAL_DAYS, parasite: 30, hygiene: 30, visit: 365 };
 
-function PrazoSection({ id, kind, title, occurrences, chefe, editing, extra = 0, children }: SectionProps) {
+function PrazoSection({ id, kind, title, occurrences, summary, editing, extra = 0, children }: SectionProps) {
   const today = todayLocal();
   const confirm = useConfirm();
   const { backend } = useServices();
   const [draft, setDraft] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const prazos = currentPrazos(kind, occurrences, chefe.plans, today).sort((a, b) => a.due.localeCompare(b.due));
+  const prazos = currentPrazos(kind, occurrences, summary.plans, today).sort((a, b) => a.due.localeCompare(b.due));
 
   async function removePlan(planId: string) {
     if (!(await confirm(t.removePlanConfirm))) return;
@@ -146,7 +146,7 @@ function PrazoSection({ id, kind, title, occurrences, chefe, editing, extra = 0,
         </p>
       )}
       {draft ? (
-        <PlanForm key={draft.item} kind={kind} pet={chefe.pet} draft={draft} onDone={() => setDraft(null)} />
+        <PlanForm key={draft.item} kind={kind} pet={summary.pet} draft={draft} onDone={() => setDraft(null)} />
       ) : (
         <div>
           <button type="button" onClick={() => setDraft({ item: '', dueOn: today, intervalDays: DEFAULT_INTERVALS[kind], dose: '', replanning: false })}>
@@ -319,20 +319,20 @@ interface HistoryRow {
 }
 
 /** Every vaccine dose and care record, newest first, folded and small; the remove buttons show only while editing. */
-function PrazosHistory({ chefe, editing }: { chefe: Chefe; editing: boolean }) {
+function PrazosHistory({ summary, editing }: { summary: PetSummary; editing: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();
   const [error, setError] = useState<string | null>(null);
   const v = strings.vaccines;
   const rows: HistoryRow[] = [
-    ...chefe.doses.map((d): HistoryRow => ({
+    ...summary.doses.map((d): HistoryRow => ({
       id: d.id,
       kind: 'vaccine',
       name: d.vaccine,
       on: d.appliedOn,
       detail: [d.lot && `lote ${d.lot}`, d.maker, d.vet, v.by(d.byName)].filter(Boolean).join(' · '),
     })),
-    ...chefe.care.map((c): HistoryRow => ({
+    ...summary.care.map((c): HistoryRow => ({
       id: c.id,
       kind: 'care',
       name: c.item,
@@ -351,7 +351,7 @@ function PrazosHistory({ chefe, editing }: { chefe: Chefe; editing: boolean }) {
 
   return (
     <details className="fold meta" open={editing || undefined}>
-      <summary>{strings.chefe.history}</summary>
+      <summary>{strings.petPage.history}</summary>
       {error && (
         <p className="notice" role="alert">
           {error}

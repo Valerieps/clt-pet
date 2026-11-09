@@ -4,7 +4,7 @@ import { canManageGroup } from '../domain/group/roles';
 import { swipeTarget } from '../domain/navigation';
 import { strings } from '../domain/strings';
 import { useLiveStatus, useServices } from './backend-context';
-import { useChefia } from './chefia';
+import { usePets } from './use-pets';
 import { BackBar, ManualHandle } from './parts';
 import { SpeedDial } from './SpeedDial';
 import { navigate, usePath } from './router';
@@ -85,14 +85,14 @@ function MemberApp() {
   );
 }
 
-const REGISTER_PATH = /^\/chefes\/([^/]+)\/registrar$/;
+const REGISTER_PATH = /^\/pets\/([^/]+)\/registrar$/;
 const MANUAL_PATH = /^\/sos(?:\/([^/]+))?$/;
-const PET_PATH = /^\/chefes\/([^/]+)$/;
+const PET_PATH = /^\/pets\/([^/]+)$/;
 
 /** The screen under the layers: a drawer (Registrar, Manual) sits over the page it was opened from. */
 function Shell({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
   const path = usePath();
-  const { chefes } = useChefia();
+  const { summaries } = usePets();
   const touch = useRef<{ x: number; y: number } | null>(null);
 
   const register = REGISTER_PATH.exec(path);
@@ -100,9 +100,9 @@ function Shell({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
   const petId = register?.[1] ?? PET_PATH.exec(path)?.[1] ?? manual?.[1] ?? null;
   const currentPetId = petId ? decodeURIComponent(petId) : null;
 
-  // Swiping sideways walks the main screens: Próximas Ações, then each chefe.
-  const order = ['/', ...chefes.map((c) => `/chefes/${c.pet.id}`)];
-  const here = currentPetId && !register && !manual ? `/chefes/${currentPetId}` : path;
+  // Swiping sideways walks the main screens: Próximas Ações, then each pet.
+  const order = ['/', ...summaries.map((c) => `/pets/${c.pet.id}`)];
+  const here = currentPetId && !register && !manual ? `/pets/${currentPetId}` : path;
   const onTouchStart = (event: TouchEvent) => {
     const target = event.target as HTMLElement;
     const point = event.touches[0];
@@ -117,7 +117,7 @@ function Shell({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
     if (to) navigate(to);
   };
 
-  const manualPetId = currentPetId ?? chefes[0]?.pet.id ?? null;
+  const manualPetId = currentPetId ?? summaries[0]?.pet.id ?? null;
 
   return (
     <div className="shell" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
@@ -162,7 +162,7 @@ function Screen({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
         <Members me={me} />
       </SubPage>
     );
-  if (path === '/chefes')
+  if (path === '/pets')
     return (
       <SubPage>
         <Pets />

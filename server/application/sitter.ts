@@ -84,7 +84,6 @@ export function sitterManual(ctx: Context, token: string): SitterManualView | nu
       id: pet.id,
       name: pet.profile.name,
       species: pet.species,
-      tags: pet.tags,
       photoVersion: pet.photoVersion,
       microchip: pet.profile.microchip,
       allergies: pet.profile.allergies,
@@ -98,7 +97,7 @@ export function sitterManual(ctx: Context, token: string): SitterManualView | nu
   return { label: link.label, note: link.note, expiresOn: link.expires_on, tutors, pets: views };
 }
 
-/** A photo for the sitter's page, only of a chefe the link covers. */
+/** A photo for the sitter's page, only of a pet the link covers. */
 export function sitterPhoto(ctx: Context, token: string, petId: string): string | null {
   const link = openLink(ctx, token);
   return link && (JSON.parse(link.pet_ids) as string[]).includes(petId) ? photoOf(ctx, petId) : null;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { demandedDeadlines } from './deadlines';
-import { chefeStatus } from './next-actions';
+import { petStatus } from './next-actions';
 import { currentPrazos, normalizePlan, prazoStatus, routineDueAfter, visitOccurrences, type Occurrence, type Plan } from './prazos';
 
 const today = '2026-11-04';
@@ -104,13 +104,13 @@ describe('plans on the page and the home screen', () => {
   const pet = { id: 'p', name: 'Paçoca', seriousMode: false, allergiesAnswered: true };
 
   it('a planned vaccine due soon demands attention before any dose', () => {
-    const status = chefeStatus(pet, [], today, null, [], [plan('V10', '2026-11-10', 365, 'vaccine')]);
+    const status = petStatus(pet, [], today, null, [], [plan('V10', '2026-11-10', 365, 'vaccine')]);
     expect(status).toMatchObject({ needsAttention: true, vaccine: { item: 'Vacina V10', overdue: false, days: 6 } });
   });
 
   it('planned hygiene stays off the home screen but shows on the page', () => {
     const plans = [plan('Banho', '2026-11-05', 15, 'hygiene'), plan('Vermífugo', '2027-03-01')];
-    expect(chefeStatus(pet, [], today, null, [], plans).needsAttention).toBe(false);
+    expect(petStatus(pet, [], today, null, [], plans).needsAttention).toBe(false);
     const demanded = demandedDeadlines({ doses: [], care: [], visits: [], plans }, today);
     expect(demanded.map((d) => [d.kind, d.name])).toEqual([['hygiene', 'Banho']]);
   });

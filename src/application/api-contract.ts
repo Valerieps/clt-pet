@@ -46,27 +46,26 @@ export interface PetView {
   readonly id: string;
   readonly species: Species;
   readonly profile: PetProfile;
-  readonly tags: readonly string[];
   /** Changes whenever the photo does (it is part of the image's address); null without a photo. */
   readonly photoVersion: string | null;
   /** False until someone saves the allergies once, so the screen can say "nenhuma alergia informada". */
   readonly allergiesAnswered: boolean;
-  /** The per-chefe switch that turns the humor off (docs/spec/voz-dos-chefes.md). */
+  /** The per-pet switch that turns the humor off (docs/spec/voz-dos-pets.md). */
   readonly seriousMode: boolean;
   readonly weightAlertPercent: number;
   readonly emergency: Emergency;
   readonly tutorMemberId: string | null;
   readonly tutorEmail: string;
   readonly tutorName: string | null;
-  /** While the tutoria is lent: the day it goes back (docs/spec/chefes.md, "Tutoria"). */
+  /** While the tutoria is lent: the day it goes back (docs/spec/pets.md, "Tutoria"). */
   readonly tutorUntil: string | null;
   /** Who takes the tutoria back on `tutorUntil`. */
   readonly tutorReturnName: string | null;
-  /** YYYY-MM-DD: when the chefe was registered in the app (its "chegada"). */
+  /** YYYY-MM-DD: when the pet was registered in the app (its "chegada"). */
   readonly arrivedOn: string;
   /** Oldest first. */
   readonly weights: readonly WeightEntryView[];
-  /** The newest thing registered for this chefe (weight, vaccine, medication, care, visit, diary): who and when (ISO). */
+  /** The newest thing registered for this pet (weight, vaccine, medication, care, visit, diary): who and when (ISO). */
   readonly lastRecord: LastRecordView | null;
 }
 
@@ -95,7 +94,7 @@ export interface VaccinationView {
   readonly byName: string;
 }
 
-/** A chefe that left (docs/spec/chefes.md, "Aposentadoria"); its history stays in the database. */
+/** A pet that left (docs/spec/pets.md, "Aposentadoria"); its history stays in the database. */
 export interface RetiredPetView {
   readonly id: string;
   readonly name: string;
@@ -185,12 +184,11 @@ export interface SitterLinkView {
   readonly byName: string;
 }
 
-/** What the sitter's page shows about one chefe (docs/spec/manual-temporario.md). */
+/** What the sitter's page shows about one pet (docs/spec/manual-temporario.md). */
 export interface SitterPetView {
   readonly id: string;
   readonly name: string;
   readonly species: Species;
-  readonly tags: readonly string[];
   readonly photoVersion: string | null;
   readonly microchip: string | null;
   readonly allergies: PetProfile['allergies'];
@@ -229,7 +227,7 @@ export interface MedicationView {
   readonly byName: string;
 }
 
-/** Where a chefe's photo is served (GET, signed-in members only). */
+/** Where a pet's photo is served (GET, signed-in members only). */
 export const petPhotoPath = (petId: string, version: string) => `/api/pets/${petId}/photo?v=${encodeURIComponent(version)}`;
 
 /** Largest accepted photo, as base64 text (about 300 kB of JPEG); the app shrinks pictures far below it. */
@@ -240,15 +238,15 @@ export type PetUpdate = { petId: string; weightAlertPercent: number } & PetProfi
 
 /** Reads: `POST /api/query/<name>`. They never change anything. */
 export interface Queries {
-  /** The chefes that are not retired, with weights. */
+  /** The pets that are not retired, with weights. */
   pets: { input: Record<string, never>; output: PetView[] };
-  /** Every dose registered for the chefes that are not retired, oldest application first. */
+  /** Every dose registered for the pets that are not retired, oldest application first. */
   vaccinations: { input: Record<string, never>; output: VaccinationView[] };
   /** Newest retirement first. */
   retiredPets: { input: Record<string, never>; output: RetiredPetView[] };
-  /** Parasite and hygiene records of the chefes that are not retired, oldest first. */
+  /** Parasite and hygiene records of the pets that are not retired, oldest first. */
   care: { input: Record<string, never>; output: CareView[] };
-  /** The planned prazos of the chefes that are not retired, soonest first. */
+  /** The planned prazos of the pets that are not retired, soonest first. */
   plans: { input: Record<string, never>; output: PlanView[] };
   /** Every condition, active and resolved. */
   conditions: { input: Record<string, never>; output: ConditionView[] };
@@ -259,7 +257,7 @@ export interface Queries {
   meals: { input: Record<string, never>; output: MealView[] };
   /** The links not revoked, newest first. */
   sitterLinks: { input: Record<string, never>; output: SitterLinkView[] };
-  /** Every medication registered for the chefes that are not retired, oldest start first. */
+  /** Every medication registered for the pets that are not retired, oldest start first. */
   medications: { input: Record<string, never>; output: MedicationView[] };
   me: { input: Record<string, never>; output: MeView };
   push: { input: Record<string, never>; output: PushInfo };
@@ -276,13 +274,13 @@ export interface Commands {
   /** Admins; never oneself, so the last admin stays. */
   'member.remove': { input: { memberId: string }; output: null };
   'member.rename': { input: { name: string }; output: MeView };
-  /** Any member edits any chefe's profile, allergies and weight limit. */
+  /** Any member edits any pet's profile, allergies and weight limit. */
   'pet.update': { input: PetUpdate; output: PetView };
   /** Any member edits the vet, 24 h clinic and health plan shown on the Cartão SOS. */
   'pet.setEmergency': { input: { petId: string } & Emergency; output: PetView };
-  /** The Exame Admissional: a new chefe, with only the name and species; the actor is its tutor. */
+  /** The Exame Admissional: a new pet, with only the name and species; the actor is its tutor. */
   'pet.create': { input: { name: string; species: Species }; output: PetView };
-  /** Retires a chefe (death or adoption): it leaves Próximas Ações; its history stays. */
+  /** Retires a pet (death or adoption): it leaves Próximas Ações; its history stays. */
   'pet.retire': { input: { petId: string }; output: null };
   /** Lends the tutoria to `memberId` until `until` (a future date); the current tutor takes it back that day. */
   'pet.lendTutoria': { input: { petId: string; memberId: string; until: string }; output: PetView };
@@ -290,14 +288,12 @@ export interface Commands {
   'pet.setTutor': { input: { petId: string; memberId: string }; output: PetView };
   /** `image` is a base64 JPEG (at most PHOTO_MAX_BASE64 characters); null takes the photo away. */
   'pet.setPhoto': { input: { petId: string; image: string | null }; output: PetView };
-  /** Replaces the personality tags (docs/spec/voz-dos-chefes.md). */
-  'pet.setTags': { input: { petId: string; tags: string[] }; output: PetView };
   /** Saves this device's push subscription (the endpoint must be a push service of ADR-008). */
   'push.subscribe': { input: { endpoint: string; p256dh: string; auth: string }; output: null };
   'push.unsubscribe': { input: { endpoint: string }; output: null };
   'weight.add': { input: { petId: string; grams: number; onDate: string }; output: PetView };
   'weight.remove': { input: { weightId: string }; output: PetView };
-  /** One dose for every chefe in `petIds`; only `vaccine` and `appliedOn` are required. */
+  /** One dose for every pet in `petIds`; only `vaccine` and `appliedOn` are required. */
   'vaccine.add': {
     input: {
       petIds: string[];
@@ -311,14 +307,14 @@ export interface Commands {
     output: VaccinationView[];
   };
   'vaccine.remove': { input: { vaccinationId: string }; output: null };
-  /** One parasite or hygiene record for every chefe in `petIds`; the interval defaults to 365 days. */
+  /** One parasite or hygiene record for every pet in `petIds`; the interval defaults to 365 days. */
   'care.add': {
     input: { petIds: string[]; category: CareCategory; item: string; doneOn: string; intervalDays?: number; note?: string | null };
     output: CareView[];
   };
   'care.remove': { input: { careId: string }; output: null };
   /**
-   * Plans an item's next date for every chefe in `petIds`, replacing that item's earlier plan. A record
+   * Plans an item's next date for every pet in `petIds`, replacing that item's earlier plan. A record
    * of the same item (`vaccine.add`, `care.add`) removes the plan: from then on the record decides.
    * A routine consulta (`visit`) stays: a consulta done with the same subject moves it forward.
    */
@@ -341,7 +337,7 @@ export interface Commands {
   /** The link lasts `days` days (1 to 90, default 7), counting today. */
   'sitter.create': { input: { label: string; petIds: string[]; note?: string | null; days?: number }; output: SitterLinkView };
   'sitter.revoke': { input: { linkId: string }; output: null };
-  /** One medication for one chefe; `endOn` empty or missing is continuous use. */
+  /** One medication for one pet; `endOn` empty or missing is continuous use. */
   'medication.add': {
     input: { petId: string; name: string; dose: string; frequency: Frequency; startOn: string; endOn?: string | null };
     output: MedicationView;

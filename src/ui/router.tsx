@@ -1,5 +1,12 @@
 // A tiny router over the History API: the app has a handful of screens and no router dependency.
 import { useEffect, useState, type AnchorHTMLAttributes, type MouseEvent } from 'react';
+import { currentPath } from '../domain/navigation';
+
+/** Called once at start-up: an old address (/chefes/...) becomes the new one before any screen reads it; the #tab is kept. */
+export function upgradeOldAddress(): void {
+  const path = currentPath(window.location.pathname);
+  if (path !== window.location.pathname) window.history.replaceState(null, '', path + window.location.search + window.location.hash);
+}
 
 const listeners = new Set<() => void>();
 

@@ -7,7 +7,7 @@ cada item, mesmo antes de ele ter acontecido alguma vez.
   a aba Agendamentos mostra cada item.
 - **Não entra aqui:** o registro de uma vacina (`vacinas.md`) ou de um cuidado (`cuidados.md`), o
   status de cada tipo (também lá), os avisos no celular (`lembretes.md`) e o lugar da aba na página
-  do chefe (`navegacao.md`).
+  do pet (`navegacao.md`).
 
 ## Em aberto
 
@@ -20,8 +20,8 @@ cada item, mesmo antes de ele ter acontecido alguma vez.
   com a próxima data e de quanto em quanto tempo ele se repete. Os quatro são obrigatórios; a data
   pode ser passada ou futura. *(2)*
   Por quê: antes só dava para começar um prazo a partir de algo já feito, e eu quero montar o
-  esquema dos chefes antes da primeira dose.
-- Eu posso planejar o mesmo item para vários chefes de uma vez. *(2)*
+  esquema dos pets antes da primeira dose.
+- Eu posso planejar o mesmo item para vários pets de uma vez. *(2)*
 - O planejamento é uma ficha: entra pelo botão no fim de cada seção da aba Agendamentos ("+ Planejar
   vacina", "+ Planejar medicação", "+ Planejar higiene", "+ Planejar consulta"), nunca pelo +. *(2)*
 - Ao planejar uma medicação eu escolho a dose e a frequência. Se a frequência é "Periódica (a cada X
@@ -29,7 +29,7 @@ cada item, mesmo antes de ele ter acontecido alguma vez.
   dose. Se é diária (1x, 2x ou 3x ao dia, a cada 12 ou 8 horas, ou quando precisar), ela vira um
   tratamento (`medicacoes.md`): a dose é obrigatória, com início e, se quiser, fim. *(2)*
   Por quê: medicações e tratamentos eram duas listas em abas diferentes para a mesma pergunta, "o
-  que esse chefe toma".
+  que esse pet toma".
 - Cada item da aba tem "Mudar data", que abre o planejamento já preenchido: assim eu mudo a próxima
   data de um item que já tem registro (ex.: o veterinário adiantou o reforço). *(2)*
 - Planejar de novo um item que já tem planejamento substitui o anterior. *(2)*
@@ -53,14 +53,14 @@ cada item, mesmo antes de ele ter acontecido alguma vez.
   futura), um exame ou um laudo não mexem no planejamento. *(2)*
   Por quê: a consulta não tem intervalo próprio; sem o planejamento, a rotina se perderia.
 - A consulta de rotina vence logo a um quarto do intervalo (até 30 dias antes), como os cuidados,
-  e entra no "Exige" da página do chefe; ainda não entra nas Próximas Ações nem gera aviso no celular. *(2)*
+  e entra no "Exige" da página do pet; ainda não entra nas Próximas Ações nem gera aviso no celular. *(2)*
 
 ## Status e atenção
 
 - Um item planejado tem o mesmo status de um registrado (Em dia, Vence logo ou Atrasado), pelas
   regras do seu tipo (`vacinas.md`, `cuidados.md`). *(2)*
 - Ele entra no "Exige", nas Próximas Ações e nos avisos do celular exatamente como um item
-  registrado: vacinas e medicações em tudo, higiene e consultas de rotina só na página do chefe. *(2)*
+  registrado: vacinas e medicações em tudo, higiene e consultas de rotina só na página do pet. *(2)*
 
 ## A aba Agendamentos
 

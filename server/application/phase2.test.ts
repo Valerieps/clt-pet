@@ -23,7 +23,7 @@ const query = <T>(name: string): T => (service.query('h-v', name, {}) as { value
 const ctx = (): Context => ({ sql, clock, ids: sequentialIds() });
 
 describe('care', () => {
-  it('registers a record for several chefes and removes it', () => {
+  it('registers a record for several pets and removes it', () => {
     const result = service.command('h-v', 'care.add', {
       petIds: ['pet-berenice', 'pet-panda'],
       category: 'parasite',
@@ -41,7 +41,7 @@ describe('care', () => {
     expect(query<CareView[]>('care')).toHaveLength(1);
   });
 
-  it('saves nothing for an unknown chefe or invalid input', () => {
+  it('saves nothing for an unknown pet or invalid input', () => {
     const base = { category: 'hygiene', item: 'Banho', doneOn: '2026-10-01' };
     expect(service.command('h-v', 'care.add', { ...base, petIds: ['pet-pacoca', 'nope'] })).toEqual({ ok: false, error: 'not_found' });
     expect(service.command('h-v', 'care.add', { ...base, petIds: [] })).toEqual({ ok: false, error: 'invalid' });
@@ -154,14 +154,14 @@ describe('sitter links', () => {
     expect(query<SitterLinkView[]>('sitterLinks').map((l) => l.id)).toEqual([link.id]);
   });
 
-  it('serves photos only of the chefes the link covers', () => {
+  it('serves photos only of the pets the link covers', () => {
     service.command('h-v', 'pet.setPhoto', { petId: 'pet-panda', image: 'AAAA' });
     const link = create();
     expect(service.sitterPhoto(link.token, 'pet-panda')).toBeNull();
     expect(service.sitterManual('nope')).toBeNull();
   });
 
-  it('needs at least one existing chefe', () => {
+  it('needs at least one existing pet', () => {
     expect(service.command('h-v', 'sitter.create', { label: 'Ana', petIds: ['nope'] })).toEqual({ ok: false, error: 'not_found' });
     expect(service.command('h-v', 'sitter.create', { label: 'Ana', petIds: [] })).toEqual({ ok: false, error: 'invalid' });
   });
@@ -170,13 +170,13 @@ describe('sitter links', () => {
 describe('admission, retirement and lent tutoria', () => {
   const pets = () => query<{ id: string; tutorName: string | null; tutorUntil: string | null; tutorReturnName: string | null }[]>('pets');
 
-  it('admits a new chefe with the actor as tutor', () => {
+  it('admits a new pet with the actor as tutor', () => {
     const result = service.command('h-v', 'pet.create', { name: ' Tico ', species: 'dog' });
     expect(result).toMatchObject({ ok: true, value: { profile: { name: 'Tico' }, species: 'dog', tutorName: 'Valéria', arrivedOn: '2026-11-04' } });
     expect(service.command('h-v', 'pet.create', { name: 'Tico', species: 'fish' })).toEqual({ ok: false, error: 'invalid' });
   });
 
-  it('retires a chefe: it leaves the lists and its reminders stop', () => {
+  it('retires a pet: it leaves the lists and its reminders stop', () => {
     service.command('h-v', 'care.add', { petIds: ['pet-panda'], category: 'parasite', item: 'Vermífugo', doneOn: '2026-10-01', intervalDays: 90 });
     expect(service.command('h-v', 'pet.retire', { petId: 'pet-panda' })).toMatchObject({ ok: true, changed: ['pets'] });
     expect(pets().map((p) => p.id)).not.toContain('pet-panda');

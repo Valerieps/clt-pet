@@ -25,7 +25,7 @@ export function Pets() {
             <li key={pet.id} className="card pet-header">
               <PetPhoto pet={pet} small />
               <div>
-                <Link to={`/chefes/${pet.id}`}>
+                <Link to={`/pets/${pet.id}`}>
                   <strong>{pet.profile.name}</strong>
                 </Link>{' '}
                 <span className="muted">{t.species[pet.species]}</span>
@@ -57,7 +57,7 @@ export function Pets() {
   );
 }
 
-/** The Exame Admissional (docs/spec/chefes.md): a new chefe with only the name and the species. */
+/** The Exame Admissional (docs/spec/pets.md): a new pet with only the name and the species. */
 function Admission() {
   const toast = useToast();
   const { backend } = useServices();

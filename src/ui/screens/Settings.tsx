@@ -12,7 +12,7 @@ import { PushToggle } from './PushToggle';
 
 const t = strings.settings;
 
-/** The avatar's destination: chefes, members and invites, reminders, the member's own name, sign-out. */
+/** The avatar's destination: pets, members and invites, reminders, the member's own name, sign-out. */
 export function Settings({ me, onSignOut }: { me: MeView; onSignOut: () => void }) {
   return (
     <>
@@ -32,10 +32,10 @@ export function Settings({ me, onSignOut }: { me: MeView; onSignOut: () => void 
       </header>
       <main className="sheet stack" style={{ gap: 20 }}>
         <section>
-          <p className="lbl">{t.chefes}</p>
-          <Link to="/chefes" className="item">
-            <p>{t.allChefes}</p>
-            <span className="meta">{t.chefesHint}</span>
+          <p className="lbl">{t.pets}</p>
+          <Link to="/pets" className="item">
+            <p>{t.allPets}</p>
+            <span className="meta">{t.petsHint}</span>
           </Link>
           <Link to="/temporario" className="item">
             <p>{t.sitter}</p>

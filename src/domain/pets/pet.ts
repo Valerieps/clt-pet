@@ -1,4 +1,4 @@
-// A chefe's profile (docs/spec/chefes.md, "Perfil" and "Alergias e restrições").
+// A pet's profile (docs/spec/pets.md, "Perfil" and "Alergias e restrições").
 export type Species = 'cat' | 'dog';
 export type Sex = 'female' | 'male';
 export type FoodKind = 'dry' | 'wet';
@@ -30,8 +30,6 @@ export const PET_NAME_MAX = 40;
 export const TEXT_MAX = 80;
 export const MICROCHIP_MAX = 30;
 export const MAX_ALLERGIES = 20;
-export const MAX_TAGS = 6;
-export const TAG_MAX = 40;
 export const SPECIES: readonly Species[] = ['cat', 'dog'];
 const SEXES: readonly Sex[] = ['female', 'male'];
 const FOOD_KINDS: readonly FoodKind[] = ['dry', 'wet'];
@@ -123,20 +121,7 @@ function normalizeAllergies(raw: unknown): Allergy[] | null {
   return result;
 }
 
-/** Validates the raw tags of `pet.setTags`: trimmed, no repeats (ignoring case), at most MAX_TAGS. Null when wrong. */
-export function normalizeTags(raw: unknown): string[] | null {
-  if (!Array.isArray(raw) || raw.length > MAX_TAGS * 2) return null;
-  const tags: string[] = [];
-  for (const item of raw) {
-    const tag = text(item, TAG_MAX);
-    if (tag === undefined) return null;
-    if (tag === null) continue;
-    if (!tags.some((t) => t.toLowerCase() === tag.toLowerCase())) tags.push(tag);
-  }
-  return tags.length <= MAX_TAGS ? tags : null;
-}
-
-/** The birth date that makes a chefe `years` years and `months` months old on `today` (YYYY-MM-DD). */
+/** The birth date that makes a pet `years` years and `months` months old on `today` (YYYY-MM-DD). */
 export function birthDateFromAge(years: number, months: number, today: string): string | null {
   if (!Number.isInteger(years) || !Number.isInteger(months) || years < 0 || months < 0 || months > 11 || years > 40) return null;
   if (years === 0 && months === 0) return null;

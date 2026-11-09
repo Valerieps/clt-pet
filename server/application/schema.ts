@@ -32,8 +32,8 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       revoked_at TEXT
     )`,
   ],
-  // 2: the chefes, their tags, allergies and weights, and the three that start registered
-  // (docs/spec/chefes.md). The tutor is tied by e-mail; sign-in fills `tutor_member_id`.
+  // 2: the pets, their tags, allergies and weights, and the three that start registered
+  // (docs/spec/pets.md). The tutor is tied by e-mail; sign-in fills `tutor_member_id`.
   [
     `CREATE TABLE pets (
       id TEXT PRIMARY KEY,
@@ -83,10 +83,10 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       ('pet-berenice', 'Exigente'), ('pet-berenice', 'Juíza Suprema'), ('pet-berenice', 'Olhar de Julgamento'),
       ('pet-panda', 'Especialista em Sonecas'), ('pet-panda', 'Crítico de Sachê'), ('pet-panda', 'Zero Estressado'),
       ('pet-pacoca', 'Diretora de Festas'), ('pet-pacoca', 'Auditora de Petiscos'), ('pet-pacoca', 'Carisma em Grau de Urgência')`,
-    // Members who already joined take their chefes right away.
+    // Members who already joined take their pets right away.
     `UPDATE pets SET tutor_member_id = (SELECT id FROM members WHERE members.email = pets.tutor_email AND members.active = 1)`,
   ],
-  // 3: the estimated age (docs/spec/chefes.md) and the photos (ADR-009).
+  // 3: the estimated age (docs/spec/pets.md) and the photos (ADR-009).
   [
     `ALTER TABLE pets ADD COLUMN birth_estimated INTEGER NOT NULL DEFAULT 0`,
     `CREATE TABLE pet_photos (
@@ -112,7 +112,7 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     )`,
     `CREATE INDEX vaccinations_pet ON vaccinations(pet_id, applied_on)`,
   ],
-  // 5: each chefe's vet, 24 h clinic and health plan, for the Cartão SOS (docs/spec/cartao-sos.md).
+  // 5: each pet's vet, 24 h clinic and health plan, for the Cartão SOS (docs/spec/cartao-sos.md).
   [
     `ALTER TABLE pets ADD COLUMN vet_name TEXT`,
     `ALTER TABLE pets ADD COLUMN vet_phone TEXT`,
@@ -143,7 +143,7 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
   ],
   // 7: the address of the 24 h clinic, for the Cartão SOS (docs/spec/cartao-sos.md).
   [`ALTER TABLE pets ADD COLUMN clinic_address TEXT`],
-  // 8: the medications of each chefe (docs/spec/medicacoes.md). A null `end_on` is continuous use.
+  // 8: the medications of each pet (docs/spec/medicacoes.md). A null `end_on` is continuous use.
   [
     `CREATE TABLE medications (
       id TEXT PRIMARY KEY,
@@ -159,7 +159,7 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
     `CREATE INDEX medications_pet ON medications(pet_id, start_on)`,
   ],
   // 9: phase 2 — parasite and hygiene care, conditions, consultas/exames/laudos, the diary, the
-  // meals and the pet sitter's links (docs/spec/cuidados.md, saude.md, chefes.md, manual-temporario.md).
+  // meals and the pet sitter's links (docs/spec/cuidados.md, saude.md, pets.md, manual-temporario.md).
   // The due date of a care record is computed from `done_on` + `interval_days`, never stored.
   [
     `CREATE TABLE care_records (
@@ -229,7 +229,7 @@ export const MIGRATIONS: readonly (readonly string[])[] = [
       created_at TEXT NOT NULL
     )`,
   ],
-  // 10: the tutoria lent for a period (docs/spec/chefes.md): who takes it back and on which day.
+  // 10: the tutoria lent for a period (docs/spec/pets.md): who takes it back and on which day.
   [
     `ALTER TABLE pets ADD COLUMN tutor_until TEXT`,
     `ALTER TABLE pets ADD COLUMN tutor_return_member_id TEXT REFERENCES members(id)`,

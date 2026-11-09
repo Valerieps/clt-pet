@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ageParts, birthDateFromAge, formatAge, missingFields, normalizeProfile, normalizeTags, type PetProfile } from './pet';
+import { ageParts, birthDateFromAge, formatAge, missingFields, normalizeProfile, type PetProfile } from './pet';
 import { formatKilos, latestWeight, parseKilos, weightAlert } from './weight';
 
 const TODAY = '2026-11-04';
@@ -74,16 +74,6 @@ describe('weight', () => {
     expect(weightAlert([{ grams: 4000, onDate: '2026-08-01' }, { grams: 3000, onDate: '2026-11-01' }], 10)).toBeNull();
     expect(weightAlert([{ grams: 4000, onDate: '2026-11-01' }], 10)).toBeNull();
     expect(weightAlert([{ grams: 4000, onDate: '2026-09-10' }, { grams: 3700, onDate: '2026-11-01' }], 5)).not.toBeNull();
-  });
-});
-
-describe('normalizeTags', () => {
-  it('trims, drops blanks and repeats, and caps the count', () => {
-    expect(normalizeTags([' Exigente ', '', 'exigente', 'Juíza'])).toEqual(['Exigente', 'Juíza']);
-    expect(normalizeTags(['a', 'b', 'c', 'd', 'e', 'f', 'g'])).toBeNull();
-    expect(normalizeTags(['x'.repeat(41)])).toBeNull();
-    expect(normalizeTags('a')).toBeNull();
-    expect(normalizeTags([3])).toBeNull();
   });
 });
 

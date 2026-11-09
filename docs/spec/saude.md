@@ -1,6 +1,6 @@
 # Saúde
 
-As condições de saúde de cada chefe, as Reuniões com o Conselho Médico (consultas, exames e laudos)
+As condições de saúde de cada pet, as Reuniões com o Conselho Médico (consultas, exames e laudos)
 e o "algo estranho hoje".
 
 - **Entra aqui:** condições (ativas e resolvidas), consultas, exames, laudos, o retorno e o "algo
@@ -11,8 +11,8 @@ e o "algo estranho hoje".
 
 ## Em aberto
 
-- [ ] Algum chefe tem condição crônica hoje? Se sim, qual e desde quando?
-- [ ] O "algo estranho hoje" deve aparecer nas Próximas Ações (a última anotação) ou só na página do chefe?
+- [ ] Algum pet tem condição crônica hoje? Se sim, qual e desde quando?
+- [ ] O "algo estranho hoje" deve aparecer nas Próximas Ações (a última anotação) ou só na página do pet?
   Hoje, só na página.
 - [ ] Anexar o PDF ou a foto do exame e do laudo entra agora ou fica com a leitura por foto
   (fase 4)? Hoje eu escrevo o resultado em texto.
@@ -41,7 +41,7 @@ e o "algo estranho hoje".
 - Na aba Agendamentos, a seção Consultas mostra as consultas de rotina (`prazos.md`), depois as
   consultas agendadas e as que têm retorno em aberto; todas as consultas, exames e laudos ficam no
   histórico dobrado embaixo. *(2)*
-- O retorno entra no "Exige" da página do chefe 7 dias antes da data e sai quando eu registro a
+- O retorno entra no "Exige" da página do pet 7 dias antes da data e sai quando eu registro a
   consulta de retorno (`navegacao.md`, "Exige"). *(2)*
 - Qualquer funcionário pode apagar um registro, depois de tocar no lápis. *(2)*
 

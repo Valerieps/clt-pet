@@ -6,7 +6,7 @@ import { formatDate } from '../../domain/pets/pet';
 import { SITTER_DEFAULT_DAYS, SITTER_LABEL_MAX, SITTER_MAX_DAYS, SITTER_NOTE_MAX } from '../../domain/sitter/sitter';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
-import { useChefia } from '../chefia';
+import { usePets } from '../use-pets';
 import { useConfirm } from '../confirm';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
@@ -47,8 +47,8 @@ function LinkRow({ link }: { link: SitterLinkView }) {
   const toast = useToast();
   const confirm = useConfirm();
   const { backend } = useServices();
-  const { chefes } = useChefia();
-  const names = chefes.filter((c) => link.petIds.includes(c.pet.id)).map((c) => c.pet.profile.name);
+  const { summaries } = usePets();
+  const names = summaries.filter((c) => link.petIds.includes(c.pet.id)).map((c) => c.pet.profile.name);
   const url = linkOf(link.token);
 
   async function copy() {
@@ -103,9 +103,9 @@ function LinkRow({ link }: { link: SitterLinkView }) {
 function SitterForm({ onDone }: { onDone: () => void }) {
   const toast = useToast();
   const { backend } = useServices();
-  const { chefes } = useChefia();
+  const { summaries } = usePets();
   const [label, setLabel] = useState('');
-  const [petIds, setPetIds] = useState<string[]>(() => chefes.map((c) => c.pet.id));
+  const [petIds, setPetIds] = useState<string[]>(() => summaries.map((c) => c.pet.id));
   const [days, setDays] = useState(String(SITTER_DEFAULT_DAYS));
   const [note, setNote] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -131,7 +131,7 @@ function SitterForm({ onDone }: { onDone: () => void }) {
       <fieldset className="field">
         <legend>{t.form.pets}</legend>
         <div className="chips">
-          {chefes.map(({ pet }) => (
+          {summaries.map(({ pet }) => (
             <button key={pet.id} type="button" className="chip" aria-pressed={petIds.includes(pet.id)} onClick={() => toggle(pet.id)}>
               {pet.profile.name}
             </button>

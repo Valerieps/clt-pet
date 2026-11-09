@@ -7,7 +7,7 @@ import { sameItem } from '../../domain/prazos';
 import { strings } from '../../domain/strings';
 import { DEFAULT_INTERVAL_DAYS, MAX_INTERVAL_DAYS, PROTOCOLS } from '../../domain/vaccines/vaccine';
 import { useServices } from '../backend-context';
-import { todayLocal } from '../chefia';
+import { todayLocal } from '../use-pets';
 import { useToast } from '../toast';
 import { useQuery } from '../use-query';
 

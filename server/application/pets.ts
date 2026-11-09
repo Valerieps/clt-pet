@@ -1,5 +1,5 @@
-// The chefes: profile, tutoria, allergies and weight (docs/spec/chefes.md).
-// Any member sees and edits any chefe; the actor only has to be signed in.
+// The pets: profile, tutoria, allergies and weight (docs/spec/pets.md).
+// Any member sees and edits any pet; the actor only has to be signed in.
 import { PHOTO_MAX_BASE64, type PetView, type RetiredPetView, type WeightEntryView } from '../../src/application/api-contract';
 import { normalizeEmail } from '../../src/domain/group/email';
 import { normalizeEmergency } from '../../src/domain/pets/emergency';
@@ -8,7 +8,6 @@ import {
   isSpecies,
   normalizePetName,
   normalizeProfile,
-  normalizeTags,
   type Allergy,
   type FoodKind,
   type Sex,
@@ -73,7 +72,6 @@ export function todayInBrasilia(ctx: Context): string {
 }
 
 function toView(ctx: Context, row: PetRow): PetView {
-  const tags = ctx.sql.all<{ tag: string }>('SELECT tag FROM pet_tags WHERE pet_id = ? ORDER BY rowid', row.id).map((r) => r.tag);
   const allergies = ctx.sql.all<Allergy>('SELECT kind, description FROM pet_allergies WHERE pet_id = ? ORDER BY id', row.id);
   const weights = ctx.sql.all<{ id: string; grams: number; on_date: string; name: string }>(
     `SELECT weights.id, weights.grams, weights.on_date, members.name FROM weights
@@ -98,7 +96,6 @@ function toView(ctx: Context, row: PetRow): PetView {
       foodDaily: row.food_daily,
       allergies,
     },
-    tags,
     photoVersion: ctx.sql.all<{ updated_at: string }>('SELECT updated_at FROM pet_photos WHERE pet_id = ?', row.id)[0]?.updated_at ?? null,
     allergiesAnswered: row.allergies_answered === 1,
     seriousMode: row.serious_mode === 1,
@@ -166,17 +163,6 @@ export function updatePet(ctx: Context, _actor: Member, input: Record<string, un
   for (const allergy of profile.allergies) {
     ctx.sql.run('INSERT INTO pet_allergies (pet_id, kind, description) VALUES (?, ?, ?)', pet.id, allergy.kind, allergy.description);
   }
-  return reply(ctx, pet.id);
-}
-
-/** Replaces the personality tags; the order is kept. */
-export function setTags(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<PetView> {
-  const pet = findPet(ctx, input.petId);
-  if (!pet) return failure('not_found');
-  const tags = normalizeTags(input.tags);
-  if (!tags) return failure('invalid');
-  ctx.sql.run('DELETE FROM pet_tags WHERE pet_id = ?', pet.id);
-  for (const tag of tags) ctx.sql.run('INSERT INTO pet_tags (pet_id, tag) VALUES (?, ?)', pet.id, tag);
   return reply(ctx, pet.id);
 }
 
@@ -308,7 +294,7 @@ export function createPet(ctx: Context, actor: Member, input: Record<string, unk
   return reply(ctx, id);
 }
 
-/** Retires a chefe: it leaves the Mural, the reminders and every list; its records stay in the database. */
+/** Retires a pet: it leaves the Mural, the reminders and every list; its records stay in the database. */
 export function retirePet(ctx: Context, _actor: Member, input: Record<string, unknown>): CommandResult<null> {
   const pet = findPet(ctx, input.petId);
   if (!pet) return failure('not_found');
@@ -349,7 +335,7 @@ export function removeWeight(ctx: Context, _actor: Member, input: Record<string,
   return reply(ctx, row.pet_id);
 }
 
-/** When a member signs in, the chefes tied to their e-mail point to their account. */
+/** When a member signs in, the pets tied to their e-mail point to their account. */
 export function linkTutor(ctx: Context, memberId: string, email: string): void {
   ctx.sql.run('UPDATE pets SET tutor_member_id = ? WHERE tutor_email = ?', memberId, normalizeEmail(email));
 }

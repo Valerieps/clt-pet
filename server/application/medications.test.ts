@@ -16,7 +16,7 @@ const list = (): MedicationView[] => (service.query('h-v', 'medications', {}) as
 const input = { petId: 'pet-panda', name: 'Apoquel', dose: '1 comprimido', frequency: 'daily2', startOn: '2026-11-01' };
 
 describe('medication.add', () => {
-  it('registers a medication for one chefe', () => {
+  it('registers a medication for one pet', () => {
     const result = service.command('h-v', 'medication.add', { ...input, endOn: '2026-11-15' });
     expect(result).toMatchObject({ ok: true, changed: ['medications'] });
     expect(list().map((m) => [m.petId, m.name, m.dose, m.frequency, m.startOn, m.endOn, m.byName])).toEqual([
@@ -29,7 +29,7 @@ describe('medication.add', () => {
     expect(list()[0].endOn).toBeNull();
   });
 
-  it('saves nothing when the chefe does not exist or the input is invalid', () => {
+  it('saves nothing when the pet does not exist or the input is invalid', () => {
     expect(service.command('h-v', 'medication.add', { ...input, petId: 'nope' })).toEqual({ ok: false, error: 'not_found' });
     expect(service.command('h-v', 'medication.add', { ...input, frequency: 'hourly' })).toEqual({ ok: false, error: 'invalid' });
     expect(service.command('h-v', 'medication.add', { ...input, endOn: '2026-10-01' })).toEqual({ ok: false, error: 'invalid' });

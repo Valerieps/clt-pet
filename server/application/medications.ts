@@ -1,4 +1,4 @@
-// The medications of each chefe (docs/spec/medicacoes.md). Any member registers and removes them.
+// The medications of each pet (docs/spec/medicacoes.md). Any member registers and removes them.
 import type { MedicationView } from '../../src/application/api-contract';
 import { normalizeMedication } from '../../src/domain/medications/medication';
 import { failure, nowIso, type CommandResult, type Context } from './context';

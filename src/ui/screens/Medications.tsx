@@ -4,12 +4,12 @@ import { isEnded } from '../../domain/medications/medication';
 import { formatDate } from '../../domain/pets/pet';
 import { strings } from '../../domain/strings';
 import { useServices } from '../backend-context';
-import { todayLocal } from '../chefia';
+import { todayLocal } from '../use-pets';
 import { useConfirm } from '../confirm';
 
 const t = strings.medications;
 
-/** A chefe's treatments (docs/spec/medicacoes.md), inside Medicações in Agendamentos: those in use first, the ended ones folded. */
+/** A pet's treatments (docs/spec/medicacoes.md), inside Medicações in Agendamentos: those in use first, the ended ones folded. */
 export function TreatmentList({ treatments, removable }: { treatments: readonly MedicationView[]; removable: boolean }) {
   const confirm = useConfirm();
   const { backend } = useServices();

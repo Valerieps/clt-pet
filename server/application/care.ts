@@ -59,7 +59,7 @@ export const careReminders: ReminderSource = (ctx) => {
   );
 };
 
-/** Registers the same record for several chefes at once; all of them must exist, or nothing is saved. */
+/** Registers the same record for several pets at once; all of them must exist, or nothing is saved. */
 export function addCare(ctx: Context, actor: Member, input: Record<string, unknown>): CommandResult<CareView[]> {
   const record = normalizeCare(input, todayInBrasilia(ctx));
   const { petIds } = input;

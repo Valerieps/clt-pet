@@ -1,4 +1,4 @@
-// A chefe's medications (docs/spec/medicacoes.md): what is given, how often, from when to when.
+// A pet's medications (docs/spec/medicacoes.md): what is given, how often, from when to when.
 import { isIsoDate, TEXT_MAX } from '../pets/pet';
 
 export const FREQUENCIES = ['daily1', 'daily2', 'daily3', 'every12h', 'every8h', 'asNeeded'] as const;

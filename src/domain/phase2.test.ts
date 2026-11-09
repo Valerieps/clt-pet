@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { careDueDate, careStatus, currentCare, normalizeCare, soonWindow } from './care/care';
 import { normalizeCondition, normalizeVisit } from './health/health';
-import { chefeStatus, isSnoozed } from './next-actions';
+import { petStatus, isSnoozed } from './next-actions';
 import { normalizeDiary, normalizeMeal } from './routine/routine';
 import { isSitterTokenShape, normalizeSitterLink } from './sitter/sitter';
 
@@ -88,7 +88,7 @@ describe('sitter link', () => {
     expect(normalizeSitterLink({ label: 'Ana', petIds: ['a'] }, TODAY)?.expiresOn).toBe('2026-11-10');
   });
 
-  it('refuses a link without chefes, label or a sane length', () => {
+  it('refuses a link without pets, label or a sane length', () => {
     expect(normalizeSitterLink({ label: 'Ana', petIds: [] }, TODAY)).toBeNull();
     expect(normalizeSitterLink({ label: '', petIds: ['a'] }, TODAY)).toBeNull();
     expect(normalizeSitterLink({ label: 'Ana', petIds: ['a'], days: 91 }, TODAY)).toBeNull();
@@ -113,13 +113,13 @@ describe('home status with parasites', () => {
   const pet = { id: 'p', name: 'Paçoca', seriousMode: false, allergiesAnswered: true };
 
   it('demands attention for a late parasite care, like a vaccine', () => {
-    const status = chefeStatus(pet, [], TODAY, null, [{ item: 'Vermífugo', doneOn: '2026-07-01', intervalDays: 90 }]);
+    const status = petStatus(pet, [], TODAY, null, [{ item: 'Vermífugo', doneOn: '2026-07-01', intervalDays: 90 }]);
     expect(status.needsAttention).toBe(true);
     expect(status.vaccine).toEqual({ item: 'Vermífugo', overdue: true, days: 36 });
   });
 
   it('picks the earliest due among vaccines and parasites', () => {
-    const status = chefeStatus(pet, [{ vaccine: 'V10', appliedOn: '2025-11-20', intervalDays: 365 }], TODAY, null, [
+    const status = petStatus(pet, [{ vaccine: 'V10', appliedOn: '2025-11-20', intervalDays: 365 }], TODAY, null, [
       { item: 'Antipulgas', doneOn: '2026-10-08', intervalDays: 30 },
     ]);
     expect(status.vaccine?.item).toBe('Antipulgas');

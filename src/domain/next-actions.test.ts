@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chefeStatus, doneToday, lastRecordLabel, pendingActions, tutorGroups, type StatusPet } from './next-actions';
+import { petStatus, doneToday, lastRecordLabel, pendingActions, tutorGroups, type StatusPet } from './next-actions';
 
 const utcDay = (at: Date) => at.toISOString().slice(0, 10);
 
@@ -41,23 +41,23 @@ describe('lastRecordLabel', () => {
 const pet: StatusPet = { allergiesAnswered: true };
 const today = '2026-11-04';
 
-describe('chefeStatus', () => {
+describe('petStatus', () => {
   it('is fine with no doses and the allergies answered', () => {
-    expect(chefeStatus(pet, [], today)).toMatchObject({ needsAttention: false, vaccine: null, pending: [], next: null });
+    expect(petStatus(pet, [], today)).toMatchObject({ needsAttention: false, vaccine: null, pending: [], next: null });
   });
 
   it('needs attention when the allergies are blank', () => {
-    const status = chefeStatus({ allergiesAnswered: false }, [], today);
+    const status = petStatus({ allergiesAnswered: false }, [], today);
     expect(status).toMatchObject({ needsAttention: true, allergiesMissing: true, vaccine: null });
   });
 
   it('needs attention with a vaccine due within 30 days, and names the days left', () => {
-    const status = chefeStatus(pet, [{ vaccine: 'V10', appliedOn: '2025-12-04', intervalDays: 365 }], today);
+    const status = petStatus(pet, [{ vaccine: 'V10', appliedOn: '2025-12-04', intervalDays: 365 }], today);
     expect(status).toMatchObject({ needsAttention: true, vaccine: { item: 'Vacina V10', overdue: false, days: 30 } });
   });
 
   it('lists every pending prazo, the earliest first', () => {
-    const status = chefeStatus(
+    const status = petStatus(
       pet,
       [
         { vaccine: 'V10', appliedOn: '2025-10-25', intervalDays: 365 },
@@ -70,22 +70,22 @@ describe('chefeStatus', () => {
   });
 
   it('keeps the next prazo even when it is far away, without demanding attention', () => {
-    const status = chefeStatus(pet, [{ vaccine: 'V10', appliedOn: '2026-10-01', intervalDays: 365 }], today);
+    const status = petStatus(pet, [{ vaccine: 'V10', appliedOn: '2026-10-01', intervalDays: 365 }], today);
     expect(status.needsAttention).toBe(false);
     expect(status.next).toEqual({ item: 'Vacina V10', overdue: false, days: 331 });
   });
 
   it('needs attention when the weight alert fired, even with everything else in order', () => {
-    const status = chefeStatus(pet, [], today, -12.5);
+    const status = petStatus(pet, [], today, -12.5);
     expect(status).toMatchObject({ needsAttention: true, weightChange: { percent: -12.5 }, vaccine: null });
   });
 });
 
 describe('pendingActions', () => {
-  const late = chefeStatus(pet, [{ vaccine: 'V10', appliedOn: '2025-10-25', intervalDays: 365 }], today); // 10 days late
-  const soon = chefeStatus(pet, [{ vaccine: 'V5', appliedOn: '2025-11-10', intervalDays: 365 }], today); // 6 days left
-  const weight = chefeStatus(pet, [], today, 6.2);
-  const allergies = chefeStatus({ allergiesAnswered: false }, [], today);
+  const late = petStatus(pet, [{ vaccine: 'V10', appliedOn: '2025-10-25', intervalDays: 365 }], today); // 10 days late
+  const soon = petStatus(pet, [{ vaccine: 'V5', appliedOn: '2025-11-10', intervalDays: 365 }], today); // 6 days left
+  const weight = petStatus(pet, [], today, 6.2);
+  const allergies = petStatus({ allergiesAnswered: false }, [], today);
 
   it('puts the late first, then the weight and allergies, then what is due', () => {
     const actions = pendingActions([
@@ -97,18 +97,18 @@ describe('pendingActions', () => {
     expect(actions.map((a) => `${a.petId}:${a.kind}`)).toEqual(['late:prazo', 'weight:weight', 'allergies:allergies', 'soon:prazo']);
   });
 
-  it('gives one line per thing to do of the same chefe', () => {
-    const both = chefeStatus({ allergiesAnswered: false }, [{ vaccine: 'V10', appliedOn: '2025-10-25', intervalDays: 365 }], today, 8);
+  it('gives one line per thing to do of the same pet', () => {
+    const both = petStatus({ allergiesAnswered: false }, [{ vaccine: 'V10', appliedOn: '2025-10-25', intervalDays: 365 }], today, 8);
     expect(pendingActions([{ petId: 'p', status: both }]).map((a) => a.kind)).toEqual(['prazo', 'weight', 'allergies']);
   });
 
-  it('leaves the snoozed chefes out', () => {
+  it('leaves the snoozed pets out', () => {
     expect(pendingActions([{ petId: 'late', status: late }], new Set(['late']))).toEqual([]);
   });
 });
 
 describe('tutorGroups', () => {
-  it("puts the member's card first, then the others, and the chefes without a tutor last", () => {
+  it("puts the member's card first, then the others, and the pets without a tutor last", () => {
     const pets = [
       { id: 'a', tutorMemberId: null, tutorName: null },
       { id: 'b', tutorMemberId: 'cesar', tutorName: 'Cesar' },

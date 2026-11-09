@@ -1,6 +1,6 @@
 # Medicações
 
-As medicações de cada chefe: o que toma, quanto, com que frequência e por quanto tempo.
+As medicações de cada pet: o que toma, quanto, com que frequência e por quanto tempo.
 
 - **Entra aqui:** cadastrar, listar e apagar medicações.
 - **Não entra aqui:** "dose dada", trava anti-duplicidade, estoque, horários exatos e lembretes
@@ -13,19 +13,19 @@ As medicações de cada chefe: o que toma, quanto, com que frequência e por qua
 
 ## Cadastro
 
-- Eu cadastro uma medicação para um chefe: nome do remédio, dose, frequência, data de início e,
+- Eu cadastro uma medicação para um pet: nome do remédio, dose, frequência, data de início e,
   se quiser, data de fim. Sem data de fim, é uso contínuo. *(1)*
 - A dose é um texto livre ("1 comprimido", "0,5 ml"). A frequência é uma de seis: 1x, 2x ou 3x ao
   dia, a cada 12 horas, a cada 8 horas, ou quando precisar. *(1)*
 - A data de início começa em hoje e pode ser passada ou futura. A data de fim não pode ser antes
   do início. *(1)*
-- Uma medicação vale para um chefe só. *(1)*
+- Uma medicação vale para um pet só. *(1)*
   *Por quê:* a dose costuma variar com o peso e a espécie.
 - Qualquer funcionário cadastra e apaga; cada linha mostra quem cadastrou. *(1)*
 
 ## Onde aparece
 
-- Na página do chefe, a medicação se chama **Tratamento** e fica na aba Agendamentos, na seção
+- Na página do pet, a medicação se chama **Tratamento** e fica na aba Agendamentos, na seção
   Medicações, depois das medicações periódicas: os em uso primeiro e, dobrados embaixo, os
   encerrados (a data de fim já passou). *(2)*
 - Eu cadastro um tratamento pelo botão "+ Planejar medicação", no fim da seção, escolhendo uma

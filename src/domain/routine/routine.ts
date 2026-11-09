@@ -1,4 +1,4 @@
-// The daily routine: the chefe's diary and the meals (docs/spec/saude.md and the meals in docs/spec/chefes.md).
+// The daily routine: the pet's diary and the meals (docs/spec/saude.md and the meals in docs/spec/pets.md).
 import { optionalText } from '../health/health';
 import { isIsoDate, TEXT_MAX } from '../pets/pet';
 
