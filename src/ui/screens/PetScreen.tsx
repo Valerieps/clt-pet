@@ -4,7 +4,6 @@ import { demandedDeadlines, type Deadline } from '../../domain/deadlines';
 import { dueLabel } from '../../domain/due-text';
 import { firstName } from '../../domain/people';
 import { PET_TABS, tabOfHash, type PetTab } from '../../domain/navigation';
-import { petSubtitle } from '../../domain/portrait';
 import { daysBetween } from '../../domain/reminders/reminders';
 import {
   ageParts,
@@ -114,7 +113,6 @@ function PetPage({ summary, summaries, me }: { summary: PetSummary; summaries: r
         )}
         <div className="hero-caption" ref={caption}>
           <h1 className="pet-name">{name}</h1>
-          <p className="support">{petSubtitle(pet, todayLocal())}</p>
         </div>
       </section>
       <main className="pet-body">

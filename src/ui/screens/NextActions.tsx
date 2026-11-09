@@ -6,7 +6,7 @@ import { greetingFor } from '../../domain/greeting';
 import { careRing, homeState, type CareRing } from '../../domain/portrait';
 import { strings } from '../../domain/strings';
 import { todayLocal, usePets, type PetSummary } from '../use-pets';
-import { PetFace, Faces, MeLink } from '../parts';
+import { PetFace, MeLink } from '../parts';
 import { Link } from '../router';
 
 const t = strings.home;
@@ -44,7 +44,7 @@ export function NextActions({ me }: { me: MeView }) {
   return (
     <>
       <header className="top-row">
-        <Faces summaries={summaries} current="home" />
+        <span />
         <MeLink me={me} />
       </header>
       <main className="home">
