@@ -170,10 +170,10 @@ describe('weights', () => {
     const { id } = pet('Berenice');
     expect(pet('Berenice').lastRecord).toBeNull();
     service.command('h-v', 'weight.add', { petId: id, grams: 4200, onDate: '2026-11-03' });
-    expect(pet('Berenice').lastRecord).toEqual({ byName: 'Valéria', at: '2026-11-04T15:00:00.000Z' });
+    expect(pet('Berenice').lastRecord).toEqual({ byName: 'Valéria', what: 'Peso', at: '2026-11-04T15:00:00.000Z' });
     clock.set('2026-11-04T18:00:00Z');
     service.command('h-c', 'diary.add', { petId: id, onDate: '2026-11-04', text: 'Vomitou uma bola de pelo' });
-    expect(pet('Berenice').lastRecord).toEqual({ byName: 'Cesar', at: '2026-11-04T18:00:00.000Z' });
+    expect(pet('Berenice').lastRecord).toEqual({ byName: 'Cesar', what: 'Algo estranho hoje', at: '2026-11-04T18:00:00.000Z' });
     expect(pet('Panda').lastRecord).toBeNull();
   });
 

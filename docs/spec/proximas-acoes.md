@@ -40,7 +40,7 @@ Nada por enquanto.
 ### Feito hoje
 
 - Quando alguém registra algo para um pet (peso, vacina, medicação, cuidado, consulta ou diário),
-  ele aparece em Feito hoje: o rosto, o nome e "Registrado por Nome". Fica até o fim do dia. *(1)*
+  ele aparece em Feito hoje: o rosto, o nome do pet e o que foi feito, por quem e a hora ("Antirrábica · Valéria, 14h"). Fica até o fim do dia. *(1)*
   *Por quê:* o outro funcionário abre o app e sabe na hora que já foi feito, e por quem.
 - Informar as alergias não entra em Feito hoje. Sem nada feito hoje, a parte não aparece. *(1)*
 

@@ -71,6 +71,8 @@ export interface PetView {
 
 export interface LastRecordView {
   readonly byName: string;
+  /** What was registered: "Peso", the vaccine's name, the medication, the care item, the visit title. */
+  readonly what: string;
   /** ISO timestamp of when it was saved, not the day it refers to. */
   readonly at: string;
 }

@@ -55,15 +55,28 @@ const PET_SELECT = `SELECT pets.*, members.name AS tutor_name, back.name AS retu
 /** What the Registrar drawer saves (docs/spec/navegacao.md): the Mural's "Feito" seal shows the newest of these. */
 // One query per table, not one UNION: the Durable Object's SQLite allows at most 5 terms in a compound SELECT.
 const REGISTER_TABLES = ['weights', 'vaccinations', 'medications', 'care_records', 'visits', 'diary'] as const;
+// What each table's record is called on screen: the vaccine, the medication, the care item, the visit title.
+const WHAT_OF: Record<(typeof REGISTER_TABLES)[number], string> = {
+  weights: "'Peso'",
+  vaccinations: 'r.vaccine',
+  medications: 'r.name',
+  care_records: 'r.item',
+  visits: 'r.title',
+  diary: "'Algo estranho hoje'",
+};
 const LAST_RECORD = REGISTER_TABLES.map(
-  (table) => `SELECT members.name, r.created_at FROM ${table} AS r JOIN members ON members.id = r.member_id
+  (table) => `SELECT members.name, r.created_at, ${WHAT_OF[table]} AS what FROM ${table} AS r JOIN members ON members.id = r.member_id
    WHERE r.pet_id = ? ORDER BY r.created_at DESC LIMIT 1`,
 );
 
-function lastRecord(ctx: Context, petId: string): { name: string; created_at: string } | undefined {
-  return LAST_RECORD.flatMap((query) => ctx.sql.all<{ name: string; created_at: string }>(query, petId)).reduce<
-    { name: string; created_at: string } | undefined
-  >((newest, r) => (!newest || r.created_at > newest.created_at ? r : newest), undefined);
+interface LastRecordRow {
+  name: string;
+  created_at: string;
+  what: string;
+}
+
+function lastRecord(ctx: Context, petId: string): LastRecordRow | undefined {
+  return LAST_RECORD.flatMap((query) => ctx.sql.all<LastRecordRow>(query, petId)).reduce<LastRecordRow | undefined>((newest, r) => (!newest || r.created_at > newest.created_at ? r : newest), undefined);
 }
 
 /** Today in Brasília (UTC-3), as YYYY-MM-DD: the date a weight or birthday is judged against. */
@@ -116,7 +129,7 @@ function toView(ctx: Context, row: PetRow): PetView {
     tutorReturnName: row.tutor_until ? row.return_name : null,
     arrivedOn: row.created_at.slice(0, 10),
     weights: weights.map((w): WeightEntryView => ({ id: w.id, grams: w.grams, onDate: w.on_date, byName: w.name })),
-    lastRecord: last ? { byName: last.name, at: last.created_at } : null,
+    lastRecord: last ? { byName: last.name, what: last.what, at: last.created_at } : null,
   };
 }
 

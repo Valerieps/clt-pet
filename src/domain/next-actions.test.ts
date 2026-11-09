@@ -9,18 +9,18 @@ describe('doneToday', () => {
 
   it('is null without a record or when the record is from another day', () => {
     expect(doneToday(null, day, utcDay)).toBeNull();
-    expect(doneToday({ byName: 'Cesar', at: '2026-11-03T23:00:00Z' }, day, utcDay)).toBeNull();
+    expect(doneToday({ byName: 'Cesar', what: 'Peso', at: '2026-11-03T23:00:00Z' }, day, utcDay)).toBeNull();
   });
 
   it('gives the first name of who registered today', () => {
-    expect(doneToday({ byName: 'Valéria Souza', at: '2026-11-04T09:00:00Z' }, day, utcDay)).toBe('Valéria');
-    expect(doneToday({ byName: 'Cesar', at: '2026-11-04T09:00:00Z' }, day, utcDay)).toBe('Cesar');
+    expect(doneToday({ byName: 'valéria souza', what: 'Antirrábica', at: '2026-11-04T09:00:00Z' }, day, utcDay)).toMatchObject({ by: 'Valéria', what: 'Antirrábica' });
+    expect(doneToday({ byName: 'CESAR', what: 'Peso', at: '2026-11-04T09:00:00Z' }, day, utcDay)).toMatchObject({ by: 'Cesar', what: 'Peso' });
   });
 
   it('judges the day on the device clock, not in UTC', () => {
     // 01:00 UTC on the 5th is still 22h of the 4th in Brasília.
-    expect(doneToday({ byName: 'Cesar', at: '2026-11-05T01:00:00Z' }, day, brasilia)).toBe('Cesar');
-    expect(doneToday({ byName: 'Cesar', at: '2026-11-05T01:00:00Z' }, day, utcDay)).toBeNull();
+    expect(doneToday({ byName: 'Cesar', what: 'Peso', at: '2026-11-05T01:00:00Z' }, day, brasilia)).toMatchObject({ by: 'Cesar' });
+    expect(doneToday({ byName: 'Cesar', what: 'Peso', at: '2026-11-05T01:00:00Z' }, day, utcDay)).toBeNull();
   });
 });
 
