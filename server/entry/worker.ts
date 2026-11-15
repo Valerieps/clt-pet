@@ -1,5 +1,6 @@
 // The Worker: serves the app's files, the API under /api, the live connection and the cron
 // (ADR-004). Everything about the group is delegated to the Group Durable Object.
+import { WorkerEntrypoint } from 'cloudflare:workers';
 import type { ApiError, ApiResult } from '../../src/application/api-contract';
 import { SESSION_DAYS, type GoogleProfile } from '../application/members';
 import { clearCookie, LOGIN_COOKIE, readCookie, SESSION_COOKIE, setCookie } from '../infrastructure/cookies';
@@ -170,6 +171,18 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
   return result.ok ? json({ value: result.value }) : json({ error: result.error }, STATUS[result.error]);
 }
 
+/** Runs every time-based job; each job decides whether it is due (GroupService.tick). */
+export async function runCron(env: Env, _ctx: ExecutionContext): Promise<void> {
+  await group(env).tick();
+}
+
+/** Service-binding RPC entrypoint: the central cron Worker calls `tick` on each app. */
+export class Cron extends WorkerEntrypoint<Env> {
+  async tick(): Promise<void> {
+    await runCron(this.env, this.ctx);
+  }
+}
+
 export default {
   async fetch(request, env, _ctx): Promise<Response> {
     const url = new URL(request.url);
@@ -177,7 +190,7 @@ export default {
     return env.ASSETS.fetch(request);
   },
 
-  async scheduled(_controller, env, _ctx): Promise<void> {
-    await group(env).tick();
+  async scheduled(_controller, env, ctx): Promise<void> {
+    await runCron(env, ctx);
   },
 } satisfies ExportedHandler<Env>;

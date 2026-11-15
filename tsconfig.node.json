@@ -11,5 +11,5 @@
     "vite.config.ts",
     "network-policy.ts"
   ],
-  "exclude": []
+  "exclude": ["server/entry/worker.test.ts"]
 }

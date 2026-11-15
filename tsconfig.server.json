@@ -14,5 +14,5 @@
     "types": ["@cloudflare/workers-types"]
   },
   "include": ["server", "src/domain", "src/application/api-contract.ts"],
-  "exclude": ["server/**/*.test.ts", "server/testing", "src/**/*.test.ts"]
+  "exclude": ["server/application/**/*.test.ts", "server/infrastructure/**/*.test.ts", "server/testing", "src/**/*.test.ts"]
 }
