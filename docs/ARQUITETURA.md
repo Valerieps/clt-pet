@@ -18,7 +18,7 @@ O desenho técnico que o código não mostra sozinho.
 app (celular) ──POST /api/query|command──► Worker ──RPC──► Group (Durable Object, SQLite)
      ▲                                       ▲                    │
      └──────── WebSocket /api/live ──────────┘                    │ "mudou: members, invites…"
-                                             cron 5 min ──► tick  ▼
+                                             cron-central ► tick  ▼
                                                      todos os apps abertos refazem a consulta
 ```
 
@@ -78,7 +78,8 @@ Em `pets`, a tutoria emprestada usa `tutor_until`, `tutor_return_member_id` e `t
 
 ## Fluxo de eventos
 
-O cron de 5 minutos chama `GroupService.tick`. Primeiro ele devolve as tutorias emprestadas cujo dia
+O cron de 5 minutos chama `GroupService.tick`. Ele não vive neste Worker: o Worker `cron-central`
+chama a entrada RPC `Cron.tick()` (`server/entry/worker.ts`) por um service binding, a cada 5 minutos. Primeiro ele devolve as tutorias emprestadas cujo dia
 chegou (e avisa os apps abertos com o tópico `pets`). Depois vêm os lembretes: cada feature com prazo
 registra uma `ReminderSource` (vacinas, medicações, retornos de consulta), que diz o item, o
 prazo e a aba da página do pet que o aviso abre. Às 9h de Brasília, o `tick` grava em `reminders_sent` o estágio devido (30 dias, 7 dias,
