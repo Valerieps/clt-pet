@@ -17,6 +17,9 @@ database: it calls `POST /api/query/<name>` and `POST /api/command/<name>`, type
   and refetch everything after a reconnect.
 - **Time-based jobs:** one cron every 5 minutes calls `Group.tick()`; each job decides whether it is
   due. Cron runs in UTC: a job tied to the local calendar converts the time itself.
+  **Update (2026-11-16):** the schedule moved out of this Worker. The central Worker `cron-central`
+  calls the `Cron` entrypoint's `tick()` (`server/entry/worker.ts`) over a service binding every
+  5 minutes; `wrangler.jsonc` keeps `"triggers": { "crons": [] }` and there is no `scheduled()`.
 - **Plan:** Workers Free. Durable Objects with SQLite storage and cron triggers are included.
 - **Deploy:** Workers Builds, connected to the GitHub repository, runs `npm run build` and deploys
   `main`; other branches get a preview version (`wrangler preview`, configured by the `previews`

@@ -12,7 +12,7 @@ vi.mock('cloudflare:workers', () => ({
 }));
 vi.mock('./group-object', () => ({ Group: class {}, SESSION_HASH_HEADER: 'x-app-session-hash' }));
 
-import worker, { Cron, runCron } from './worker';
+import { Cron, runCron } from './worker';
 
 function fakeEnv() {
   const tick = vi.fn(async () => {});
@@ -26,12 +26,6 @@ describe('cron entry points', () => {
   it('runCron ticks the group', async () => {
     const { env, tick } = fakeEnv();
     await runCron(env, ctx);
-    expect(tick).toHaveBeenCalledTimes(1);
-  });
-
-  it('scheduled() does the same as runCron', async () => {
-    const { env, tick } = fakeEnv();
-    await worker.scheduled!({} as ScheduledController, env, ctx);
     expect(tick).toHaveBeenCalledTimes(1);
   });
 

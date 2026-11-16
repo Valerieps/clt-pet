@@ -17,8 +17,9 @@
   },
   // Never edit a shipped migration; add the next tag.
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Group"] }],
-  // One cron for every time-based job; each job decides whether it is due (GroupService.tick).
-  "triggers": { "crons": ["*/5 * * * *"] },
+  // No cron here: the central Worker `cron-central` calls `Cron.tick()` over a service binding every
+  // 5 minutes. Keep the empty list: deleting `triggers` would leave the old schedule in Cloudflare.
+  "triggers": { "crons": [] },
   "vars": {
     // Public: the OAuth client ID from Google Cloud (README.md). The secret is a secret.
     "GOOGLE_CLIENT_ID": "625557632408-au455jq56jsf95474qbeka52c4qsvnkh.apps.googleusercontent.com",

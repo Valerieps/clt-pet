@@ -189,8 +189,4 @@ export default {
     if (url.pathname.startsWith('/api/')) return api(request, env, url);
     return env.ASSETS.fetch(request);
   },
-
-  async scheduled(_controller, env, ctx): Promise<void> {
-    await runCron(env, ctx);
-  },
 } satisfies ExportedHandler<Env>;
